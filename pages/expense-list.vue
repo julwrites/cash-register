@@ -6,8 +6,12 @@
       :selectedPeriod="selectedPeriod"
       :selectedCategory="selectedCategory"
       :categoryOptions="categoryOptions"
+      :startDate="startDate"
+      :endDate="endDate"
       @update:selectedPeriod="selectedPeriod = $event"
       @update:selectedCategory="selectedCategory = $event"
+      @update:startDate="startDate = $event"
+      @update:endDate="endDate = $event"
       @reset-filters="resetFilters"
     />
 
@@ -79,8 +83,13 @@ const isEditModalOpen = ref(false);
 const editForm = ref({});
 const currentPage = ref(1);
 const itemsPerPage = 10;
+
+const startDate = ref(null);
+const endDate = ref(null);
+
 const selectedPeriod = ref({ label: 'All Time', value: '' });
 const selectedCategory = ref({ label: 'All Categories', value: '' });
+
 const activeTab = ref('table');
 const isMobile = ref(false);
 const activeChartTab = ref('income-expense');
@@ -116,17 +125,29 @@ const filteredEntries = computed(() => {
 
   if (selectedPeriod.value.value) {
     const now = new Date();
-    let startDate = new Date(now);
+    let filterStartDate = new Date(now);
 
     if (selectedPeriod.value.value === 'week') {
-      startDate.setDate(now.getDate() - 7);
+      filterStartDate.setDate(now.getDate() - now.getDay());
+      filterStartDate.setHours(0, 0, 0, 0);
     } else if (selectedPeriod.value.value === 'month') {
-      startDate.setMonth(now.getMonth() - 1);
+      filterStartDate.setDate(1);
+      filterStartDate.setHours(0, 0, 0, 0);
     } else if (selectedPeriod.value.value === 'year') {
-      startDate.setFullYear(now.getFullYear() - 1);
+      filterStartDate.setMonth(0, 1);
+      filterStartDate.setHours(0, 0, 0, 0);
+    } else if (selectedPeriod.value.value === 'custom' && startDate.value && endDate.value) {
+      filterStartDate = new Date(startDate.value);
+      const filterEndDate = new Date(endDate.value);
+      filterEndDate.setHours(23, 59, 59, 999); // Set to end of day
+      filtered = filtered.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate >= filterStartDate && entryDate <= filterEndDate;
+      });
+      return filtered; // Return early as we've already applied the date filter
     }
 
-    filtered = filtered.filter(entry => new Date(entry.date) >= startDate);
+    filtered = filtered.filter(entry => new Date(entry.date) >= filterStartDate);
   }
 
   if (selectedCategory.value.value) {
@@ -209,6 +230,8 @@ function applyFilters() {
 function resetFilters() {
   selectedPeriod.value = { label: 'All Time', value: '' };
   selectedCategory.value = { label: 'All Categories', value: '' };
+  startDate.value = null;
+  endDate.value = null;
   currentPage.value = 1;
 }
 
