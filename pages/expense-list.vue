@@ -87,7 +87,7 @@ const itemsPerPage = 10;
 const startDate = ref(null);
 const endDate = ref(null);
 
-const selectedPeriod = ref({ label: 'All Time', value: '' });
+const selectedPeriod = ref({ label: 'This Month', value: 'month' });
 const selectedCategory = ref({ label: 'All Categories', value: '' });
 
 const activeTab = ref('table');
