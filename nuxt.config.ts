@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
   modules: ['@vite-pwa/nuxt', '@nuxt/ui', "@nuxt/fonts"],
+  content: {
+    experimental: { nativeSqlite: true }
+  },
   css: [ '~/assets/css/global.css' ],
   colorMode: {
     preference: 'system', // default value of $colorMode.preference

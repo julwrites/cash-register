@@ -1,59 +1,132 @@
 // users-db.ts
 import { existsSync } from 'fs';
-import sqlite3 from 'sqlite3';
-import { open, Database } from 'sqlite';
-import path from 'path';
+import Database from 'better-sqlite3';
+import * as path from 'path';
 
 const databasePath = path.join(process.cwd(), 'data', 'users.sqlite');
 export const secretKey = process.env.AUTH_SECRET;
 export const adminUsername = process.env.ADMIN_USERNAME;
 export const adminPassword = process.env.ADMIN_PASSWORD;
 
-let db: Database;
+let db: any;
 
-export const initializeDatabase = async () => {
-  if (!existsSync(databasePath)) {
-    console.log("No existing Users Table found. Starting with empty table.");
-  }
+interface DatabaseOperations {
+  run: (...args: any[]) => Promise<any>;
+  get: (...args: any[]) => Promise<any>;
+  all: (...args: any[]) => Promise<any>;
+  db: any;
+}
 
-  db = await open({
-    filename: databasePath,
-    driver: sqlite3.Database
+export const initializeDatabase = (): Promise<DatabaseOperations> => {
+  return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
+    try {
+      db = new Database(databasePath);
+      console.log('Connected to the users database');
+      
+      // better-sqlite3 is synchronous, so we just wrap in promises
+      const dbRun = (...args: any[]) => {
+        return new Promise((resolve, reject) => {
+          try {
+            const result = db.prepare(args[0]).run(...args.slice(1));
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      };
+      
+      const dbGet = (...args: any[]) => {
+        return new Promise((resolve, reject) => {
+          try {
+            const result = db.prepare(args[0]).get(...args.slice(1));
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      };
+      
+      const dbAll = (...args: any[]) => {
+        return new Promise((resolve, reject) => {
+          try {
+            const result = db.prepare(args[0]).all(...args.slice(1));
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      };
+      dbRun(`
+        CREATE TABLE IF NOT EXISTS users (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          username VARCHAR(50) UNIQUE,
+          password VARCHAR(50),
+          is_admin BOOLEAN DEFAULT FALSE,
+          is_approved BOOLEAN DEFAULT TRUE
+        );
+      `).then(() => {
+        // Check if admin user exists, if not, create it
+        dbGet('SELECT * FROM users WHERE username = ?', adminUsername)
+          .then(adminUser => {
+            if (!adminUser && adminUsername && adminPassword) {
+              dbRun(
+                'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
+                adminUsername,
+                adminPassword,
+                true,
+                true
+              ).then(() => {
+                console.log('Admin user created successfully.');
+                resolve({
+                  run: dbRun,
+                  get: dbGet,
+                  all: dbAll,
+                  db
+                });
+              }).catch(err => {
+                console.error('Error creating admin user', err);
+                reject(err);
+              });
+            } else {
+              resolve({
+                run: dbRun,
+                get: dbGet,
+                all: dbAll,
+                db
+              });
+        }
+          }).catch(err => {
+            console.error('Error checking admin user', err);
+            reject(err);
+          });
+      }).catch(err => {
+        console.error('Error creating table', err);
+        reject(err);
+      });
+    } catch (err) {
+      console.error('Error opening database', err);
+      reject(err);
+    }
   });
-
-  // Create table if not exists
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username VARCHAR(50) UNIQUE,
-      password VARCHAR(50),
-      is_admin BOOLEAN DEFAULT FALSE,
-      is_approved BOOLEAN DEFAULT TRUE
-    );
-  `);
-
-  // Check if admin user exists, if not, create it
-  const adminUser = await db.get('SELECT * FROM users WHERE username = ?', adminUsername);
-  if (!adminUser && adminUsername && adminPassword) {
-    await db.run(
-      'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
-      adminUsername,
-      adminPassword,
-      true,
-      true
-    );
-    console.log('Admin user created successfully.');
-  }
-
-  return db;
 };
-
 export interface User {
   id: number;
   username: string;
-  password: string;
-  is_admin: boolean;
   is_approved: boolean;
 }
 
-export default initializeDatabase;
+interface DatabaseOperations {
+  run: (...args: any[]) => Promise<any>;
+  get: (...args: any[]) => Promise<any>;
+  all: (...args: any[]) => Promise<any>;
+  db: any;
+}
+
+const dbPromise: Promise<DatabaseOperations> = initializeDatabase();
+
+export default {
+  run: async (...args: any[]) => (await dbPromise).run(...args),
+  get: async (...args: any[]) => (await dbPromise).get(...args),
+  all: async (...args: any[]) => (await dbPromise).all(...args),
+  db: async () => (await dbPromise).db
+};
