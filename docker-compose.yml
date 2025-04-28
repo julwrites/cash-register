@@ -3,11 +3,5 @@ services:
     build: .
     restart: always
     volumes:
-      - /Users/julianteh/Library/CloudStorage/OneDrive-Personal/Chillian/Cash-Register/data:/app/data
-    env_file: /Users/julianteh/Library/CloudStorage/OneDrive-Personal/Chillian/Cash-Register/data/cash-register.env
-    networks:
-      - it_service_network
-      
-networks:
-  it_service_network:
-    external: true
+      - ./data:/app/data
+    env_file: .env
