@@ -8,7 +8,7 @@
         <USelectMenu v-model="expenseData.category" :options="categoryOptions" id="category" required />
       </UFormGroup>
       <UFormGroup label="Description" name="description">
-        <UInput type="text" id="description" v-model="expenseData.description" required />
+        <USelectMenu v-model="expenseData.description" :options="descriptionOptions" id="description" required creatable />
       </UFormGroup>
       <UFormGroup label="Debit" name="debit">
         <UInput type="number" id="debit" v-model.number="expenseData.debit" step="0.01" min="0" />
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, onMounted } from 'vue';
+import { defineProps, defineEmits, ref, onMounted, computed } from 'vue';
 import { defaultExpense } from '../../composables/defaultExpense';
 import { useCategories } from '@/composables/useCategories';
 
@@ -49,6 +49,8 @@ const expenseData = ref<Expense>({
   ...props.expense
 });
 
+const descriptionOptions = ref([]);
+
 const categoryOptions = computed(() => [
   ...categoriesByID.value
     .map(cat => cat.name )
@@ -56,6 +58,10 @@ const categoryOptions = computed(() => [
 
 onMounted(async () => {
   await fetchCategories();
+  const response = await fetch('/api/expenses/descriptions');
+  if (response.ok) {
+    descriptionOptions.value = await response.json();
+  }
 });
 
 function handleSubmit() {

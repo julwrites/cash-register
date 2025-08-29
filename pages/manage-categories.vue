@@ -41,8 +41,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useCategories } from '@/composables/useCategories';
+import { useToast } from '#imports';
 
 const { categoriesByID, fetchCategories, addCategory, deleteCategory, updateCategory } = useCategories();
+const toast = useToast();
 
 const columns = [
   { key: 'id', label: 'ID' },
@@ -58,7 +60,7 @@ onMounted(async () => {
   await fetchCategories();
 });
 
-function actions(row: Category) {
+function actions(row: { id: number; name: string }) {
   return [
     [
       {
@@ -76,20 +78,35 @@ function actions(row: Category) {
 }
 
 async function handleAddCategory() {
-  await addCategory(newCategoryState.value);
-  newCategoryState.value.name = '';
+  const result = await addCategory(newCategoryState.value);
+  if (result.success) {
+    toast.add({ title: 'Category added successfully', color: 'green' });
+    newCategoryState.value.name = '';
+  } else {
+    toast.add({ title: 'Error adding category', description: result.error, color: 'red' });
+  }
 }
 
 async function handleDeleteCategory(categoryId: number) {
-  await deleteCategory(categoryId);
+  const result = await deleteCategory(categoryId);
+  if (result.success) {
+    toast.add({ title: 'Category deleted successfully', color: 'green' });
+  } else {
+    toast.add({ title: 'Error deleting category', description: result.error, color: 'red' });
+  }
 }
 
 async function handleUpdateCategory() {
-  await updateCategory(editFormState.value);
-  isEditModalOpen.value = false;
+  const result = await updateCategory(editFormState.value);
+  if (result.success) {
+    toast.add({ title: 'Category updated successfully', color: 'green' });
+    isEditModalOpen.value = false;
+  } else {
+    toast.add({ title: 'Error updating category', description: result.error, color: 'red' });
+  }
 }
 
-function startEditCategory(category: Category) {
+function startEditCategory(category: { id: number; name: string }) {
   editFormState.value = { ...category };
   isEditModalOpen.value = true;
 }

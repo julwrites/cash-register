@@ -1,7 +1,7 @@
 // /Users/julianteh/julwrites/cash-register/server/api/expenses/add.ts
 
 import { defineEventHandler, readBody, createError } from "h3";
-import db, { Expense } from "./expenses-db";
+import { getDb, Expense } from "./expenses-db";
 
 export default defineEventHandler(async (event) => {
   const expense: Expense = await readBody(event);
@@ -17,6 +17,8 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const year = new Date(expense.date).getFullYear();
+    const db = await getDb(year);
     const result = await db.run(`
       INSERT INTO expenses (credit, debit, description, date, category)
       VALUES (?, ?, ?, ?, ?)

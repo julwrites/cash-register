@@ -33,16 +33,15 @@ export function useCategories() {
       });
 
       if (response.ok) {
-        const addedCategory = await response.json();
-        categories.value.push(addedCategory);
-        return addedCategory;
+        await fetchCategories();
+        return { success: true };
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.statusMessage || 'Failed to add category');
+        return { success: false, error: errorData.statusMessage || 'Failed to add category' };
       }
     } catch (error) {
       console.error('Failed to add category:', error);
-      throw error;
+      return { success: false, error: error.message };
     }
   }
 
@@ -53,18 +52,19 @@ export function useCategories() {
       });
 
       if (response.ok) {
-        categories.value = categorie.value.filter((category: Category) => category.id !== categoryId);
+        await fetchCategories();
+        return { success: true };
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.statusMessage || 'Failed to delete category');
+        return { success: false, error: errorData.statusMessage || 'Failed to delete category' };
       }
     } catch (error) {
       console.error('Failed to delete category:', error);
-      throw error;
+      return { success: false, error: error.message };
     }
   }
 
-  async function updateCategory(category: Category) {
+  async function updateCategory(category: { id: number; name: string }) {
     try {
       const response = await fetch(`/api/categories/${category.id}`, {
         method: 'PUT',
@@ -75,19 +75,15 @@ export function useCategories() {
       });
 
       if (response.ok) {
-        const updatedCategory = await response.json();
-        const index = categories.value.findIndex((category: Category) => category.id === updatedCategory.id);
-        if (index !== -1) {
-          categories.value[index] = updatedCategory;
-        }
-        return updatedCategory;
+        await fetchCategories();
+        return { success: true };
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.statusMessage || 'Failed to update category');
+        return { success: false, error: errorData.statusMessage || 'Failed to update category' };
       }
     } catch (error) {
       console.error('Failed to update category:', error);
-      throw error;
+      return { success: false, error: error.message };
     }
   }
   

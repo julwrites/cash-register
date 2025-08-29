@@ -78,6 +78,8 @@ async function checkAdminStatus(token: string) {
     if (response.ok) {
       const data = await response.json();
       isAdmin.value = data.isAdmin;
+    } else if (response.status === 401) {
+      logout();
     } else {
       console.error('Failed to check admin status');
     }

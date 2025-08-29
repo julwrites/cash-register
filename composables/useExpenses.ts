@@ -27,7 +27,8 @@ export function useExpenses() {
 
   async function updateExpense(updatedExpense) {
     try {
-      const response = await fetch(`/api/expenses/${updatedExpense.id}`, {
+      const year = new Date(updatedExpense.date).getFullYear();
+      const response = await fetch(`/api/expenses/${year}/${updatedExpense.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -56,7 +57,12 @@ export function useExpenses() {
 
   async function deleteExpense(id) {
     try {
-      const response = await fetch(`/api/expenses/${id}`, {
+      const expenseToDelete = expenses.value.find(expense => expense.id === id);
+      if (!expenseToDelete) {
+        throw new Error('Expense not found');
+      }
+      const year = new Date(expenseToDelete.date).getFullYear();
+      const response = await fetch(`/api/expenses/${year}/${id}`, {
         method: 'DELETE'
       });
       if (!response.ok) {

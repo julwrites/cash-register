@@ -1,9 +1,15 @@
 // /Users/julianteh/julwrites/cash-register/server/api/categories/categories-db.ts
 
+import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
 
-const databasePath = path.join(process.cwd(), 'data', 'categories.sqlite');
+const dataDir = path.join(process.cwd(), 'data');
+if (!existsSync(dataDir)) {
+  mkdirSync(dataDir, { recursive: true });
+}
+
+const databasePath = path.join(dataDir, 'categories.sqlite');
 
 let db: any;
 

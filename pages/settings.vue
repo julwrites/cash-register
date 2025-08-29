@@ -18,10 +18,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import AdminPage from './admin.vue';
 import ManageCategoriesPage from './manage-categories.vue';
 import UserSettings from './user-settings.vue';
-const { getItem } = useLocalStorage();
+const { getItem, removeItem } = useLocalStorage();
+const router = useRouter();
 
 const selectedSettingsTab = ref('user-settings');
 const isAdmin = ref(true);
@@ -70,12 +72,19 @@ async function checkAdminStatus(token: string) {
     if (response.ok) {
       const data = await response.json();
       isAdmin.value = data.isAdmin;
+    } else if (response.status === 401) {
+      logout();
     } else {
       console.error('Failed to check admin status');
     }
   } catch (error) {
     console.error('Error checking admin status:', error);
   }
+}
+
+function logout() {
+  removeItem('authToken');
+  router.push('/login');
 }
 </script>
 

@@ -25,6 +25,7 @@ RUN rm -rf *.lock
 
 # Create data directory for SQLite
 RUN mkdir -p /app/data
+RUN chown -R node:node /app/data
 
 # Install dependencies with rebuild flag to ensure native modules are compiled correctly
 RUN yarn install

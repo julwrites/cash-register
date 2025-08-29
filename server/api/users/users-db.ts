@@ -1,9 +1,14 @@
 // users-db.ts
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
 
-const databasePath = path.join(process.cwd(), 'data', 'users.sqlite');
+const dataDir = path.join(process.cwd(), 'data');
+if (!existsSync(dataDir)) {
+  mkdirSync(dataDir, { recursive: true });
+}
+
+const databasePath = path.join(dataDir, 'users.sqlite');
 export const secretKey = process.env.AUTH_SECRET;
 export const adminUsername = process.env.ADMIN_USERNAME;
 export const adminPassword = process.env.ADMIN_PASSWORD;
@@ -73,8 +78,8 @@ export const initializeDatabase = (): Promise<DatabaseOperations> => {
                 'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
                 adminUsername,
                 adminPassword,
-                true,
-                true
+                1,
+                1
               ).then(() => {
                 console.log('Admin user created successfully.');
                 resolve({

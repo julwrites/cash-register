@@ -1,31 +1,32 @@
 // /Users/julianteh/julwrites/cash-register/server/api/expenses/expenses-db.ts
 
+import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
 
-const databasePath = path.join(process.cwd(), 'data', 'expenses.sqlite');
+const dataDir = path.join(process.cwd(), 'data');
+if (!existsSync(dataDir)) {
+  mkdirSync(dataDir, { recursive: true });
+}
 
-let db: any;
-
-let dbRun: (...args: any[]) => Promise<any>;
-let dbGet: (...args: any[]) => Promise<any>;
-let dbAll: (...args: any[]) => Promise<any>;
+const dbConnections: { [year: number]: Database.Database } = {};
 
 interface DatabaseOperations {
   run: (...args: any[]) => Promise<any>;
   get: (...args: any[]) => Promise<any>;
   all: (...args: any[]) => Promise<any>;
-  db: any;
+  db: Database.Database;
 }
 
-const initializeDatabase = (): Promise<DatabaseOperations> => {
+const initializeDatabase = (year: number): Promise<DatabaseOperations> => {
   return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
     try {
-      db = new Database(databasePath);
-      console.log('Connected to the expenses database');
-      
-      // better-sqlite3 is synchronous, so we just wrap in promises
-      dbRun = (...args: any[]) => {
+      const databasePath = path.join(process.cwd(), 'data', `expenses-${year}.sqlite`);
+      const db = new Database(databasePath);
+      console.log(`Connected to the expenses database for year ${year}`);
+      dbConnections[year] = db;
+
+      const dbRun = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).run(...args.slice(1));
@@ -35,8 +36,8 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
           }
         });
       };
-      
-      dbGet = (...args: any[]) => {
+
+      const dbGet = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).get(...args.slice(1));
@@ -46,8 +47,8 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
           }
         });
       };
-      
-      dbAll = (...args: any[]) => {
+
+      const dbAll = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).all(...args.slice(1));
@@ -57,6 +58,7 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
           }
         });
       };
+
       dbRun(`
         CREATE TABLE IF NOT EXISTS expenses (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -70,7 +72,7 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
         resolve({
           run: dbRun,
           get: dbGet,
-          all: dbAll,
+all: dbAll,
           db
         } as DatabaseOperations);
       }).catch(err => {
@@ -84,13 +86,13 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
   });
 };
 
-const dbPromise: Promise<DatabaseOperations> = initializeDatabase();
+const dbPromises: { [year: number]: Promise<DatabaseOperations> } = {};
 
-export default {
-  run: async (...args: any[]) => (await dbPromise).run(...args),
-  get: async (...args: any[]) => (await dbPromise).get(...args),
-  all: async (...args: any[]) => (await dbPromise).all(...args),
-  db: async () => (await dbPromise).db
+export const getDb = (year: number): Promise<DatabaseOperations> => {
+  if (!dbPromises[year]) {
+    dbPromises[year] = initializeDatabase(year);
+  }
+  return dbPromises[year];
 };
 
 export interface Expense {
