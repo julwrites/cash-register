@@ -8,7 +8,8 @@
         <USelectMenu v-model="expenseData.category" :options="categoryOptions" id="category" required />
       </UFormGroup>
       <UFormGroup label="Description" name="description">
-        <USelectMenu v-model="expenseData.description" :options="descriptionOptions" id="description" required creatable />
+        <USelectMenu v-model="expenseData.description" :options="descriptionOptions" id="description" required creatable
+          searchable />
       </UFormGroup>
       <UFormGroup label="Debit" name="debit">
         <UInput type="number" id="debit" v-model.number="expenseData.debit" step="0.01" min="0" />
@@ -53,7 +54,7 @@ const descriptionOptions = ref([]);
 
 const categoryOptions = computed(() => [
   ...categoriesByID.value
-    .map(cat => cat.name )
+    .map(cat => cat.name)
 ]);
 
 onMounted(async () => {
