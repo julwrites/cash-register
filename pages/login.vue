@@ -29,6 +29,9 @@
             required
           />
         </div>
+        <div v-if="showPasswordField" class="form-group">
+          <UCheckbox v-model="rememberMe" label="Remember me" />
+        </div>
         <UButton
           type="submit"
           color="primary"
@@ -58,6 +61,7 @@ import SetupAdminAccount from './components/SetupAdminAccount.vue';
 
 const username = ref('');
 const password = ref('');
+const rememberMe = ref(false);
 const router = useRouter();
 const { setItem } = useLocalStorage();
 const showSetPasswordModal = ref(false);
@@ -109,7 +113,11 @@ async function login() {
   try {
     const response = await $fetch('/api/users/auth/login', {
       method: 'POST',
-      body: { username: username.value, password: password.value },
+      body: {
+        username: username.value,
+        password: password.value,
+        rememberMe: rememberMe.value
+      },
     });
 
     if (response.token) {
