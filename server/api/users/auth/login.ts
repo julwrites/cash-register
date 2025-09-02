@@ -7,7 +7,7 @@ import { initializeDatabase, User } from '../users-db';
 const secretKey = process.env.AUTH_SECRET;
 
 export default defineEventHandler(async (event) => {
-  const { username, password } = await readBody(event);
+  const { username, password, rememberMe } = await readBody(event);
 
   const db = await initializeDatabase();
   const user = await db.get('SELECT * FROM users WHERE username = ?', [username]) as User;
@@ -28,11 +28,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' });
   }
 
+  const expiresIn = rememberMe ? '90d' : '1d';
   const token = jwt.sign({ 
     userId: user.id, 
     username: user.username, 
     isAdmin: user.is_admin 
-  }, secretKey, { expiresIn: '1h' });
+  }, secretKey, { expiresIn });
 
   return { 
     userExists: true,
