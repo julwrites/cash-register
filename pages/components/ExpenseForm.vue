@@ -59,7 +59,7 @@ const categoryOptions = computed(() => [
 
 onMounted(async () => {
   await fetchCategories();
-  const response = await fetch('/api/expenses/descriptions');
+  const response = await fetch('/api/descriptions');
   if (response.ok) {
     descriptionOptions.value = await response.json();
   }
