@@ -2,6 +2,7 @@
 
 import { defineEventHandler, readBody, createError } from "h3";
 import { getDb, Expense } from "./expenses-db";
+import { trackDescriptionUsage } from "../descriptions/descriptions-db";
 
 export default defineEventHandler(async (event) => {
   const expense: Expense = await readBody(event);
@@ -23,6 +24,9 @@ export default defineEventHandler(async (event) => {
       INSERT INTO expenses (credit, debit, description, date, category)
       VALUES (?, ?, ?, ?, ?)
     `, expense.credit || 0, expense.debit || 0, expense.description, expense.date, expense.category);
+
+    // Track description usage for MRU sorting
+    await trackDescriptionUsage(expense.description);
 
     return { id: result.lastID, ...expense };
   } catch (err: unknown) {
