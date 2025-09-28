@@ -2,11 +2,19 @@
   <div class="admin-container">
     <h2 class="page-title">Admin Dashboard</h2>
 
-    <UButton
-      class="mb-4"
-      label="Create New User"
-      @click="isCreateUserModalOpen = true"
-    />
+    <div class="admin-actions mb-4">
+      <UButton
+        class="mr-2"
+        label="Create New User"
+        @click="isCreateUserModalOpen = true"
+      />
+      <UButton
+        label="Migrate Descriptions"
+        @click="triggerDescriptionMigration"
+        :loading="migrationLoading"
+        color="green"
+      />
+    </div>
 
     <div v-if="loading" class="loading">Loading...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
@@ -59,6 +67,8 @@ const columns = [
 
 const isCreateUserModalOpen = ref(false);
 const newUsername = ref('');
+const migrationLoading = ref(false);
+const migrationResult = ref(null);
 
 onMounted(async () => {
   try {
@@ -191,6 +201,39 @@ async function updateAdmin(userId, updates) {
     error.value = err.message;
   }
 }
+
+async function triggerDescriptionMigration() {
+  try {
+    migrationLoading.value = true;
+    migrationResult.value = null;
+
+    const token = getItem('authToken');
+    const response = await fetch('/api/descriptions/migrate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to trigger migration');
+    }
+
+    const result = await response.json();
+    migrationResult.value = result;
+
+    if (result.success) {
+      alert(`Migration completed successfully!\n\nStatistics:\n- Total descriptions: ${result.statistics?.totalDescriptions || 'N/A'}\n- Total usage count: ${result.statistics?.totalUsageCount || 'N/A'}\n- Migration time: ${result.statistics?.migrationTime || 'N/A'}`);
+    } else {
+      alert(`Migration failed: ${result.error || 'Unknown error'}`);
+    }
+  } catch (err) {
+    error.value = err.message;
+    alert(`Migration error: ${err.message}`);
+  } finally {
+    migrationLoading.value = false;
+  }
+}
 </script>
 
 <style scoped>
@@ -198,6 +241,12 @@ async function updateAdmin(userId, updates) {
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .page-title {
