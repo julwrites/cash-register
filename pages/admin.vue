@@ -16,6 +16,30 @@
       />
     </div>
 
+    <div v-if="migrationResult" class="migration-status mb-4">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-bold">Migration Status</h3>
+        </template>
+        <div v-if="migrationResult.success" class="text-green-600">
+          <p><strong>✓ Migration completed successfully!</strong></p>
+          <div v-if="migrationResult.statistics" class="mt-2 text-sm">
+            <p><strong>Statistics:</strong></p>
+            <ul class="list-disc list-inside">
+              <li>Total descriptions: {{ migrationResult.statistics.totalDescriptions }}</li>
+              <li>Total usage count: {{ migrationResult.statistics.totalUsageCount }}</li>
+              <li>Years processed: {{ migrationResult.statistics.yearsProcessed.join(', ') }}</li>
+              <li>Migration time: {{ migrationResult.statistics.migrationTime }}</li>
+            </ul>
+          </div>
+        </div>
+        <div v-else class="text-red-600">
+          <p><strong>✗ Migration failed</strong></p>
+          <p class="mt-1">{{ migrationResult.error || 'Unknown error occurred' }}</p>
+        </div>
+      </UCard>
+    </div>
+
     <div v-if="loading" class="loading">Loading...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else class="users-table">
@@ -221,12 +245,6 @@ async function triggerDescriptionMigration() {
 
     const result = await response.json();
     migrationResult.value = result;
-
-    if (result.success) {
-      alert(`Migration completed successfully!\n\nStatistics:\n- Total descriptions: ${result.statistics?.totalDescriptions || 'N/A'}\n- Total usage count: ${result.statistics?.totalUsageCount || 'N/A'}\n- Migration time: ${result.statistics?.migrationTime || 'N/A'}`);
-    } else {
-      alert(`Migration failed: ${result.error || 'Unknown error'}`);
-    }
   } catch (err) {
     error.value = err.message;
     alert(`Migration error: ${err.message}`);
