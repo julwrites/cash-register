@@ -9,7 +9,7 @@ if (!existsSync(dataDir)) {
   mkdirSync(dataDir, { recursive: true });
 }
 
-const dbConnections: { [year: number]: Database.Database } = {};
+
 
 interface DatabaseOperations {
   run: (...args: any[]) => Promise<any>;
@@ -19,14 +19,16 @@ interface DatabaseOperations {
 }
 
 const initializeDatabase = (year: number): Promise<DatabaseOperations> => {
+  console.log('Initializing expenses database connection for year:', year);
   return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
     try {
       const databasePath = path.join(process.cwd(), 'data', `expenses-${year}.sqlite`);
       const db = new Database(databasePath);
       console.log(`Connected to the expenses database for year ${year}`);
-      dbConnections[year] = db;
+      
 
       const dbRun = (...args: any[]) => {
+        console.log('Executing expenses query:', args[0]);
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).run(...args.slice(1));
@@ -38,6 +40,7 @@ const initializeDatabase = (year: number): Promise<DatabaseOperations> => {
       };
 
       const dbGet = (...args: any[]) => {
+        console.log('Executing expenses query:', args[0]);
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).get(...args.slice(1));
@@ -49,6 +52,7 @@ const initializeDatabase = (year: number): Promise<DatabaseOperations> => {
       };
 
       const dbAll = (...args: any[]) => {
+        console.log('Executing expenses query:', args[0]);
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).all(...args.slice(1));
@@ -86,13 +90,11 @@ all: dbAll,
   });
 };
 
-const dbPromises: { [year: number]: Promise<DatabaseOperations> } = {};
+
 
 export const getDb = (year: number): Promise<DatabaseOperations> => {
-  if (!dbPromises[year]) {
-    dbPromises[year] = initializeDatabase(year);
-  }
-  return dbPromises[year];
+  console.log('Getting expenses database for year:', year);
+  return initializeDatabase(year);
 };
 
 export interface Expense {

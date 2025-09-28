@@ -17,8 +17,11 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 403, statusMessage: 'Forbidden' });
     }
 
+    console.log('getUsers handler called');
     const db = await initializeDatabase();
+    console.log('Before db.all');
     const users = await db.all('SELECT id, username, is_admin, is_approved FROM users') as User[];
+    console.log('After db.all, users:', users);
     return users;
   } catch (error) {
     console.error('Get Users API error:', error);

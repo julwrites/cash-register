@@ -29,9 +29,12 @@ export default defineEventHandler(async (event) => {
 
 // Add a function to fetch expenses with formatted date
 export async function fetchExpenses(): Promise<Expense[]> {
+  console.log('fetchExpenses called');
   const years = getYears();
+  console.log('Years:', years);
   let allExpenses: Expense[] = [];
   for (const year of years) {
+    console.log('Fetching expenses for year:', year);
     const db = await getDb(year);
     const expenses = await db.all(`
       SELECT id, credit, debit, description,
@@ -39,7 +42,9 @@ export async function fetchExpenses(): Promise<Expense[]> {
         category
       FROM expenses;
     `);
+    console.log('Expenses for year', year, ':', expenses);
     allExpenses = allExpenses.concat(expenses as Expense[]);
   }
+  console.log('All expenses:', allExpenses);
   return allExpenses;
 }

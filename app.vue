@@ -1,3 +1,7 @@
+<script setup>
+console.log('App.vue setup');
+</script>
+
 <template>
   <UContainer>
     <NuxtPwaManifest />

@@ -13,7 +13,7 @@ export const secretKey = process.env.AUTH_SECRET;
 export const adminUsername = process.env.ADMIN_USERNAME;
 export const adminPassword = process.env.ADMIN_PASSWORD;
 
-let db: any;
+
 
 interface DatabaseOperations {
   run: (...args: any[]) => Promise<any>;
@@ -25,7 +25,7 @@ interface DatabaseOperations {
 export const initializeDatabase = (): Promise<DatabaseOperations> => {
   return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
     try {
-      db = new Database(databasePath);
+      const db = new Database(databasePath);
       console.log('Connected to the users database');
       
       // better-sqlite3 is synchronous, so we just wrap in promises
@@ -127,11 +127,38 @@ interface DatabaseOperations {
   db: any;
 }
 
-const dbPromise: Promise<DatabaseOperations> = initializeDatabase();
+let dbPromise: Promise<DatabaseOperations> | null = null;
 
 export default {
-  run: async (...args: any[]) => (await dbPromise).run(...args),
-  get: async (...args: any[]) => (await dbPromise).get(...args),
-  all: async (...args: any[]) => (await dbPromise).all(...args),
-  db: async () => (await dbPromise).db
+  run: async (...args: any[]) => {
+    if (!dbPromise) {
+      console.log('Initializing users database connection');
+      dbPromise = initializeDatabase();
+    }
+    console.log('Executing users query:', args[0]);
+    return (await dbPromise).run(...args);
+  },
+  get: async (...args: any[]) => {
+    if (!dbPromise) {
+      console.log('Initializing users database connection');
+      dbPromise = initializeDatabase();
+    }
+    console.log('Executing users query:', args[0]);
+    return (await dbPromise).get(...args);
+  },
+  all: async (...args: any[]) => {
+    if (!dbPromise) {
+      console.log('Initializing users database connection');
+      dbPromise = initializeDatabase();
+    }
+    console.log('Executing users query:', args[0]);
+    return (await dbPromise).all(...args);
+  },
+  db: async () => {
+    if (!dbPromise) {
+      console.log('Initializing users database connection');
+      dbPromise = initializeDatabase();
+    }
+    return (await dbPromise).db;
+  }
 };

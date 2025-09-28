@@ -7,7 +7,10 @@ export default defineEventHandler(async (event) => {
   const method = event.node.req.method;
 
   if (method === 'GET') {
+    console.log('Categories GET handler called');
+    console.log('Before db.all');
     const categories = await db.all("SELECT * FROM categories");
+    console.log('After db.all, categories:', categories);
     return categories;
   }
 

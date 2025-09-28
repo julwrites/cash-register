@@ -12,12 +12,12 @@
   "dependencies": {
     "@nuxt/fonts": "^0.7.2",
     "@nuxt/ui": "^2.18.4",
-    "@sidebase/nuxt-auth": "^0.8.2",
+    "@sidebase/nuxt-auth": "^0.8.1",
     "@vite-pwa/nuxt": "^0.9.1",
     "better-sqlite3": "^11.5.0",
     "chart.js": "^4.4.4",
     "jsonwebtoken": "^9.0.2",
-    "next-auth": "5.0.0-beta.20",
+    "next-auth": "~4.21.1",
     "nuxt": "^3.12.4",
     "vue": "latest",
     "vue-chartjs": "^5.3.1"

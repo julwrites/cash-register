@@ -11,11 +11,9 @@ if (!existsSync(dataDir)) {
 
 const databasePath = path.join(dataDir, 'categories.sqlite');
 
-let db: any;
 
-let dbRun: (...args: any[]) => Promise<any>;
-let dbGet: (...args: any[]) => Promise<any>;
-let dbAll: (...args: any[]) => Promise<any>;
+
+
 
 interface DatabaseOperations {
   run: (...args: any[]) => Promise<any>;
@@ -27,11 +25,11 @@ interface DatabaseOperations {
 const initializeDatabase = (): Promise<DatabaseOperations> => {
   return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
     try {
-      db = new Database(databasePath);
+      const db = new Database(databasePath);
       console.log('Connected to the categories database');
       
       // better-sqlite3 is synchronous, so we just wrap in promises
-      dbRun = (...args: any[]) => {
+      const dbRun = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).run(...args.slice(1));
@@ -42,7 +40,7 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
         });
       };
       
-      dbGet = (...args: any[]) => {
+      const dbGet = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).get(...args.slice(1));
@@ -53,7 +51,7 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
         });
       };
       
-      dbAll = (...args: any[]) => {
+      const dbAll = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
             const result = db.prepare(args[0]).all(...args.slice(1));
@@ -86,13 +84,40 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
   });
 };
 
-const dbPromise: Promise<DatabaseOperations> = initializeDatabase();
+let dbPromise: Promise<DatabaseOperations> | null = null;
 
 export default {
-  run: async (...args: any[]) => (await dbPromise).run(...args),
-  get: async (...args: any[]) => (await dbPromise).get(...args),
-  all: async (...args: any[]) => (await dbPromise).all(...args),
-  db: async () => (await dbPromise).db
+  run: async (...args: any[]) => {
+    if (!dbPromise) {
+      console.log('Initializing categories database connection');
+      dbPromise = initializeDatabase();
+    }
+    console.log('Executing categories query:', args[0]);
+    return (await dbPromise).run(...args);
+  },
+  get: async (...args: any[]) => {
+    if (!dbPromise) {
+      console.log('Initializing categories database connection');
+      dbPromise = initializeDatabase();
+    }
+    console.log('Executing categories query:', args[0]);
+    return (await dbPromise).get(...args);
+  },
+  all: async (...args: any[]) => {
+    if (!dbPromise) {
+      console.log('Initializing categories database connection');
+      dbPromise = initializeDatabase();
+    }
+    console.log('Executing categories query:', args[0]);
+    return (await dbPromise).all(...args);
+  },
+  db: async () => {
+    if (!dbPromise) {
+      console.log('Initializing categories database connection');
+      dbPromise = initializeDatabase();
+    }
+    return (await dbPromise).db;
+  }
 };
 
 export interface Category {
