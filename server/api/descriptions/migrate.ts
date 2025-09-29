@@ -44,9 +44,9 @@ export default defineEventHandler(async (event): Promise<MigrationResult> => {
       success: true,
       message: 'Description migration completed successfully',
       statistics: {
-        totalDescriptions: totalDescriptions,
-        totalUsageCount: totalUsageCount,
-        yearsProcessed: years,
+        totalDescriptions: migrationResult.totalDescriptions,
+        totalUsageCount: migrationResult.totalUsageCount,
+        yearsProcessed: migrationResult.yearsProcessed,
         migrationTime: `${migrationTime}ms`
       }
     };
