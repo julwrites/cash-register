@@ -57,19 +57,24 @@ const categoryOptions = computed(() => [
     .map(cat => cat.name)
 ]);
 
-onMounted(async () => {
-  await fetchCategories();
+const fetchDescriptions = async () => {
   const response = await fetch('/api/descriptions');
   if (response.ok) {
     descriptionOptions.value = await response.json();
   }
+};
+
+onMounted(async () => {
+  await fetchCategories();
+  await fetchDescriptions();
 });
 
-function handleSubmit() {
+async function handleSubmit() {
   if (validateExpense(expenseData.value)) {
     emits('submit', expenseData.value);
+    await fetchDescriptions();
   }
-  expenseData.value = { ...defaultExpense }; // Reset form
+  expenseData.value = { ...defaultExpense };
 }
 
 function validateExpense(expense: Expense): boolean {

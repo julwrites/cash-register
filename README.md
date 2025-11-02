@@ -73,3 +73,25 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Scheduled Tasks
+
+### Description MRU Migration
+
+The application uses a standalone script to migrate expense descriptions to the MRU (Most Recently Used) database. This ensures the description autocomplete list stays up-to-date.
+
+To set up daily automated migration at midnight, add this to your crontab:
+
+```bash
+# Open crontab editor
+crontab -e
+
+# Add this line (adjust path to your installation)
+0 0 * * * cd /Users/julianteh/julwrites/homelab/it_services/CashRegister/cash-register && node scripts/migrate-descriptions.mjs >> logs/migration.log 2>&1
+```
+
+To run the migration manually:
+
+```bash
+node scripts/migrate-descriptions.mjs
+```
