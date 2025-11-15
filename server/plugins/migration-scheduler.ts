@@ -1,4 +1,4 @@
-import { startScheduler } from '../scheduler';
+import { startScheduler } from '#imports';
 
 let initialized = false;
 
