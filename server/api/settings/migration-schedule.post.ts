@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3';
 import { setMigrationSchedule, MigrationSchedule } from '../settings/settings-db';
+import { rescheduleScheduler } from '../../../scheduler';
 
 export default defineEventHandler(async (event) => {
   try {
@@ -29,9 +30,12 @@ export default defineEventHandler(async (event) => {
 
     await setMigrationSchedule(schedule);
 
+    // Reschedule the task immediately
+    await rescheduleScheduler();
+
     return {
       success: true,
-      message: 'Migration schedule updated. Server restart required for changes to take effect.',
+      message: 'Migration schedule updated and applied immediately.',
       schedule
     };
   } catch (error) {
