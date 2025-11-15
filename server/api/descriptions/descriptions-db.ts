@@ -14,111 +14,16 @@ interface DatabaseOperations {
   db: Database.Database;
 }
 
-const initializeDatabase = (): Promise<DatabaseOperations> => {
-  console.log('Initializing descriptions database connection');
-  return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
-    try {
-      const databasePath = path.join(process.cwd(), 'data', 'descriptions.sqlite');
-      const db = new Database(databasePath);
-      console.log('Connected to the descriptions database');
-
-      const dbRun = (...args: any[]) => {
-        console.log('Executing descriptions query:', args[0]);
-        return new Promise((resolve, reject) => {
-          try {
-            const result = db.prepare(args[0]).run(...args.slice(1));
-            resolve(result);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      };
-
-      const dbGet = (...args: any[]) => {
-        console.log('Executing descriptions query:', args[0]);
-        return new Promise((resolve, reject) => {
-          try {
-            const result = db.prepare(args[0]).get(...args.slice(1));
-            resolve(result);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      };
-
-      const dbAll = (...args: any[]) => {
-        console.log('Executing descriptions query:', args[0]);
-        return new Promise((resolve, reject) => {
-          try {
-            const result = db.prepare(args[0]).all(...args.slice(1));
-            resolve(result);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      };
-
-      dbRun(`
-        CREATE TABLE IF NOT EXISTS description_usage (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          description TEXT UNIQUE NOT NULL,
-          last_used TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          usage_count INTEGER DEFAULT 1
-        );
-      `).then(() => {
-        // Create index for faster sorting
-        return dbRun(`
-          CREATE INDEX IF NOT EXISTS idx_description_usage_sort
-          ON description_usage (last_used DESC, usage_count DESC);
-        `);
-      }).then(() => {
-        resolve({
-          run: dbRun,
-          get: dbGet,
-          all: dbAll,
-          db
-        } as DatabaseOperations);
-      }).catch(err => {
-        console.error('Error creating table or index', err);
-        reject(err);
-      });
-    } catch (err) {
-      console.error('Error opening database', err);
-      reject(err);
-    }
-  });
-};
-
-export const getDescriptionDb = (): Promise<DatabaseOperations> => {
-  console.log('Getting descriptions database');
-  return initializeDatabase();
-};
-
-export const trackDescriptionUsage = async (description: string): Promise<void> => {
-  try {
-    const db = await getDescriptionDb();
-    await db.run(`
-      INSERT INTO description_usage (description, last_used, usage_count)
-      VALUES (?, CURRENT_TIMESTAMP, 1)
-      ON CONFLICT(description)
-      DO UPDATE SET
-        last_used = CURRENT_TIMESTAMP,
-        usage_count = usage_count + 1
-    `, description);
-    console.log(`Tracked description usage: "${description}"`);
-  } catch (err) {
-    console.error('Error tracking description usage:', err);
-    // Don't throw error to avoid breaking expense creation
-  }
-};
-
 interface MigrationResult {
   totalDescriptions: number;
   totalUsageCount: number;
   yearsProcessed: number[];
 }
 
-export const migrateDescriptionUsage = async (): Promise<MigrationResult> => {
+const runMigrationLogic = async (descriptionsDb: DatabaseOperations): Promise<MigrationResult> => {
+  // Clear the table to ensure idempotency
+  await descriptionsDb.run(`DELETE FROM description_usage`);
+
   const { getDb } = await import('../expenses/expenses-db');
   const fs = await import('fs');
   const path = await import('path');
@@ -138,8 +43,6 @@ export const migrateDescriptionUsage = async (): Promise<MigrationResult> => {
 
   let totalDescriptions = 0;
   let totalUsageCount = 0;
-
-  const descriptionsDb = await getDescriptionDb();
 
   for (const year of years) {
     const expenseDbPath = path.join(dataDir, `expenses-${year}.sqlite`);
@@ -197,4 +100,123 @@ export const migrateDescriptionUsage = async (): Promise<MigrationResult> => {
     totalUsageCount,
     yearsProcessed: years
   };
+};
+
+let dbPromise: Promise<DatabaseOperations> | null = null;
+
+const initializeDatabase = (): Promise<DatabaseOperations> => {
+  console.log('Initializing descriptions database connection');
+  return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
+    try {
+      const databasePath = path.join(process.cwd(), 'data', 'descriptions.sqlite');
+      const db = new Database(databasePath);
+      console.log('Connected to the descriptions database');
+
+      const dbRun = (...args: any[]) => {
+        console.log('Executing descriptions query:', args[0]);
+        return new Promise((resolve, reject) => {
+          try {
+            const result = db.prepare(args[0]).run(...args.slice(1));
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      };
+
+      const dbGet = (...args: any[]) => {
+        console.log('Executing descriptions query:', args[0]);
+        return new Promise((resolve, reject) => {
+          try {
+            const result = db.prepare(args[0]).get(...args.slice(1));
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      };
+
+      const dbAll = (...args: any[]) => {
+        console.log('Executing descriptions query:', args[0]);
+        return new Promise((resolve, reject) => {
+          try {
+            const result = db.prepare(args[0]).all(...args.slice(1));
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      };
+
+      const dbOperations = {
+        run: dbRun,
+        get: dbGet,
+        all: dbAll,
+        db
+      } as DatabaseOperations;
+
+      dbRun(`
+        CREATE TABLE IF NOT EXISTS description_usage (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          description TEXT UNIQUE NOT NULL,
+          last_used TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          usage_count INTEGER DEFAULT 1
+        );
+      `).then(() => {
+        // Create index for faster sorting
+        return dbRun(`
+          CREATE INDEX IF NOT EXISTS idx_description_usage_sort
+          ON description_usage (last_used DESC, usage_count DESC);
+        `);
+      }).then(() => {
+        return dbGet(`SELECT COUNT(*) as count FROM description_usage`);
+      }).then((row: any) => {
+        if (row && row.count === 0) {
+          console.log('Description usage table is empty, running migration...');
+          return runMigrationLogic(dbOperations).then(() => {
+             console.log('Migration finished.');
+          });
+        }
+      }).then(() => {
+        resolve(dbOperations);
+      }).catch(err => {
+        console.error('Error during database initialization', err);
+        reject(err);
+      });
+    } catch (err) {
+      console.error('Error opening database', err);
+      reject(err);
+    }
+  });
+};
+
+export const getDescriptionDb = (): Promise<DatabaseOperations> => {
+  console.log('Getting descriptions database');
+  if (!dbPromise) {
+    dbPromise = initializeDatabase();
+  }
+  return dbPromise;
+};
+
+export const trackDescriptionUsage = async (description: string): Promise<void> => {
+  try {
+    const db = await getDescriptionDb();
+    await db.run(`
+      INSERT INTO description_usage (description, last_used, usage_count)
+      VALUES (?, CURRENT_TIMESTAMP, 1)
+      ON CONFLICT(description)
+      DO UPDATE SET
+        last_used = CURRENT_TIMESTAMP,
+        usage_count = usage_count + 1
+    `, description);
+    console.log(`Tracked description usage: "${description}"`);
+  } catch (err) {
+    console.error('Error tracking description usage:', err);
+    // Don't throw error to avoid breaking expense creation
+  }
+};
+
+export const migrateDescriptionUsage = async (): Promise<MigrationResult> => {
+  const descriptionsDb = await getDescriptionDb();
+  return runMigrationLogic(descriptionsDb);
 };
