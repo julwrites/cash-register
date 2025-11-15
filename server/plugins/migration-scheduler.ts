@@ -1,5 +1,3 @@
-import { startScheduler } from '#imports';
-
 let initialized = false;
 
 export default defineNitroPlugin((nitroApp) => {

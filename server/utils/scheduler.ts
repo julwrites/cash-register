@@ -1,6 +1,6 @@
 import { Cron } from 'croner';
-import { getMigrationSchedule } from './api/settings/settings-db';
-import { migrateDescriptionUsage } from './api/descriptions/descriptions-db';
+import { getMigrationSchedule } from '../api/settings/settings-db';
+import { migrateDescriptionUsage } from '../api/descriptions/descriptions-db';
 
 let scheduledTask: Cron | null = null;
 

@@ -1,6 +1,5 @@
 import { defineEventHandler, readBody, createError } from 'h3';
 import { setMigrationSchedule, MigrationSchedule } from './settings-db';
-import { rescheduleScheduler } from '#imports';
 
 export default defineEventHandler(async (event) => {
   try {
