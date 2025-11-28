@@ -15,11 +15,6 @@
         :loading="migrationLoading"
         color="green"
       />
-      <UButton
-        label="Migration Schedule"
-        @click="isScheduleModalOpen = true"
-        color="blue"
-      />
     </div>
 
     <div v-if="migrationResult" class="migration-status mb-4">
@@ -73,30 +68,6 @@
       </form>
     </UCard>
   </UModal>
-
-  <UModal v-model="isScheduleModalOpen">
-    <UCard>
-      <template #header>
-        <h3 class="text-lg font-bold">Migration Schedule Settings</h3>
-      </template>
-      <form @submit.prevent="updateMigrationSchedule">
-        <UFormGroup label="Enable Scheduled Migration" class="mb-4">
-          <UToggle v-model="scheduleForm.enabled" />
-        </UFormGroup>
-        <UFormGroup label="Time (24-hour format)" class="mb-4">
-          <UInput v-model="scheduleForm.time" type="time" required />
-        </UFormGroup>
-        <UFormGroup label="Frequency" class="mb-4">
-          <USelectMenu v-model="scheduleForm.frequency" :options="frequencyOptions" required />
-        </UFormGroup>
-        <div class="flex justify-between mt-4">
-          <UButton type="submit" color="primary" :loading="scheduleLoading">Save Schedule</UButton>
-          <UButton type="button" color="gray" @click="isScheduleModalOpen = false">Cancel</UButton>
-        </div>
-        <p class="text-sm text-gray-500 mt-2">Note: Server restart required for schedule changes to take effect.</p>
-      </form>
-    </UCard>
-  </UModal>
   </div>
 </template>
 
@@ -124,15 +95,6 @@ const newUsername = ref('');
 const migrationLoading = ref(false);
 const migrationResult = ref(null);
 
-const isScheduleModalOpen = ref(false);
-const scheduleLoading = ref(false);
-const scheduleForm = ref({
-  enabled: true,
-  time: '00:00',
-  frequency: 'daily'
-});
-const frequencyOptions = ['daily', 'weekly', 'monthly'];
-
 onMounted(async () => {
   try {
     const token = getItem('authToken');
@@ -154,12 +116,6 @@ onMounted(async () => {
         status: user.is_approved ? 'Activated' : 'Pending',
       };
     });
-
-    const scheduleResponse = await fetch('/api/settings/migration-schedule');
-    if (scheduleResponse.ok) {
-      const currentSchedule = await scheduleResponse.json();
-      scheduleForm.value = currentSchedule;
-    }
 
     loading.value = false;
   } catch (err) {
@@ -295,35 +251,6 @@ async function triggerDescriptionMigration() {
     alert(`Migration error: ${err.message}`);
   } finally {
     migrationLoading.value = false;
-  }
-}
-
-async function updateMigrationSchedule() {
-  try {
-    scheduleLoading.value = true;
-
-    const token = getItem('authToken');
-    const response = await fetch('/api/settings/migration-schedule', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(scheduleForm.value)
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update migration schedule');
-    }
-
-    const result = await response.json();
-    alert(result.message || 'Migration schedule updated successfully!');
-    isScheduleModalOpen.value = false;
-  } catch (err) {
-    error.value = err.message;
-    alert(`Schedule update error: ${err.message}`);
-  } finally {
-    scheduleLoading.value = false;
   }
 }
 

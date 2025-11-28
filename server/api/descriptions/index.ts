@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
       SELECT description
       FROM description_usage
       ORDER BY last_used DESC, usage_count DESC
-      LIMIT 50
+      LIMIT 1000
     `);
 
     console.log(`Returning ${descriptions.length} MRU-sorted descriptions`);
