@@ -1,7 +1,4 @@
-name: ci
-
-permissions:
-  contents: read
+name: Build and Test
 
 on:
   push:
@@ -13,18 +10,21 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  ci:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: corepack enable
+
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: pnpm
+          cache: npm
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
+
+      - name: 🧪 Run tests
+        run: npm run test
 
       - name: 🚧 Build project
-        run: pnpm run build
+        run: npm run build

@@ -7,7 +7,8 @@
     "dev": "nuxt dev -p 14322 --env-file .env",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "test": "vitest run"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.7.2",
@@ -25,7 +26,10 @@
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.0",
+    "@nuxt/test-utils": "^3.21.0",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^22.15.2"
+    "@types/node": "^22.15.2",
+    "happy-dom": "^20.0.11",
+    "vitest": "^3.2.4"
   }
 }
