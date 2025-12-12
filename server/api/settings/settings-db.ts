@@ -2,7 +2,7 @@ import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
 
-const dataDir = path.join(process.cwd(), 'data');
+const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 if (!existsSync(dataDir)) {
   mkdirSync(dataDir, { recursive: true });
 }
@@ -18,7 +18,7 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
   console.log('Initializing settings database connection');
   return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
     try {
-      const databasePath = path.join(process.cwd(), 'data', 'settings.sqlite');
+      const databasePath = path.join(dataDir, 'settings.sqlite');
       const db = new Database(databasePath);
       console.log('Connected to the settings database');
 
@@ -64,22 +64,25 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
           value TEXT NOT NULL,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
-      `).then(() => {
-        return dbRun(`
+      `)
+        .then(() => {
+          return dbRun(`
           INSERT OR IGNORE INTO settings (key, value)
           VALUES ('migration_schedule', '{"enabled":true,"time":"00:00","frequency":"daily"}');
         `);
-      }).then(() => {
-        resolve({
-          run: dbRun,
-          get: dbGet,
-          all: dbAll,
-          db
-        } as DatabaseOperations);
-      }).catch(err => {
-        console.error('Error creating settings table', err);
-        reject(err);
-      });
+        })
+        .then(() => {
+          resolve({
+            run: dbRun,
+            get: dbGet,
+            all: dbAll,
+            db,
+          } as DatabaseOperations);
+        })
+        .catch((err) => {
+          console.error('Error creating settings table', err);
+          reject(err);
+        });
     } catch (err) {
       console.error('Error opening settings database', err);
       reject(err);
@@ -104,33 +107,38 @@ export const getMigrationSchedule = async (): Promise<MigrationSchedule> => {
     const result: any = await db.get(`
       SELECT value FROM settings WHERE key = 'migration_schedule'
     `);
-    
+
     if (result && result.value) {
       return JSON.parse(result.value);
     }
-    
+
     return {
       enabled: true,
       time: '00:00',
-      frequency: 'daily'
+      frequency: 'daily',
     };
   } catch (err) {
     console.error('Error getting migration schedule:', err);
     return {
       enabled: true,
       time: '00:00',
-      frequency: 'daily'
+      frequency: 'daily',
     };
   }
 };
 
-export const setMigrationSchedule = async (schedule: MigrationSchedule): Promise<void> => {
+export const setMigrationSchedule = async (
+  schedule: MigrationSchedule
+): Promise<void> => {
   try {
     const db = await getSettingsDb();
-    await db.run(`
+    await db.run(
+      `
       INSERT OR REPLACE INTO settings (key, value, updated_at)
       VALUES ('migration_schedule', ?, CURRENT_TIMESTAMP)
-    `, JSON.stringify(schedule));
+    `,
+      JSON.stringify(schedule)
+    );
     console.log('Migration schedule updated:', schedule);
   } catch (err) {
     console.error('Error setting migration schedule:', err);

@@ -3,7 +3,11 @@
     <UTable :rows="entries" :columns="columns" table-class="expense-table">
       <template #actions-data="{ row }">
         <UDropdown :items="actions(row)">
-          <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          <UButton
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-ellipsis-horizontal-20-solid"
+          />
         </UDropdown>
       </template>
     </UTable>
@@ -14,12 +18,12 @@
 const props = defineProps({
   entries: {
     type: Array,
-    required: true
+    required: true,
   },
   columns: {
     type: Array,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const emit = defineEmits(['edit', 'delete']);

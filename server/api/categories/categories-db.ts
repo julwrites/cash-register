@@ -4,16 +4,12 @@ import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
 
-const dataDir = path.join(process.cwd(), 'data');
+const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 if (!existsSync(dataDir)) {
   mkdirSync(dataDir, { recursive: true });
 }
 
 const databasePath = path.join(dataDir, 'categories.sqlite');
-
-
-
-
 
 interface DatabaseOperations {
   run: (...args: any[]) => Promise<any>;
@@ -27,7 +23,7 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
     try {
       const db = new Database(databasePath);
       console.log('Connected to the categories database');
-      
+
       // better-sqlite3 is synchronous, so we just wrap in promises
       const dbRun = (...args: any[]) => {
         return new Promise((resolve, reject) => {
@@ -39,7 +35,7 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
           }
         });
       };
-      
+
       const dbGet = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
@@ -50,7 +46,7 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
           }
         });
       };
-      
+
       const dbAll = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
@@ -66,17 +62,19 @@ const initializeDatabase = (): Promise<DatabaseOperations> => {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL
         );
-      `).then(() => {
-        resolve({
-          run: dbRun,
-          get: dbGet,
-          all: dbAll,
-          db
-        } as DatabaseOperations);
-      }).catch(err => {
-        console.error('Error creating table', err);
-        reject(err);
-      });
+      `)
+        .then(() => {
+          resolve({
+            run: dbRun,
+            get: dbGet,
+            all: dbAll,
+            db,
+          } as DatabaseOperations);
+        })
+        .catch((err) => {
+          console.error('Error creating table', err);
+          reject(err);
+        });
     } catch (err) {
       console.error('Error opening database', err);
       reject(err);
@@ -117,7 +115,7 @@ export default {
       dbPromise = initializeDatabase();
     }
     return (await dbPromise).db;
-  }
+  },
 };
 
 export interface Category {

@@ -1,18 +1,21 @@
 // /Users/julianteh/julwrites/cash-register/server/api/expenses/index.ts
 
 import { defineEventHandler, createError } from 'h3';
-import { getDb, Expense } from './expenses-db';
+import type { Expense } from './expenses-db';
+import { getDb } from './expenses-db';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const dataDir = path.join(process.cwd(), 'data');
+const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 
 const getYears = () => {
   const files = fs.readdirSync(dataDir);
   console.log('Files in data directory:', files);
   const years = files
-    .filter(file => file.startsWith('expenses-') && file.endsWith('.sqlite'))
-    .map(file => parseInt(file.replace('expenses-', '').replace('.sqlite', '')));
+    .filter((file) => file.startsWith('expenses-') && file.endsWith('.sqlite'))
+    .map((file) =>
+      parseInt(file.replace('expenses-', '').replace('.sqlite', ''))
+    );
   console.log('Found years:', years);
   return years;
 };

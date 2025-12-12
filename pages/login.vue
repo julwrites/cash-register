@@ -3,18 +3,20 @@
     <UCard class="login-card">
       <h1 class="text-center mb-lg">{{ isFirstUser ? 'Welcome' : 'Login' }}</h1>
       <div v-if="isFirstUser">
-        <p>It looks like you're the first user. Let's set up your admin account.</p>
-        <UButton @click="showSetupModal = true" color="primary" block>
+        <p>
+          It looks like you're the first user. Let's set up your admin account.
+        </p>
+        <UButton color="primary" block @click="showSetupModal = true">
           Set Up Admin Account
         </UButton>
       </div>
-      <form v-else @submit.prevent="checkUser" class="login-form">
+      <form v-else class="login-form" @submit.prevent="checkUser">
         <div class="form-group">
           <label for="username" class="form-label">Username:</label>
           <UInput
-            type="text"
             id="username"
             v-model="username"
+            type="text"
             class="form-input"
             required
           />
@@ -22,9 +24,9 @@
         <div v-if="showPasswordField" class="form-group">
           <label for="password" class="form-label">Password:</label>
           <UInput
-            type="password"
             id="password"
             v-model="password"
+            type="password"
             class="form-input"
             required
           />
@@ -44,11 +46,11 @@
     </UCard>
 
     <UModal v-model="showSetPasswordModal">
-      <SetPassword :username="username" @passwordSet="onPasswordSet" />
+      <SetPassword :username="username" @password-set="onPasswordSet" />
     </UModal>
 
     <UModal v-model="showSetupModal">
-      <SetupAdminAccount @accountSetup="onAccountSetup" />
+      <SetupAdminAccount @account-setup="onAccountSetup" />
     </UModal>
   </div>
 </template>
@@ -116,7 +118,7 @@ async function login() {
       body: {
         username: username.value,
         password: password.value,
-        rememberMe: rememberMe.value
+        rememberMe: rememberMe.value,
       },
     });
 
@@ -129,7 +131,10 @@ async function login() {
   } catch (error) {
     console.error('Login error:', error);
 
-    if (error.status === 403 && error.data?.statusMessage === 'Account not approved by admin') {
+    if (
+      error.status === 403 &&
+      error.data?.statusMessage === 'Account not approved by admin'
+    ) {
       alert('Your account is awaiting admin approval.');
     } else {
       alert('Invalid username or password');
@@ -145,7 +150,9 @@ function onPasswordSet() {
 
 function onAccountSetup() {
   showSetupModal.value = false;
-  alert('Admin account set up successfully. Please log in with your new credentials.');
+  alert(
+    'Admin account set up successfully. Please log in with your new credentials.'
+  );
   isFirstUser.value = false;
 }
 </script>

@@ -2,17 +2,20 @@
   <div class="app-container">
     <div v-if="isLoggedIn" class="main-container">
       <div class="banner">
-        <UTabs :items="items" @change="onChange" class="banner-tabs"/>
+        <UTabs :items="items" class="banner-tabs" @change="onChange" />
       </div>
 
       <div class="content">
         <ExpenseForm v-if="selectedTab === 'form'" />
         <ExpenseList v-else-if="selectedTab === 'list'" />
-        <SettingsPage v-else-if="selectedTab === 'settings'" :isAdmin="isAdmin" />
+        <SettingsPage
+          v-else-if="selectedTab === 'settings'"
+          :is-admin="isAdmin"
+        />
       </div>
 
       <footer class="footer">
-        <UButton @click="logout" class="logout-btn">Logout</UButton>
+        <UButton class="logout-btn" @click="logout">Logout</UButton>
       </footer>
     </div>
     <div v-else>
@@ -72,8 +75,8 @@ async function checkAdminStatus(token: string) {
   try {
     const response = await fetch('/api/users/auth/checkAdmin', {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (response.ok) {
       const data = await response.json();
@@ -177,7 +180,7 @@ function logout() {
   background-color: #f8f9fa;
   padding: 10px 20px;
   text-align: right;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .logout-btn {

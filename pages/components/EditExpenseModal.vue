@@ -6,7 +6,7 @@
       </template>
       <ExpenseForm
         :expense="expense"
-        submitButtonText="Update"
+        submit-button-text="Update"
         @submit="$emit('save', $event)"
         @cancel="$emit('cancel')"
       />
@@ -21,14 +21,14 @@ import ExpenseForm from './ExpenseForm.vue';
 const props = defineProps({
   isOpen: Boolean,
   expense: Object,
-  categories: Array
+  categories: Array,
 });
 
 const emit = defineEmits(['update:isOpen', 'save', 'cancel']);
 
 const isOpen = computed({
   get: () => props.isOpen,
-  set: (value) => emit('update:isOpen', value)
+  set: (value) => emit('update:isOpen', value),
 });
 </script>
 

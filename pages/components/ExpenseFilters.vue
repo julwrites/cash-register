@@ -1,13 +1,29 @@
 <template>
   <div class="filters">
-    <USelectMenu v-model="localSelectedPeriod" :options="periodOptions" placeholder="Select time period" />
-    <USelectMenu v-model="localSelectedCategory" :options="categoryOptions" placeholder="Select category" />
+    <USelectMenu
+      v-model="localSelectedPeriod"
+      :options="periodOptions"
+      placeholder="Select time period"
+    />
+    <USelectMenu
+      v-model="localSelectedCategory"
+      :options="categoryOptions"
+      placeholder="Select category"
+    />
 
     <div class="filter-actions">
-      <UButton class="filter-reset" @click="$emit('reset-filters')" variant="outline">Reset Filters</UButton>
+      <UButton
+        class="filter-reset"
+        variant="outline"
+        @click="$emit('reset-filters')"
+        >Reset Filters</UButton
+      >
     </div>
 
-    <div v-if="localSelectedPeriod.value === 'custom'" class="date-range-picker">
+    <div
+      v-if="localSelectedPeriod.value === 'custom'"
+      class="date-range-picker"
+    >
       <UInput
         v-model="localStartDate"
         type="date"
@@ -35,28 +51,40 @@ const props = defineProps({
   endDate: String,
 });
 
-const emit = defineEmits(['update:selectedPeriod', 'update:selectedCategory', 'update:startDate', 'update:endDate', 'reset-filters']);
+const emit = defineEmits([
+  'update:selectedPeriod',
+  'update:selectedCategory',
+  'update:startDate',
+  'update:endDate',
+  'reset-filters',
+]);
 
 const localSelectedPeriod = computed({
   get: () => props.selectedPeriod,
-  set: (value) => emit('update:selectedPeriod', value)
+  set: (value) => emit('update:selectedPeriod', value),
 });
 
 const localSelectedCategory = computed({
   get: () => props.selectedCategory,
-  set: (value) => emit('update:selectedCategory', value)
+  set: (value) => emit('update:selectedCategory', value),
 });
 
 const localStartDate = ref(props.startDate || '');
 const localEndDate = ref(props.endDate || '');
 
-watch(() => props.startDate, (newValue) => {
-  localStartDate.value = newValue || '';
-});
+watch(
+  () => props.startDate,
+  (newValue) => {
+    localStartDate.value = newValue || '';
+  }
+);
 
-watch(() => props.endDate, (newValue) => {
-  localEndDate.value = newValue || '';
-});
+watch(
+  () => props.endDate,
+  (newValue) => {
+    localEndDate.value = newValue || '';
+  }
+);
 
 const emitDateChange = () => {
   emit('update:startDate', localStartDate.value);
@@ -70,7 +98,6 @@ const periodOptions = [
   { label: 'This Year', value: 'year' },
   { label: 'Custom Range', value: 'custom' },
 ];
-
 </script>
 
 <style scoped>
@@ -96,15 +123,15 @@ const periodOptions = [
   gap: 10px;
 }
 
-  :deep(.form-group) {
-    flex: 1;
+:deep(.form-group) {
+  flex: 1;
   min-width: 200px;
-  }
+}
 
 @media (max-width: 768px) {
   .filters {
     flex-direction: column;
-}
+  }
 
   :deep(.form-group) {
     width: 100%;

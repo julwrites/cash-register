@@ -1,13 +1,13 @@
 <template>
   <div class="setup-admin-modal">
     <h2 class="text-center mb-lg">Set Up Admin Account</h2>
-    <form @submit.prevent="setupAccount" class="setup-admin-form">
+    <form class="setup-admin-form" @submit.prevent="setupAccount">
       <div class="form-group">
         <label for="username" class="form-label">Username:</label>
         <UInput
-          type="text"
           id="username"
           v-model="username"
+          type="text"
           class="form-input"
           required
         />
@@ -15,19 +15,21 @@
       <div class="form-group">
         <label for="password" class="form-label">Password:</label>
         <UInput
-          type="password"
           id="password"
           v-model="password"
+          type="password"
           class="form-input"
           required
         />
       </div>
       <div class="form-group">
-        <label for="confirmPassword" class="form-label">Confirm Password:</label>
+        <label for="confirmPassword" class="form-label"
+          >Confirm Password:</label
+        >
         <UInput
-          type="password"
           id="confirmPassword"
           v-model="confirmPassword"
+          type="password"
           class="form-input"
           required
         />

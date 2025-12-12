@@ -1,23 +1,25 @@
 <template>
   <div class="set-password-modal">
     <h2 class="text-center mb-lg">Set Your Password</h2>
-    <form @submit.prevent="setPassword" class="set-password-form">
+    <form class="set-password-form" @submit.prevent="setPassword">
       <div class="form-group">
         <label for="password" class="form-label">New Password:</label>
         <UInput
-          type="password"
           id="password"
           v-model="password"
+          type="password"
           class="form-input"
           required
         />
       </div>
       <div class="form-group">
-        <label for="confirmPassword" class="form-label">Confirm Password:</label>
+        <label for="confirmPassword" class="form-label"
+          >Confirm Password:</label
+        >
         <UInput
-          type="password"
           id="confirmPassword"
           v-model="confirmPassword"
+          type="password"
           class="form-input"
           required
         />
@@ -47,10 +49,14 @@ const password = ref('');
 const confirmPassword = ref('');
 const currentUserId = ref('');
 
-watch(() => props.username, (newUsername) => {
-  console.log('Received new username in SetPassword:', newUsername);
-  currentUserId.value = newUsername;
-}, { immediate: true });
+watch(
+  () => props.username,
+  (newUsername) => {
+    console.log('Received new username in SetPassword:', newUsername);
+    currentUserId.value = newUsername;
+  },
+  { immediate: true }
+);
 
 async function setPassword() {
   if (password.value !== confirmPassword.value) {
@@ -59,7 +65,10 @@ async function setPassword() {
   }
 
   try {
-    console.log('Attempting to set password for username:', currentUserId.value);
+    console.log(
+      'Attempting to set password for username:',
+      currentUserId.value
+    );
     const response = await $fetch('/api/users/auth/setPassword', {
       method: 'POST',
       body: { username: currentUserId.value, password: password.value },

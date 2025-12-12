@@ -1,15 +1,15 @@
-import process from 'node:process'
+import process from 'node:process';
 
-const sw = process.env.SW === 'true'
+const sw = process.env.SW === 'true';
 
 export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
-  modules: ['@vite-pwa/nuxt', '@nuxt/ui', "@nuxt/fonts"],
+  modules: ['@vite-pwa/nuxt', '@nuxt/ui', '@nuxt/fonts', '@nuxt/eslint'],
   content: {
-    experimental: { nativeSqlite: true }
+    experimental: { nativeSqlite: true },
   },
-  css: [ '~/assets/css/global.css' ],
+  css: ['~/assets/css/global.css'],
   colorMode: {
     preference: 'system', // default value of $colorMode.preference
     fallback: 'dark', // fallback value if not system preference found
@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     componentName: 'ColorScheme',
     classPrefix: '',
     classSuffix: '-mode',
-    storageKey: 'nuxt-color-mode'
+    storageKey: 'nuxt-color-mode',
   },
 
   fonts: {
@@ -110,4 +110,4 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2024-08-04',
-})
+});

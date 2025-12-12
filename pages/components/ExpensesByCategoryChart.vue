@@ -15,11 +15,11 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement);
 const props = defineProps({
   chartData: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const totalExpenses = computed(() => 
+const totalExpenses = computed(() =>
   props.chartData.datasets[0].data.reduce((acc, curr) => acc + curr, 0)
 );
 
@@ -34,10 +34,10 @@ const chartOptions = {
           const value = context.raw || 0;
           const percentage = ((value / totalExpenses.value) * 100).toFixed(2);
           return `${label}: $${value.toFixed(2)} (${percentage}%)`;
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 };
 </script>
 

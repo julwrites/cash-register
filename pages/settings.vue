@@ -3,14 +3,16 @@
     <div class="settings-banner">
       <h2>User Settings</h2>
     </div>
-    
+
     <div class="settings-content">
-      <UTabs :items="items" @change="onChange" class="settings-tabs"/>
+      <UTabs :items="items" class="settings-tabs" @change="onChange" />
 
       <div class="settings-tab-content">
         <UserSettings v-if="selectedSettingsTab === 'user-settings'" />
         <AdminPage v-else-if="selectedSettingsTab === 'admin' && isAdmin" />
-        <ManageCategoriesPage v-else-if="selectedSettingsTab === 'manage-categories'" />
+        <ManageCategoriesPage
+          v-else-if="selectedSettingsTab === 'manage-categories'"
+        />
       </div>
     </div>
   </div>
@@ -66,8 +68,8 @@ async function checkAdminStatus(token: string) {
   try {
     const response = await fetch('/api/users/auth/checkAdmin', {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (response.ok) {
       const data = await response.json();

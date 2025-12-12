@@ -1,12 +1,16 @@
 <template>
   <div class="categories-container">
     <h2 class="page-title">Manage Categories</h2>
-    
+
     <div class="categories-table">
       <UTable :rows="categoriesByID" :columns="columns">
         <template #actions-data="{ row }">
           <UDropdown :items="actions(row)">
-            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+            <UButton
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-ellipsis-horizontal-20-solid"
+            />
           </UDropdown>
         </template>
       </UTable>
@@ -15,12 +19,18 @@
     <UModal v-model="isEditModalOpen">
       <div class="edit-modal">
         <h3 class="modal-title">Edit Category</h3>
-        <UForm :state="editFormState" @submit="handleUpdateCategory" class="edit-form">
+        <UForm
+          :state="editFormState"
+          class="edit-form"
+          @submit="handleUpdateCategory"
+        >
           <UFormGroup label="Category Name" name="name">
             <UInput v-model="editFormState.name" />
           </UFormGroup>
           <div class="modal-actions">
-            <UButton color="gray" @click="isEditModalOpen = false">Cancel</UButton>
+            <UButton color="gray" @click="isEditModalOpen = false"
+              >Cancel</UButton
+            >
             <UButton type="submit" color="primary">Update</UButton>
           </div>
         </UForm>
@@ -30,9 +40,14 @@
     <div class="new-category-form">
       <UForm :state="newCategoryState" @submit="handleAddCategory">
         <UFormGroup label="New Category" name="name">
-          <UInput v-model="newCategoryState.name" placeholder="Enter new category name" />
+          <UInput
+            v-model="newCategoryState.name"
+            placeholder="Enter new category name"
+          />
         </UFormGroup>
-        <UButton type="submit" color="primary" class="add-button">Add Category</UButton>
+        <UButton type="submit" color="primary" class="add-button"
+          >Add Category</UButton
+        >
       </UForm>
     </div>
   </div>
@@ -43,7 +58,13 @@ import { ref, onMounted } from 'vue';
 import { useCategories } from '@/composables/useCategories';
 import { useToast } from '#imports';
 
-const { categoriesByID, fetchCategories, addCategory, deleteCategory, updateCategory } = useCategories();
+const {
+  categoriesByID,
+  fetchCategories,
+  addCategory,
+  deleteCategory,
+  updateCategory,
+} = useCategories();
 const toast = useToast();
 
 const columns = [
@@ -83,7 +104,11 @@ async function handleAddCategory() {
     toast.add({ title: 'Category added successfully', color: 'green' });
     newCategoryState.value.name = '';
   } else {
-    toast.add({ title: 'Error adding category', description: result.error, color: 'red' });
+    toast.add({
+      title: 'Error adding category',
+      description: result.error,
+      color: 'red',
+    });
   }
 }
 
@@ -92,7 +117,11 @@ async function handleDeleteCategory(categoryId: number) {
   if (result.success) {
     toast.add({ title: 'Category deleted successfully', color: 'green' });
   } else {
-    toast.add({ title: 'Error deleting category', description: result.error, color: 'red' });
+    toast.add({
+      title: 'Error deleting category',
+      description: result.error,
+      color: 'red',
+    });
   }
 }
 
@@ -102,7 +131,11 @@ async function handleUpdateCategory() {
     toast.add({ title: 'Category updated successfully', color: 'green' });
     isEditModalOpen.value = false;
   } else {
-    toast.add({ title: 'Error updating category', description: result.error, color: 'red' });
+    toast.add({
+      title: 'Error updating category',
+      description: result.error,
+      color: 'red',
+    });
   }
 }
 

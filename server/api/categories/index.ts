@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   if (method === 'GET') {
     console.log('Categories GET handler called');
     console.log('Before db.all');
-    const categories = await db.all("SELECT * FROM categories");
+    const categories = await db.all('SELECT * FROM categories');
     console.log('After db.all, categories:', categories);
     return categories;
   }
@@ -24,8 +24,14 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const result = await db.run("INSERT INTO categories (name) VALUES (?)", newCategory.name);
-    const addedCategory = await db.get("SELECT * FROM categories WHERE id = ?", result.lastID);
+    const result = await db.run(
+      'INSERT INTO categories (name) VALUES (?)',
+      newCategory.name
+    );
+    const addedCategory = await db.get(
+      'SELECT * FROM categories WHERE id = ?',
+      result.lastID
+    );
 
     return addedCategory;
   }

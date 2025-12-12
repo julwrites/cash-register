@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     `);
 
     console.log(`Returning ${descriptions.length} MRU-sorted descriptions`);
-    return descriptions.map(d => d.description);
+    return descriptions.map((d) => d.description);
   } catch (error) {
     console.error('Error fetching MRU descriptions:', error);
     // Return empty array as fallback
