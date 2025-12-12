@@ -26,7 +26,10 @@ export default defineEventHandler(async (event) => {
       userId
     );
 
-    const updatedUser = await db.get('SELECT id, username, is_admin, is_approved FROM users WHERE id = ?', userId);
+    const updatedUser = await db.get(
+      'SELECT id, username, is_admin, is_approved FROM users WHERE id = ?',
+      userId
+    );
     return updatedUser;
   } catch (error) {
     console.error('Update User API error:', error);

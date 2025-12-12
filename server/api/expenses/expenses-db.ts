@@ -4,12 +4,10 @@ import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
 
-const dataDir = path.join(process.cwd(), 'data');
+const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 if (!existsSync(dataDir)) {
   mkdirSync(dataDir, { recursive: true });
 }
-
-
 
 interface DatabaseOperations {
   run: (...args: any[]) => Promise<any>;
@@ -22,10 +20,13 @@ const initializeDatabase = (year: number): Promise<DatabaseOperations> => {
   console.log('Initializing expenses database connection for year:', year);
   return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
     try {
-      const databasePath = path.join(process.cwd(), 'data', `expenses-${year}.sqlite`);
+      const databasePath = path.join(
+        process.cwd(),
+        'data',
+        `expenses-${year}.sqlite`
+      );
       const db = new Database(databasePath);
       console.log(`Connected to the expenses database for year ${year}`);
-      
 
       const dbRun = (...args: any[]) => {
         console.log('Executing expenses query:', args[0]);
@@ -72,25 +73,25 @@ const initializeDatabase = (year: number): Promise<DatabaseOperations> => {
           date DATE,
           category TEXT
         );
-      `).then(() => {
-        resolve({
-          run: dbRun,
-          get: dbGet,
-all: dbAll,
-          db
-        } as DatabaseOperations);
-      }).catch(err => {
-        console.error('Error creating table', err);
-        reject(err);
-      });
+      `)
+        .then(() => {
+          resolve({
+            run: dbRun,
+            get: dbGet,
+            all: dbAll,
+            db,
+          } as DatabaseOperations);
+        })
+        .catch((err) => {
+          console.error('Error creating table', err);
+          reject(err);
+        });
     } catch (err) {
       console.error('Error opening database', err);
       reject(err);
     }
   });
 };
-
-
 
 export const getDb = (year: number): Promise<DatabaseOperations> => {
   console.log('Getting expenses database for year:', year);

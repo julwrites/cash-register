@@ -3,15 +3,15 @@
     <h3 class="page-title">Past Records</h3>
 
     <ExpenseFilters
-      :selectedPeriod="selectedPeriod"
-      :selectedCategory="selectedCategory"
-      :categoryOptions="categoryOptions"
-      :startDate="startDate"
-      :endDate="endDate"
-      @update:selectedPeriod="selectedPeriod = $event"
-      @update:selectedCategory="selectedCategory = $event"
-      @update:startDate="startDate = $event"
-      @update:endDate="endDate = $event"
+      :selected-period="selectedPeriod"
+      :selected-category="selectedCategory"
+      :category-options="categoryOptions"
+      :start-date="startDate"
+      :end-date="endDate"
+      @update:selected-period="selectedPeriod = $event"
+      @update:selected-category="selectedCategory = $event"
+      @update:start-date="startDate = $event"
+      @update:end-date="endDate = $event"
       @reset-filters="resetFilters"
     />
 
@@ -19,13 +19,13 @@
       <UTabs :items="tabItems" @change="onTabChange" />
     </div>
 
-    <div class="charts-container" v-show="!isMobile || activeTab === 'charts'">
+    <div v-show="!isMobile || activeTab === 'charts'" class="charts-container">
       <UTabs :items="chartTabItems" @change="onChartTabChange" />
       <div v-if="activeChartTab === 'income-expense'">
-        <IncomeExpenseChart :chartData="barChartData" />
+        <IncomeExpenseChart :chart-data="barChartData" />
       </div>
       <div v-else-if="activeChartTab === 'category'">
-        <ExpensesByCategoryChart :chartData="pieChartData" />
+        <ExpensesByCategoryChart :chart-data="pieChartData" />
       </div>
     </div>
 
@@ -46,7 +46,7 @@
     </div>
 
     <EditExpenseModal
-      v-model:isOpen="isEditModalOpen"
+      v-model:is-open="isEditModalOpen"
       :expense="editForm"
       :categories="categories"
       @save="handleSave"
@@ -65,18 +65,10 @@ import ExpensesByCategoryChart from './components/ExpensesByCategoryChart.vue';
 import ExpenseTable from './components/ExpenseTable.vue';
 import EditExpenseModal from './components/EditExpenseModal.vue';
 
-const {
-  expenses,
-  entries,
-  fetchExpenses,
-  updateExpense,
-  deleteExpense
-} = useExpenses();
+const { expenses, entries, fetchExpenses, updateExpense, deleteExpense } =
+  useExpenses();
 
-const {
-  categoriesByName,
-  fetchCategories,
-} = useCategories();
+const { categoriesByName, fetchCategories } = useCategories();
 
 // Reactive variables
 const isEditModalOpen = ref(false);
@@ -116,8 +108,10 @@ const chartTabItems = [
 // Computed properties
 const categoryOptions = computed(() => [
   { label: 'All Categories', value: '' },
-  ...categoriesByName.value
-    .map(cat => ({ label: cat.name, value: cat.name }))
+  ...categoriesByName.value.map((cat) => ({
+    label: cat.name,
+    value: cat.name,
+  })),
 ]);
 
 const filteredEntries = computed(() => {
@@ -136,22 +130,30 @@ const filteredEntries = computed(() => {
     } else if (selectedPeriod.value.value === 'year') {
       filterStartDate.setMonth(0, 1);
       filterStartDate.setHours(0, 0, 0, 0);
-    } else if (selectedPeriod.value.value === 'custom' && startDate.value && endDate.value) {
+    } else if (
+      selectedPeriod.value.value === 'custom' &&
+      startDate.value &&
+      endDate.value
+    ) {
       filterStartDate = new Date(startDate.value);
       const filterEndDate = new Date(endDate.value);
       filterEndDate.setHours(23, 59, 59, 999); // Set to end of day
-      filtered = filtered.filter(entry => {
+      filtered = filtered.filter((entry) => {
         const entryDate = new Date(entry.date);
         return entryDate >= filterStartDate && entryDate <= filterEndDate;
       });
       return filtered; // Return early as we've already applied the date filter
     }
 
-    filtered = filtered.filter(entry => new Date(entry.date) >= filterStartDate);
+    filtered = filtered.filter(
+      (entry) => new Date(entry.date) >= filterStartDate
+    );
   }
 
   if (selectedCategory.value.value) {
-    filtered = filtered.filter(entry => entry.category === selectedCategory.value.value);
+    filtered = filtered.filter(
+      (entry) => entry.category === selectedCategory.value.value
+    );
   }
 
   return filtered;
@@ -164,38 +166,53 @@ const paginatedEntries = computed(() => {
 });
 
 const barChartData = computed(() => {
-  const income = filteredEntries.value.reduce((sum, entry) => sum + (entry.amount > 0 ? parseFloat(entry.amount) : 0), 0);
-  const expenses = filteredEntries.value.reduce((sum, entry) => sum + (entry.amount < 0 ? Math.abs(parseFloat(entry.amount)) : 0), 0);
+  const income = filteredEntries.value.reduce(
+    (sum, entry) => sum + (entry.amount > 0 ? parseFloat(entry.amount) : 0),
+    0
+  );
+  const expenses = filteredEntries.value.reduce(
+    (sum, entry) =>
+      sum + (entry.amount < 0 ? Math.abs(parseFloat(entry.amount)) : 0),
+    0
+  );
   return {
     labels: ['Income', 'Expenses'],
-    datasets: [{
-      label: 'Amount',
-      data: [income, expenses],
-      backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-    }]
+    datasets: [
+      {
+        label: 'Amount',
+        data: [income, expenses],
+        backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+      },
+    ],
   };
 });
 
 const pieChartData = computed(() => {
   const expensesByCategory = filteredEntries.value
-    .filter(entry => parseFloat(entry.amount) < 0)
-    .reduce((acc, entry) => {
-      acc[entry.category] = (acc[entry.category] || 0) + Math.abs(parseFloat(entry.amount));
-      return acc;
-    }, {} as Record<string, number>);
+    .filter((entry) => parseFloat(entry.amount) < 0)
+    .reduce(
+      (acc, entry) => {
+        acc[entry.category] =
+          (acc[entry.category] || 0) + Math.abs(parseFloat(entry.amount));
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
   return {
     labels: Object.keys(expensesByCategory),
-    datasets: [{
-      data: Object.values(expensesByCategory),
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.6)',
-        'rgba(54, 162, 235, 0.6)',
-        'rgba(255, 206, 86, 0.6)',
-        'rgba(75, 192, 192, 0.6)',
-        'rgba(153, 102, 255, 0.6)',
-      ],
-    }]
+    datasets: [
+      {
+        data: Object.values(expensesByCategory),
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(54, 162, 235, 0.6)',
+          'rgba(255, 206, 86, 0.6)',
+          'rgba(75, 192, 192, 0.6)',
+          'rgba(153, 102, 255, 0.6)',
+        ],
+      },
+    ],
   };
 });
 
@@ -250,7 +267,7 @@ function handleSave(updatedExpense: Expense) {
 }
 
 function startEditing(row: any) {
-  const expense = expenses.value.find(e => e.id === row.id);
+  const expense = expenses.value.find((e) => e.id === row.id);
   if (expense) {
     editForm.value = { ...expense };
     isEditModalOpen.value = true;
@@ -312,11 +329,26 @@ function startEditing(row: any) {
 }
 
 /* Define specific widths for each column */
-:deep(th:nth-child(1)), :deep(td:nth-child(1)) { width: 100px; }
-:deep(th:nth-child(2)), :deep(td:nth-child(2)) { width: 150px; }
-:deep(th:nth-child(3)), :deep(td:nth-child(3)) { width: 300px; }
-:deep(th:nth-child(4)), :deep(td:nth-child(4)) { width: 100px; }
-:deep(th:nth-child(5)), :deep(td:nth-child(5)) { width: 100px; }
+:deep(th:nth-child(1)),
+:deep(td:nth-child(1)) {
+  width: 100px;
+}
+:deep(th:nth-child(2)),
+:deep(td:nth-child(2)) {
+  width: 150px;
+}
+:deep(th:nth-child(3)),
+:deep(td:nth-child(3)) {
+  width: 300px;
+}
+:deep(th:nth-child(4)),
+:deep(td:nth-child(4)) {
+  width: 100px;
+}
+:deep(th:nth-child(5)),
+:deep(td:nth-child(5)) {
+  width: 100px;
+}
 
 .pagination {
   display: flex;
@@ -348,7 +380,9 @@ function startEditing(row: any) {
 }
 
 @media (max-width: 1024px) {
-  .expense-list-container { padding: 10px; }
+  .expense-list-container {
+    padding: 10px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -357,10 +391,20 @@ function startEditing(row: any) {
     margin-bottom: 20px;
   }
 
-  .charts-container { flex-direction: column; }
-  .chart { height: 250px; margin-bottom: 30px; }
-  .expense-list-container { padding: 5px; }
-  :deep(th), :deep(td) { padding: 6px; }
+  .charts-container {
+    flex-direction: column;
+  }
+  .chart {
+    height: 250px;
+    margin-bottom: 30px;
+  }
+  .expense-list-container {
+    padding: 5px;
+  }
+  :deep(th),
+  :deep(td) {
+    padding: 6px;
+  }
   :deep(.chartjs-render-monitor) {
     max-width: 100%;
     max-height: 100%;
@@ -368,12 +412,21 @@ function startEditing(row: any) {
 }
 
 @media (max-width: 640px) {
-  .expense-list-container { padding: 2px; }
-  .edit-modal { max-width: 98vw; }
-  :deep(th), :deep(td) { padding: 4px; }
+  .expense-list-container {
+    padding: 2px;
+  }
+  .edit-modal {
+    max-width: 98vw;
+  }
+  :deep(th),
+  :deep(td) {
+    padding: 4px;
+  }
 }
 
 @media (max-width: 480px) {
-  .chart { height: 200px; }
+  .chart {
+    height: 200px;
+  }
 }
 </style>

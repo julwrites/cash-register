@@ -1,10 +1,10 @@
 <template>
   <div class="expense-form-container">
     <h3 class="page-title">Add New Record</h3>
-    <ExpenseForm 
-      :expense="newExpense" 
-      submitButtonText="Submit" 
-      @submit="addExpense" 
+    <ExpenseForm
+      :expense="newExpense"
+      submit-button-text="Submit"
+      @submit="addExpense"
     />
   </div>
 </template>
@@ -36,12 +36,10 @@ async function addExpense(expense: Expense) {
 
     // Show success message
     alert('Expense added successfully!');
-
   } catch (error) {
     alert('Failed to add expense. Please try again.');
   }
 }
-
 </script>
 
 <style scoped>
@@ -77,7 +75,7 @@ async function addExpense(expense: Expense) {
   border-radius: 4px;
 }
 
-:deep(button[type="submit"]) {
+:deep(button[type='submit']) {
   background-color: #007bff;
   color: white;
   padding: 10px 20px;
@@ -87,7 +85,7 @@ async function addExpense(expense: Expense) {
   font-size: 16px;
 }
 
-:deep(button[type="submit"]:hover) {
+:deep(button[type='submit']:hover) {
   background-color: #0056b3;
 }
 

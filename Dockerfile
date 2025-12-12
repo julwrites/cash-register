@@ -12,28 +12,26 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json
-COPY package.json ./
+# Copy package files
+COPY package.json package-lock.json ./
 
-# Yarn is already available in node image
 # Install node-gyp for native module builds
 RUN npm install -g node-gyp
 
+# Install dependencies
+RUN npm ci
+
 # Copy the rest of the application code
 COPY . .
-RUN rm -rf *.lock
 
 # Create data directory for SQLite
-RUN mkdir -p /app/data
-RUN chown -R node:node /app/data
+RUN mkdir -p /app/data && chown -R node:node /app/data
 
-# Install dependencies with rebuild flag to ensure native modules are compiled correctly
-RUN yarn install
-# Use npm rebuild for better-sqlite3 as yarn doesn't have an equivalent command
+# Rebuild better-sqlite3
 RUN npm rebuild better-sqlite3 --build-from-source
 
 # Build the application
-RUN yarn build
+RUN npm run build
 
 # Expose the port the app runs on
 EXPOSE 3000

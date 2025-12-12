@@ -2,14 +2,16 @@
   <div class="settings-container">
     <h2 class="page-title">User Settings</h2>
 
-    <UForm @submit.prevent="updateLogin" class="settings-form">
+    <UForm class="settings-form" @submit.prevent="updateLogin">
       <UFormGroup label="New Username" name="username">
-        <UInput type="text" id="username" v-model="newUsername" required />
+        <UInput id="username" v-model="newUsername" type="text" required />
       </UFormGroup>
       <UFormGroup label="New Password" name="password">
-        <UInput type="password" id="password" v-model="newPassword" required />
+        <UInput id="password" v-model="newPassword" type="password" required />
       </UFormGroup>
-      <UButton type="submit" color="primary" class="update-button">Update Settings</UButton>
+      <UButton type="submit" color="primary" class="update-button"
+        >Update Settings</UButton
+      >
     </UForm>
     <p v-if="message" class="message">{{ message }}</p>
   </div>
@@ -29,27 +31,27 @@ function updateLogin() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       newUsername: newUsername.value,
-      newPassword: newPassword.value
+      newPassword: newPassword.value,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        message.value = 'Settings updated successfully';
+        newUsername.value = '';
+        newPassword.value = '';
+      } else {
+        message.value = data.message || 'Failed to update settings';
+      }
     })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      message.value = 'Settings updated successfully';
-      newUsername.value = '';
-      newPassword.value = '';
-    } else {
-      message.value = data.message || 'Failed to update settings';
-    }
-  })
-  .catch(error => {
-    console.error('Error updating settings:', error);
-    message.value = 'An error occurred while updating settings';
-  });
+    .catch((error) => {
+      console.error('Error updating settings:', error);
+      message.value = 'An error occurred while updating settings';
+    });
 }
 </script>
 

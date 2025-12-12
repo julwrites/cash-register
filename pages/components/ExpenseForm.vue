@@ -1,24 +1,49 @@
 <template>
   <div class="expense-form-container">
-    <UForm @submit.prevent="handleSubmit" class="expense-form">
+    <UForm class="expense-form" @submit.prevent="handleSubmit">
       <UFormGroup label="Date" name="date">
-        <UInput type="date" id="date" v-model="expenseData.date" required />
+        <UInput id="date" v-model="expenseData.date" type="date" required />
       </UFormGroup>
       <UFormGroup label="Category" name="category">
-        <USelectMenu v-model="expenseData.category" :options="categoryOptions" id="category" required />
+        <USelectMenu
+          id="category"
+          v-model="expenseData.category"
+          :options="categoryOptions"
+          required
+        />
       </UFormGroup>
       <UFormGroup label="Description" name="description">
-        <USelectMenu v-model="expenseData.description" :options="descriptionOptions" id="description" required creatable
-          searchable />
+        <USelectMenu
+          id="description"
+          v-model="expenseData.description"
+          :options="descriptionOptions"
+          required
+          creatable
+          searchable
+        />
       </UFormGroup>
       <UFormGroup label="Debit" name="debit">
-        <UInput type="number" id="debit" v-model.number="expenseData.debit" step="0.01" min="0" />
+        <UInput
+          id="debit"
+          v-model.number="expenseData.debit"
+          type="number"
+          step="0.01"
+          min="0"
+        />
       </UFormGroup>
       <UFormGroup label="Credit" name="credit">
-        <UInput type="number" id="credit" v-model.number="expenseData.credit" step="0.01" min="0" />
+        <UInput
+          id="credit"
+          v-model.number="expenseData.credit"
+          type="number"
+          step="0.01"
+          min="0"
+        />
       </UFormGroup>
       <div class="form-actions">
-        <UButton type="submit" color="primary">{{ props.submitButtonText }}</UButton>
+        <UButton type="submit" color="primary">{{
+          props.submitButtonText
+        }}</UButton>
         <UButton type="button" color="gray" @click="cancelEdit">Cancel</UButton>
       </div>
     </UForm>
@@ -30,10 +55,7 @@ import { defineProps, defineEmits, ref, onMounted, computed } from 'vue';
 import { defaultExpense } from '../../composables/defaultExpense';
 import { useCategories } from '@/composables/useCategories';
 
-const {
-  categoriesByID,
-  fetchCategories,
-} = useCategories();
+const { categoriesByID, fetchCategories } = useCategories();
 
 const props = defineProps<{
   expense: Expense;
@@ -47,14 +69,13 @@ const emits = defineEmits<{
 
 const expenseData = ref<Expense>({
   ...defaultExpense,
-  ...props.expense
+  ...props.expense,
 });
 
 const descriptionOptions = ref([]);
 
 const categoryOptions = computed(() => [
-  ...categoriesByID.value
-    .map(cat => cat.name)
+  ...categoriesByID.value.map((cat) => cat.name),
 ]);
 
 const fetchDescriptions = async () => {

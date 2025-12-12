@@ -3,7 +3,7 @@ import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
 
-const dataDir = path.join(process.cwd(), 'data');
+const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 if (!existsSync(dataDir)) {
   mkdirSync(dataDir, { recursive: true });
 }
@@ -12,8 +12,6 @@ const databasePath = path.join(dataDir, 'users.sqlite');
 export const secretKey = process.env.AUTH_SECRET;
 export const adminUsername = process.env.ADMIN_USERNAME;
 export const adminPassword = process.env.ADMIN_PASSWORD;
-
-
 
 interface DatabaseOperations {
   run: (...args: any[]) => Promise<any>;
@@ -27,7 +25,7 @@ export const initializeDatabase = (): Promise<DatabaseOperations> => {
     try {
       const db = new Database(databasePath);
       console.log('Connected to the users database');
-      
+
       // better-sqlite3 is synchronous, so we just wrap in promises
       const dbRun = (...args: any[]) => {
         return new Promise((resolve, reject) => {
@@ -39,7 +37,7 @@ export const initializeDatabase = (): Promise<DatabaseOperations> => {
           }
         });
       };
-      
+
       const dbGet = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
@@ -50,7 +48,7 @@ export const initializeDatabase = (): Promise<DatabaseOperations> => {
           }
         });
       };
-      
+
       const dbAll = (...args: any[]) => {
         return new Promise((resolve, reject) => {
           try {
@@ -69,45 +67,50 @@ export const initializeDatabase = (): Promise<DatabaseOperations> => {
           is_admin BOOLEAN DEFAULT FALSE,
           is_approved BOOLEAN DEFAULT TRUE
         );
-      `).then(() => {
-        // Check if admin user exists, if not, create it
-        dbGet('SELECT * FROM users WHERE username = ?', adminUsername)
-          .then(adminUser => {
-            if (!adminUser && adminUsername && adminPassword) {
-              dbRun(
-                'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
-                adminUsername,
-                adminPassword,
-                1,
-                1
-              ).then(() => {
-                console.log('Admin user created successfully.');
+      `)
+        .then(() => {
+          // Check if admin user exists, if not, create it
+          dbGet('SELECT * FROM users WHERE username = ?', adminUsername)
+            .then((adminUser) => {
+              if (!adminUser && adminUsername && adminPassword) {
+                dbRun(
+                  'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
+                  adminUsername,
+                  adminPassword,
+                  1,
+                  1
+                )
+                  .then(() => {
+                    console.log('Admin user created successfully.');
+                    resolve({
+                      run: dbRun,
+                      get: dbGet,
+                      all: dbAll,
+                      db,
+                    });
+                  })
+                  .catch((err) => {
+                    console.error('Error creating admin user', err);
+                    reject(err);
+                  });
+              } else {
                 resolve({
                   run: dbRun,
                   get: dbGet,
                   all: dbAll,
-                  db
+                  db,
                 });
-              }).catch(err => {
-                console.error('Error creating admin user', err);
-                reject(err);
-              });
-            } else {
-              resolve({
-                run: dbRun,
-                get: dbGet,
-                all: dbAll,
-                db
-              });
-        }
-          }).catch(err => {
-            console.error('Error checking admin user', err);
-            reject(err);
-          });
-      }).catch(err => {
-        console.error('Error creating table', err);
-        reject(err);
-      });
+              }
+            })
+            .catch((err) => {
+              console.error('Error checking admin user', err);
+              reject(err);
+            });
+        })
+        .catch((err) => {
+          console.error('Error creating table', err);
+          reject(err);
+        });
     } catch (err) {
       console.error('Error opening database', err);
       reject(err);
@@ -160,5 +163,5 @@ export default {
       dbPromise = initializeDatabase();
     }
     return (await dbPromise).db;
-  }
+  },
 };

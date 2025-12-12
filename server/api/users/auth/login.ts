@@ -2,7 +2,8 @@
 
 import { defineEventHandler, createError, readBody } from 'h3';
 import jwt from 'jsonwebtoken';
-import { initializeDatabase, User } from '../users-db';
+import type { User } from '../users-db';
+import { initializeDatabase } from '../users-db';
 
 const secretKey = process.env.AUTH_SECRET;
 
@@ -10,7 +11,9 @@ export default defineEventHandler(async (event) => {
   const { username, password, rememberMe } = await readBody(event);
 
   const db = await initializeDatabase();
-  const user = await db.get('SELECT * FROM users WHERE username = ?', [username]) as User;
+  const user = (await db.get('SELECT * FROM users WHERE username = ?', [
+    username,
+  ])) as User;
 
   if (!user) {
     return { userExists: false };
@@ -25,19 +28,26 @@ export default defineEventHandler(async (event) => {
   }
 
   if (password && user.password !== password) {
-    throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' });
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Invalid credentials',
+    });
   }
 
   const expiresIn = rememberMe ? '90d' : '1d';
-  const token = jwt.sign({ 
-    userId: user.id, 
-    username: user.username, 
-    isAdmin: user.is_admin 
-  }, secretKey, { expiresIn });
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      username: user.username,
+      isAdmin: user.is_admin,
+    },
+    secretKey,
+    { expiresIn }
+  );
 
-  return { 
+  return {
     userExists: true,
-    token, 
-    user: { id: user.id, username: user.username, isAdmin: user.is_admin } 
+    token,
+    user: { id: user.id, username: user.username, isAdmin: user.is_admin },
   };
 });

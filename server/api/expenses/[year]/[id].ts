@@ -1,7 +1,8 @@
 // /Users/julianteh/julwrites/cash-register/server/api/expenses/[year]/[id].ts
 
 import { defineEventHandler, readBody, createError } from 'h3';
-import { getDb, Expense } from '../expenses-db';
+import type { Expense } from '../expenses-db';
+import { getDb } from '../expenses-db';
 import { trackDescriptionUsage } from '../../descriptions/descriptions-db';
 
 export default defineEventHandler(async (event) => {
@@ -12,7 +13,10 @@ export default defineEventHandler(async (event) => {
 
   // GET: Fetch a single expense
   if (method === 'GET') {
-    const expense = await db.get("SELECT * FROM expenses WHERE id = ?", id) as Expense;
+    const expense = (await db.get(
+      'SELECT * FROM expenses WHERE id = ?',
+      id
+    )) as Expense;
     if (!expense) {
       throw createError({
         statusCode: 404,
@@ -29,12 +33,20 @@ export default defineEventHandler(async (event) => {
 
     if (year === newYear) {
       // Year has not changed, just update the expense
-      const result = await db.run(`
+      const result = await db.run(
+        `
         UPDATE expenses
         SET credit = ?, debit = ?, description = ?, date = ?, category = ?
         WHERE id = ?
-      `, updatedExpense.credit || 0, updatedExpense.debit || 0, updatedExpense.description, updatedExpense.date, updatedExpense.category, id);
-      
+      `,
+        updatedExpense.credit || 0,
+        updatedExpense.debit || 0,
+        updatedExpense.description,
+        updatedExpense.date,
+        updatedExpense.category,
+        id
+      );
+
       if (result.changes === 0) {
         throw createError({
           statusCode: 404,
@@ -46,7 +58,7 @@ export default defineEventHandler(async (event) => {
       if (updatedExpense.description) {
         await trackDescriptionUsage(updatedExpense.description);
       }
-      
+
       return { id: Number(id), ...updatedExpense };
     } else {
       // Year has changed, so we need to move the expense to a new database
@@ -54,7 +66,10 @@ export default defineEventHandler(async (event) => {
       const newDb = await getDb(newYear);
 
       // 1. Delete from the old database
-      const deleteResult = await oldDb.run("DELETE FROM expenses WHERE id = ?", id);
+      const deleteResult = await oldDb.run(
+        'DELETE FROM expenses WHERE id = ?',
+        id
+      );
 
       if (deleteResult.changes === 0) {
         throw createError({
@@ -64,10 +79,18 @@ export default defineEventHandler(async (event) => {
       }
 
       // 2. Insert into the new database
-      const insertResult = await newDb.run(`
+      const insertResult = await newDb.run(
+        `
         INSERT INTO expenses (id, credit, debit, description, date, category)
         VALUES (?, ?, ?, ?, ?, ?)
-      `, id, updatedExpense.credit || 0, updatedExpense.debit || 0, updatedExpense.description, updatedExpense.date, updatedExpense.category);
+      `,
+        id,
+        updatedExpense.credit || 0,
+        updatedExpense.debit || 0,
+        updatedExpense.description,
+        updatedExpense.date,
+        updatedExpense.category
+      );
 
       // Track description usage
       if (updatedExpense.description) {
@@ -80,7 +103,7 @@ export default defineEventHandler(async (event) => {
 
   // DELETE: Delete an expense
   if (method === 'DELETE') {
-    const result = await db.run("DELETE FROM expenses WHERE id = ?", id);
+    const result = await db.run('DELETE FROM expenses WHERE id = ?', id);
 
     if (result.changes === 0) {
       throw createError({
@@ -90,7 +113,7 @@ export default defineEventHandler(async (event) => {
     }
 
     console.log(`Expense with ID ${id} deleted successfully`);
-    
+
     return { message: 'Expense deleted successfully' };
   }
 });

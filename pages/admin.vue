@@ -11,9 +11,9 @@
       <UButton
         class="mr-2"
         label="Migrate Descriptions"
-        @click="triggerDescriptionMigration"
         :loading="migrationLoading"
         color="green"
+        @click="triggerDescriptionMigration"
       />
     </div>
 
@@ -27,16 +27,29 @@
           <div v-if="migrationResult.statistics" class="mt-2 text-sm">
             <p><strong>Statistics:</strong></p>
             <ul class="list-disc list-inside">
-              <li>Total descriptions: {{ migrationResult.statistics.totalDescriptions }}</li>
-              <li>Total usage count: {{ migrationResult.statistics.totalUsageCount }}</li>
-              <li>Years processed: {{ migrationResult.statistics.yearsProcessed.join(', ') }}</li>
-              <li>Migration time: {{ migrationResult.statistics.migrationTime }}</li>
+              <li>
+                Total descriptions:
+                {{ migrationResult.statistics.totalDescriptions }}
+              </li>
+              <li>
+                Total usage count:
+                {{ migrationResult.statistics.totalUsageCount }}
+              </li>
+              <li>
+                Years processed:
+                {{ migrationResult.statistics.yearsProcessed.join(', ') }}
+              </li>
+              <li>
+                Migration time: {{ migrationResult.statistics.migrationTime }}
+              </li>
             </ul>
           </div>
         </div>
         <div v-else class="text-red-600">
           <p><strong>✗ Migration failed</strong></p>
-          <p class="mt-1">{{ migrationResult.error || 'Unknown error occurred' }}</p>
+          <p class="mt-1">
+            {{ migrationResult.error || 'Unknown error occurred' }}
+          </p>
         </div>
       </UCard>
     </div>
@@ -48,7 +61,11 @@
         <UTable :rows="rows" :columns="columns">
           <template #actions-data="{ row }">
             <UDropdown :items="actions(row)">
-              <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+              <UButton
+                color="gray"
+                variant="ghost"
+                icon="i-heroicons-ellipsis-horizontal-20-solid"
+              />
             </UDropdown>
           </template>
         </UTable>
@@ -56,18 +73,20 @@
     </div>
 
     <UModal v-model="isCreateUserModalOpen">
-    <UCard>
-      <template #header>
-        <h3 class="text-lg font-bold">Create New User</h3>
-      </template>
-      <form @submit.prevent="createUser">
-        <UFormGroup label="Username">
-          <UInput v-model="newUsername" type="text" required />
-        </UFormGroup>
-        <UButton type="submit" color="primary" class="mt-4">Create User</UButton>
-      </form>
-    </UCard>
-  </UModal>
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-bold">Create New User</h3>
+        </template>
+        <form @submit.prevent="createUser">
+          <UFormGroup label="Username">
+            <UInput v-model="newUsername" type="text" required />
+          </UFormGroup>
+          <UButton type="submit" color="primary" class="mt-4"
+            >Create User</UButton
+          >
+        </form>
+      </UCard>
+    </UModal>
   </div>
 </template>
 
@@ -83,12 +102,12 @@ const error = ref(null);
 
 const rows = ref([]);
 const columns = [
-  {key: 'id', label: 'ID'},
-  {key: 'name', label: 'Name'},
-  {key: 'role', label: 'Role'},
-  {key: 'status', label: 'Status'},
-  {key: 'actions', label: 'Actions'},
-]
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'role', label: 'Role' },
+  { key: 'status', label: 'Status' },
+  { key: 'actions', label: 'Actions' },
+];
 
 const isCreateUserModalOpen = ref(false);
 const newUsername = ref('');
@@ -100,15 +119,15 @@ onMounted(async () => {
     const token = getItem('authToken');
     const response = await fetch('/api/users/admin/getUsers', {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (!response.ok) {
       throw new Error('You do not have permission to access this page');
     }
     users.value = await response.json();
 
-    rows.value = users.value.map(user => {
+    rows.value = users.value.map((user) => {
       return {
         id: user.id,
         name: user.username,
@@ -125,18 +144,27 @@ onMounted(async () => {
 });
 
 function actions(row) {
-  return [[
-    {
-      label: row.status === 'Activated' && row.role === 'User' ? 'Promote' : 'Demote',
-      icon: row.role === 'User' ? 'i-heroicons-arrow-up-on-square-20-solid' : 'i-heroicons-arrow-down-on-square-20-solid',
-      click: () => row.role === 'Admin' ? demoteUser(row.id) : promoteUser(row.id)
-    },
-    {
-      label: 'Remove',
-      icon: 'i-heroicons-check-circle-20-solid',
-      click: () => removeUser(row.id)
-    }
-  ]]
+  return [
+    [
+      {
+        label:
+          row.status === 'Activated' && row.role === 'User'
+            ? 'Promote'
+            : 'Demote',
+        icon:
+          row.role === 'User'
+            ? 'i-heroicons-arrow-up-on-square-20-solid'
+            : 'i-heroicons-arrow-down-on-square-20-solid',
+        click: () =>
+          row.role === 'Admin' ? demoteUser(row.id) : promoteUser(row.id),
+      },
+      {
+        label: 'Remove',
+        icon: 'i-heroicons-check-circle-20-solid',
+        click: () => removeUser(row.id),
+      },
+    ],
+  ];
 }
 
 async function promoteUser(userId) {
@@ -154,7 +182,7 @@ async function createUser() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ username: newUsername.value }),
     });
@@ -187,7 +215,7 @@ async function removeUser(userId) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ userId: userId }),
       });
@@ -195,7 +223,7 @@ async function removeUser(userId) {
       if (!response.ok) {
         throw new Error('Failed to remove user');
       }
-      users.value = users.value.filter(user => user.Id !== userId);
+      users.value = users.value.filter((user) => user.Id !== userId);
     } catch (err) {
       error.value = err.message;
     }
@@ -209,7 +237,7 @@ async function updateAdmin(userId, updates) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ userId, ...updates }),
     });
@@ -218,7 +246,7 @@ async function updateAdmin(userId, updates) {
       throw new Error('Failed to update user');
     }
     const updatedUser = await response.json();
-    const index = users.value.findIndex(user => user.id === userId);
+    const index = users.value.findIndex((user) => user.id === userId);
     if (index !== -1) {
       users.value[index] = updatedUser;
     }
@@ -236,8 +264,8 @@ async function triggerDescriptionMigration() {
     const response = await fetch('/api/descriptions/migrate', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) {
@@ -253,7 +281,6 @@ async function triggerDescriptionMigration() {
     migrationLoading.value = false;
   }
 }
-
 </script>
 
 <style scoped>

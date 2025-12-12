@@ -1,14 +1,14 @@
 // /Users/julianteh/julwrites/cash-register/server/api/categories/[id].ts
 
 import { defineEventHandler, createError, readBody } from 'h3';
-import db from './categories-db'
+import db from './categories-db';
 
 export default defineEventHandler(async (event) => {
   const method = event.node.req.method;
   const id = event.context.params?.id;
 
   if (method === 'DELETE') {
-    const result = await db.run("DELETE FROM categories WHERE id = ?", id);
+    const result = await db.run('DELETE FROM categories WHERE id = ?', id);
 
     if (result.changes === 0) {
       throw createError({
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const category = await db.get("SELECT * FROM categories WHERE id = ?", id);
+    const category = await db.get('SELECT * FROM categories WHERE id = ?', id);
 
     if (!category) {
       throw createError({
@@ -44,11 +44,15 @@ export default defineEventHandler(async (event) => {
       return category;
     }
 
-    const result = await db.run(`
+    const result = await db.run(
+      `
       UPDATE categories 
       SET name = ?
       WHERE id = ?
-    `, updateData.name, id);
+    `,
+      updateData.name,
+      id
+    );
 
     if (result.changes === 0) {
       throw createError({
@@ -57,7 +61,10 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const updatedCategory = await db.get("SELECT * FROM categories WHERE id = ?", id);
+    const updatedCategory = await db.get(
+      'SELECT * FROM categories WHERE id = ?',
+      id
+    );
 
     return updatedCategory;
   }

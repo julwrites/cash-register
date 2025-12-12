@@ -21,13 +21,19 @@ export default defineEventHandler(async (event) => {
 
     const { userId } = await readBody(event);
     const db = await initializeDatabase();
-    
+
     await db.run('UPDATE users SET is_approved = ? WHERE id = ?', true, userId);
 
-    const updatedUser = await db.get('SELECT id, username, is_admin, is_approved FROM users WHERE id = ?', userId);
+    const updatedUser = await db.get(
+      'SELECT id, username, is_admin, is_approved FROM users WHERE id = ?',
+      userId
+    );
     return updatedUser;
   } catch (error) {
     console.error('Approve User API error:', error);
-    throw createError({ statusCode: 500, statusMessage: 'Internal Server Error' });
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Internal Server Error',
+    });
   }
 });

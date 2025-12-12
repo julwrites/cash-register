@@ -2,10 +2,10 @@ import { computed, ref } from 'vue';
 
 export function useCategories() {
   const categories = ref<{ id: number; name: string }[]>([]);
-  const categoriesByID = computed(() => 
+  const categoriesByID = computed(() =>
     categories.value.slice().sort((a, b) => a.id > b.id)
   );
-  const categoriesByName = computed(() => 
+  const categoriesByName = computed(() =>
     categories.value.slice().sort((a, b) => a.name > b.name)
   );
 
@@ -37,7 +37,10 @@ export function useCategories() {
         return { success: true };
       } else {
         const errorData = await response.json();
-        return { success: false, error: errorData.statusMessage || 'Failed to add category' };
+        return {
+          success: false,
+          error: errorData.statusMessage || 'Failed to add category',
+        };
       }
     } catch (error) {
       console.error('Failed to add category:', error);
@@ -56,7 +59,10 @@ export function useCategories() {
         return { success: true };
       } else {
         const errorData = await response.json();
-        return { success: false, error: errorData.statusMessage || 'Failed to delete category' };
+        return {
+          success: false,
+          error: errorData.statusMessage || 'Failed to delete category',
+        };
       }
     } catch (error) {
       console.error('Failed to delete category:', error);
@@ -79,20 +85,23 @@ export function useCategories() {
         return { success: true };
       } else {
         const errorData = await response.json();
-        return { success: false, error: errorData.statusMessage || 'Failed to update category' };
+        return {
+          success: false,
+          error: errorData.statusMessage || 'Failed to update category',
+        };
       }
     } catch (error) {
       console.error('Failed to update category:', error);
       return { success: false, error: error.message };
     }
   }
-  
+
   return {
     categoriesByID,
     categoriesByName,
     fetchCategories,
     addCategory,
     deleteCategory,
-    updateCategory
+    updateCategory,
   };
 }
