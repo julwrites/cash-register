@@ -2,6 +2,7 @@
 
 import { defineEventHandler, readBody, createError } from 'h3';
 import { getDb, Expense } from '../expenses-db';
+import { trackDescriptionUsage } from '../../descriptions/descriptions-db';
 
 export default defineEventHandler(async (event) => {
   const method = event.node.req.method;
@@ -40,6 +41,11 @@ export default defineEventHandler(async (event) => {
           statusMessage: 'Expense not found',
         });
       }
+
+      // Track description usage
+      if (updatedExpense.description) {
+        await trackDescriptionUsage(updatedExpense.description);
+      }
       
       return { id: Number(id), ...updatedExpense };
     } else {
@@ -62,6 +68,11 @@ export default defineEventHandler(async (event) => {
         INSERT INTO expenses (id, credit, debit, description, date, category)
         VALUES (?, ?, ?, ?, ?, ?)
       `, id, updatedExpense.credit || 0, updatedExpense.debit || 0, updatedExpense.description, updatedExpense.date, updatedExpense.category);
+
+      // Track description usage
+      if (updatedExpense.description) {
+        await trackDescriptionUsage(updatedExpense.description);
+      }
 
       return { id: insertResult.lastID, ...updatedExpense };
     }
