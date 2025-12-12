@@ -27,7 +27,11 @@ This is a Nuxt 3 cash register application with SQLite database backend. It's a 
 
 ### Database Structure
 - **Year-based storage**: Expenses are stored in separate SQLite files per year (`expenses-{year}.sqlite`)
-- **Shared databases**: `categories.sqlite` and `users.sqlite` for shared data
+- **Shared databases**:
+  - `categories.sqlite`: Stores expense categories
+  - `users.sqlite`: Stores user accounts and authentication data
+  - `descriptions.sqlite`: Stores unique description usage stats for auto-complete
+  - `settings.sqlite`: Stores application settings (e.g., migration schedules)
 - **Location**: All databases are stored in the `data/` directory
 
 ### Key Directories
