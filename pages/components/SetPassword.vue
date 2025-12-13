@@ -48,6 +48,7 @@ const emit = defineEmits(['passwordSet']);
 const password = ref('');
 const confirmPassword = ref('');
 const currentUserId = ref('');
+const toast = useToast();
 
 watch(
   () => props.username,
@@ -60,7 +61,11 @@ watch(
 
 async function setPassword() {
   if (password.value !== confirmPassword.value) {
-    alert('Passwords do not match');
+    toast.add({
+      title: 'Error',
+      description: 'Passwords do not match',
+      color: 'red',
+    });
     return;
   }
 
@@ -81,7 +86,11 @@ async function setPassword() {
     }
   } catch (error) {
     console.error('Set password error:', error);
-    alert('An error occurred while setting the password');
+    toast.add({
+      title: 'Error',
+      description: 'An error occurred while setting the password',
+      color: 'red',
+    });
   }
 }
 </script>

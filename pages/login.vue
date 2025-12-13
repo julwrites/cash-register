@@ -65,6 +65,7 @@ const username = ref('');
 const password = ref('');
 const rememberMe = ref(false);
 const router = useRouter();
+const toast = useToast();
 const showSetPasswordModal = ref(false);
 const isFirstUser = ref(false);
 const showSetupModal = ref(false);
@@ -103,7 +104,11 @@ async function checkUser() {
       }
     } catch (error) {
       console.error('Error checking user:', error);
-      alert('An error occurred. Please try again.');
+      toast.add({
+        title: 'Error',
+        description: 'An error occurred. Please try again.',
+        color: 'red',
+      });
     }
   } else {
     await login();
@@ -127,21 +132,33 @@ async function login() {
     router.push('/');
   } catch (error) {
     console.error('Login error:', error);
-    alert('Invalid username or password');
+    toast.add({
+      title: 'Login Failed',
+      description: 'Invalid username or password',
+      color: 'red',
+    });
   }
 }
 
 function onPasswordSet() {
   showSetPasswordModal.value = false;
   showPasswordField.value = true;
-  alert('Password set successfully. Please log in with your new password.');
+  toast.add({
+    title: 'Success',
+    description:
+      'Password set successfully. Please log in with your new password.',
+    color: 'green',
+  });
 }
 
 function onAccountSetup() {
   showSetupModal.value = false;
-  alert(
-    'Admin account set up successfully. Please log in with your new credentials.'
-  );
+  toast.add({
+    title: 'Success',
+    description:
+      'Admin account set up successfully. Please log in with your new credentials.',
+    color: 'green',
+  });
   isFirstUser.value = false;
 }
 </script>

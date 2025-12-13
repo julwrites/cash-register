@@ -1,6 +1,6 @@
 ---
 id: PRESENTATION-20251213-021904-TQK
-status: pending
+status: completed
 title: Replace Blocking Alerts with Toasts
 priority: medium
 created: 2025-12-13 02:19:04
