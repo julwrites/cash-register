@@ -1,8 +1,6 @@
 import { defineEventHandler, createError } from 'h3';
-import jwt from 'jsonwebtoken';
 import { migrateDescriptionUsage } from './descriptions-db';
-
-const secretKey = process.env.AUTH_SECRET;
+import { requireAdmin } from '../../utils/auth';
 
 interface MigrationResult {
   success: boolean;
@@ -17,21 +15,12 @@ interface MigrationResult {
 }
 
 export default defineEventHandler(async (event): Promise<MigrationResult> => {
-  // Authentication check
-  const token = event.req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
-  }
+  const session = await requireAdmin(event);
 
   try {
-    const decoded = jwt.verify(token, secretKey) as any;
-    if (!decoded.isAdmin) {
-      throw createError({ statusCode: 403, statusMessage: 'Forbidden' });
-    }
-
     console.log(
       'Description migration triggered by admin user:',
-      decoded.username
+      session.user.username
     );
 
     const startTime = Date.now();

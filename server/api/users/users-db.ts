@@ -2,6 +2,7 @@
 import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
+import bcrypt from 'bcrypt';
 
 const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 if (!existsSync(dataDir)) {
@@ -73,10 +74,11 @@ export const initializeDatabase = (): Promise<DatabaseOperations> => {
           dbGet('SELECT * FROM users WHERE username = ?', adminUsername)
             .then((adminUser) => {
               if (!adminUser && adminUsername && adminPassword) {
+                const hashedPassword = bcrypt.hashSync(adminPassword, 10);
                 dbRun(
                   'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
                   adminUsername,
-                  adminPassword,
+                  hashedPassword,
                   1,
                   1
                 )

@@ -1,30 +1,29 @@
 import { defineEventHandler, readBody, createError } from 'h3';
-import jwt from 'jsonwebtoken';
+import { getServerSession } from '#auth';
+import bcrypt from 'bcrypt';
 import type { User } from '../users-db';
-import { initializeDatabase, secretKey } from '../users-db';
+import { initializeDatabase } from '../users-db';
 
 export default defineEventHandler(async (event) => {
   try {
-    const { newUsername, newPassword } = await readBody(event);
-    const authHeader = event.req.headers.authorization;
-
-    if (!authHeader) {
+    const session = await getServerSession(event);
+    if (!session) {
       throw createError({
         statusCode: 401,
-        statusMessage: 'No authorization header',
+        statusMessage: 'Unauthorized',
       });
     }
 
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, secretKey) as { userId: number };
+    const { newUsername, newPassword } = await readBody(event);
+    const userId = session.user.id;
 
     const db = await initializeDatabase();
 
     // Check if user exists
     const user = (await db.get(
       'SELECT * FROM users WHERE id = ?',
-      decoded.userId
-    )) as User;
+      userId
+    )) as User & { password?: string };
 
     if (!user) {
       throw createError({
@@ -32,6 +31,8 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'User not found',
       });
     }
+
+    const hashedNewPassword = newPassword ? await bcrypt.hash(newPassword, 10) : undefined;
 
     let result;
     if (newUsername === user.username) {
@@ -41,8 +42,8 @@ export default defineEventHandler(async (event) => {
         SET password = COALESCE(?, password)
         WHERE id = ?
       `,
-        newPassword || user.password,
-        decoded.userId
+        hashedNewPassword || user.password,
+        userId
       );
     } else {
       result = await db.run(
@@ -53,8 +54,8 @@ export default defineEventHandler(async (event) => {
         WHERE id = ?
       `,
         newUsername || user.username,
-        newPassword || user.password,
-        decoded.userId
+        hashedNewPassword || user.password,
+        userId
       );
     }
 
@@ -68,16 +69,10 @@ export default defineEventHandler(async (event) => {
     return { message: 'Settings updated successfully' };
   } catch (error) {
     console.error('Update settings error:', error);
-    if (error.name === 'JsonWebTokenError') {
-      throw createError({
-        statusCode: 401,
-        statusMessage: 'Invalid token',
-      });
-    }
     throw createError({
       statusCode: 500,
       statusMessage: 'Internal server error',
-      stack: error.stack,
+      stack: error instanceof Error ? error.stack : undefined,
     });
   }
 });

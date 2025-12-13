@@ -1,23 +1,13 @@
 // server/api/admin/getUsers.ts
 import { defineEventHandler, createError } from 'h3';
-import jwt from 'jsonwebtoken';
 import type { User } from '../users-db';
 import { initializeDatabase } from '../users-db';
-
-const secretKey = process.env.AUTH_SECRET;
+import { requireAdmin } from '../../../utils/auth';
 
 export default defineEventHandler(async (event) => {
-  const token = event.req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
-  }
+  await requireAdmin(event);
 
   try {
-    const decoded = jwt.verify(token, secretKey) as any;
-    if (!decoded.isAdmin) {
-      throw createError({ statusCode: 403, statusMessage: 'Forbidden' });
-    }
-
     console.log('getUsers handler called');
     const db = await initializeDatabase();
     console.log('Before db.all');

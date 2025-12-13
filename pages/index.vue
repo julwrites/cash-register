@@ -26,17 +26,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 import ExpenseForm from './expense-form.vue';
 import ExpenseList from './expense-list.vue';
 import SettingsPage from './settings.vue';
 
-const router = useRouter();
 const selectedTab = ref('form');
-const isLoggedIn = ref(false);
-const isAdmin = ref(false);
-const { getItem, removeItem } = useLocalStorage();
+const { status, data, signOut } = useAuth();
+
+const isLoggedIn = computed(() => status.value === 'authenticated');
+const isAdmin = computed(() => data.value?.user?.isAdmin || false);
 
 const items = [
   {
@@ -53,49 +52,12 @@ const items = [
   },
 ];
 
-onMounted(async () => {
-  await checkLoginStatus();
-});
-
 function onChange(index) {
   selectedTab.value = items[index].slot;
 }
 
-async function checkLoginStatus() {
-  const token = getItem('authToken');
-  if (!token) {
-    router.push('/login');
-  } else {
-    isLoggedIn.value = true;
-    await checkAdminStatus(token);
-  }
-}
-
-async function checkAdminStatus(token: string) {
-  try {
-    const response = await fetch('/api/users/auth/checkAdmin', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (response.ok) {
-      const data = await response.json();
-      isAdmin.value = data.isAdmin;
-    } else if (response.status === 401) {
-      logout();
-    } else {
-      console.error('Failed to check admin status');
-    }
-  } catch (error) {
-    console.error('Error checking admin status:', error);
-  }
-}
-
-function logout() {
-  removeItem('authToken');
-  isLoggedIn.value = false;
-  isAdmin.value = false;
-  router.push('/login');
+async function logout() {
+  await signOut({ callbackUrl: '/login' });
 }
 </script>
 
