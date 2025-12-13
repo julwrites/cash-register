@@ -3,7 +3,11 @@ import fs from 'fs';
 import path from 'path';
 
 // Use a unique temp directory for each test run
-const tempDir = path.join(process.cwd(), 'tests', 'temp-data-' + Date.now());
+const tempDir = path.join(
+  process.cwd(),
+  'tests',
+  'temp-data-' + Date.now() + '-' + Math.floor(Math.random() * 100000)
+);
 
 console.log('Setting up temp data dir (top-level):', tempDir);
 process.env.DATA_DIR = tempDir;
