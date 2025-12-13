@@ -16,6 +16,8 @@ import { defaultExpense } from '../composables/defaultExpense';
 
 const newExpense = ref<Expense>({ ...defaultExpense });
 
+const toast = useToast();
+
 async function addExpense(expense: Expense) {
   try {
     const response = await fetch('/api/expenses/add', {
@@ -35,9 +37,13 @@ async function addExpense(expense: Expense) {
     newExpense.value = { ...defaultExpense };
 
     // Show success message
-    alert('Expense added successfully!');
-  } catch {
-    alert('Failed to add expense. Please try again.');
+    toast.add({ title: 'Expense added successfully!', color: 'green' });
+  } catch (error) {
+    toast.add({
+      title: 'Failed to add expense',
+      description: error instanceof Error ? error.message : 'Please try again.',
+      color: 'red',
+    });
   }
 }
 </script>

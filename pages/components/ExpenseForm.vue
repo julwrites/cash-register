@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { defaultExpense } from '../../composables/defaultExpense';
 import { useCategories } from '@/composables/useCategories';
 
@@ -73,6 +73,7 @@ const expenseData = ref<Expense>({
 });
 
 const descriptionOptions = ref([]);
+const toast = useToast();
 
 const categoryOptions = computed(() => [
   ...categoriesByID.value.map((cat) => cat.name),
@@ -100,12 +101,20 @@ async function handleSubmit() {
 
 function validateExpense(expense: Expense): boolean {
   if (!expense.date || !expense.category || !expense.description) {
-    alert('Please fill in all fields');
+    toast.add({
+      title: 'Validation Error',
+      description: 'Please fill in all fields',
+      color: 'red',
+    });
     return false;
   }
 
   if (expense.credit === 0 && expense.debit === 0) {
-    alert('You must enter a credit or debit amount');
+    toast.add({
+      title: 'Validation Error',
+      description: 'You must enter a credit or debit amount',
+      color: 'red',
+    });
     return false;
   }
 

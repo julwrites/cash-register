@@ -54,10 +54,15 @@ const emit = defineEmits(['accountSetup']);
 const username = ref('');
 const password = ref('');
 const confirmPassword = ref('');
+const toast = useToast();
 
 async function setupAccount() {
   if (password.value !== confirmPassword.value) {
-    alert('Passwords do not match');
+    toast.add({
+      title: 'Error',
+      description: 'Passwords do not match',
+      color: 'red',
+    });
     return;
   }
 
@@ -74,7 +79,11 @@ async function setupAccount() {
     }
   } catch (error) {
     console.error('Setup admin account error:', error);
-    alert('An error occurred while setting up the admin account');
+    toast.add({
+      title: 'Error',
+      description: 'An error occurred while setting up the admin account',
+      color: 'red',
+    });
   }
 }
 </script>
