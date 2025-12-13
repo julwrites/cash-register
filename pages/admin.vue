@@ -91,13 +91,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useToast } from '#imports';
 
+const toast = useToast();
 const users = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
-const rows = ref([]);
 const columns = [
   { key: 'id', label: 'ID' },
   { key: 'name', label: 'Name' },
@@ -105,6 +106,15 @@ const columns = [
   { key: 'status', label: 'Status' },
   { key: 'actions', label: 'Actions' },
 ];
+
+const rows = computed(() => {
+  return users.value.map((user) => ({
+    id: user.id,
+    name: user.username,
+    role: user.is_admin ? 'Admin' : 'User',
+    status: user.is_approved ? 'Activated' : 'Pending',
+  }));
+});
 
 const isCreateUserModalOpen = ref(false);
 const newUsername = ref('');
@@ -118,16 +128,6 @@ onMounted(async () => {
       throw new Error('You do not have permission to access this page');
     }
     users.value = await response.json();
-
-    rows.value = users.value.map((user) => {
-      return {
-        id: user.id,
-        name: user.username,
-        role: user.is_admin ? 'Admin' : 'User',
-        status: user.is_approved ? 'Activated' : 'Pending',
-      };
-    });
-
     loading.value = false;
   } catch (err) {
     error.value = err.message;
@@ -136,27 +136,65 @@ onMounted(async () => {
 });
 
 function actions(row) {
-  return [
-    [
-      {
-        label:
-          row.status === 'Activated' && row.role === 'User'
-            ? 'Promote'
-            : 'Demote',
-        icon:
-          row.role === 'User'
-            ? 'i-heroicons-arrow-up-on-square-20-solid'
-            : 'i-heroicons-arrow-down-on-square-20-solid',
-        click: () =>
-          row.role === 'Admin' ? demoteUser(row.id) : promoteUser(row.id),
+  const items = [];
+
+  if (row.status === 'Pending') {
+    items.push({
+      label: 'Approve',
+      icon: 'i-heroicons-check-20-solid',
+      click: () => approveUser(row.id),
+    });
+  } else {
+    // Activated users
+    if (row.role === 'User') {
+      items.push({
+        label: 'Promote',
+        icon: 'i-heroicons-arrow-up-on-square-20-solid',
+        click: () => promoteUser(row.id),
+      });
+    } else {
+      // Admin
+      items.push({
+        label: 'Demote',
+        icon: 'i-heroicons-arrow-down-on-square-20-solid',
+        click: () => demoteUser(row.id),
+      });
+    }
+  }
+
+  items.push({
+    label: 'Remove',
+    icon: 'i-heroicons-trash-20-solid',
+    click: () => removeUser(row.id),
+  });
+
+  return [items];
+}
+
+async function approveUser(userId) {
+  try {
+    const response = await fetch('/api/users/admin/approveUser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
-        label: 'Remove',
-        icon: 'i-heroicons-check-circle-20-solid',
-        click: () => removeUser(row.id),
-      },
-    ],
-  ];
+      body: JSON.stringify({ userId }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to approve user');
+    }
+
+    const updatedUser = await response.json();
+    const index = users.value.findIndex((user) => user.id === userId);
+    if (index !== -1) {
+      users.value[index] = updatedUser;
+    }
+    toast.add({ title: 'User approved', color: 'green' });
+  } catch (err) {
+    error.value = err.message;
+    toast.add({ title: 'Error approving user', description: err.message, color: 'red' });
+  }
 }
 
 async function promoteUser(userId) {
@@ -183,17 +221,12 @@ async function createUser() {
 
     const newUser = await response.json();
     users.value.push(newUser);
-    rows.value.push({
-      id: newUser.id,
-      name: newUser.username,
-      role: newUser.is_admin ? 'Admin' : 'User',
-      status: newUser.is_approved ? 'Activated' : 'Pending',
-    });
-
     isCreateUserModalOpen.value = false;
     newUsername.value = '';
+    toast.add({ title: 'User created', color: 'green' });
   } catch (err) {
     error.value = err.message;
+    toast.add({ title: 'Error creating user', description: err.message, color: 'red' });
   }
 }
 
@@ -211,9 +244,11 @@ async function removeUser(userId) {
       if (!response.ok) {
         throw new Error('Failed to remove user');
       }
-      users.value = users.value.filter((user) => user.Id !== userId);
+      users.value = users.value.filter((user) => user.id !== userId);
+      toast.add({ title: 'User removed', color: 'green' });
     } catch (err) {
       error.value = err.message;
+      toast.add({ title: 'Error removing user', description: err.message, color: 'red' });
     }
   }
 }
@@ -236,8 +271,10 @@ async function updateAdmin(userId, updates) {
     if (index !== -1) {
       users.value[index] = updatedUser;
     }
+    toast.add({ title: 'User role updated', color: 'green' });
   } catch (err) {
     error.value = err.message;
+    toast.add({ title: 'Error updating user role', description: err.message, color: 'red' });
   }
 }
 
