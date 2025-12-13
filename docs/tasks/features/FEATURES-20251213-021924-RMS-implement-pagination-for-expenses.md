@@ -1,6 +1,6 @@
 ---
 id: FEATURES-20251213-021924-RMS
-status: pending
+status: completed
 title: Implement Pagination for Expenses
 priority: medium
 created: 2025-12-13 02:19:24
@@ -28,3 +28,8 @@ Implement pagination for the Expense List to improve performance and scalability
 ## Acceptance Criteria
 *   The API does not return the full dataset unless requested.
 *   The UI allows users to view older expenses via pagination controls.
+
+## Implementation Details
+*   **Backend**: Created `fetchExpensesPaginated` service in `server/utils/expense-service.ts` which handles cross-year pagination logic and server-side filtering. Updated `server/api/expenses/index.ts` to use this service when `page` and `limit` are provided.
+*   **Frontend**: Updated `useExpenses` composable to expose `paginatedExpenses` (for table) and `totalCount`. Updated `ExpenseList.vue` to use `UPagination` and fetch paginated data for the table, while maintaining a separate fetch for charts to ensure they remain accurate (aggregation still happens client-side for now).
+*   **Testing**: Added backend tests in `tests/backend/expenses-pagination.test.ts` covering cross-year pagination and filtering.

@@ -31,7 +31,7 @@
 
     <div v-show="!isMobile || activeTab === 'table'">
       <ExpenseTable
-        :entries="paginatedEntries"
+        :entries="paginatedExpenses"
         :columns="columns"
         @edit="startEditing"
         @delete="deleteExpense"
@@ -39,7 +39,7 @@
 
       <UPagination
         v-model="currentPage"
-        :total="filteredEntries.length"
+        :total="totalCount"
         :per-page="itemsPerPage"
         @change="handlePageChange"
       />
@@ -65,8 +65,16 @@ import ExpensesByCategoryChart from './components/ExpensesByCategoryChart.vue';
 import ExpenseTable from './components/ExpenseTable.vue';
 import EditExpenseModal from './components/EditExpenseModal.vue';
 
-const { expenses, entries, fetchExpenses, updateExpense, deleteExpense } =
-  useExpenses();
+const {
+  expenses,
+  entries,
+  paginatedExpenses,
+  totalCount,
+  fetchExpenses,
+  fetchPaginatedExpenses,
+  updateExpense,
+  deleteExpense,
+} = useExpenses();
 
 const { categoriesByName, fetchCategories } = useCategories();
 
@@ -114,56 +122,70 @@ const categoryOptions = computed(() => [
   })),
 ]);
 
-const filteredEntries = computed(() => {
-  let filtered = [...entries.value];
+// Helper to convert selected filters into query params
+const currentFilters = computed(() => {
+  const filters: any = {};
+  if (selectedCategory.value.value) {
+    filters.category = selectedCategory.value.value;
+  }
 
   if (selectedPeriod.value.value) {
     const now = new Date();
-    let filterStartDate = new Date(now);
+    const filterStartDate = new Date(now);
+    const filterEndDate = new Date(now);
 
     if (selectedPeriod.value.value === 'week') {
       filterStartDate.setDate(now.getDate() - now.getDay());
       filterStartDate.setHours(0, 0, 0, 0);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filters.startDate = filterStartDate.toISOString().split('T')[0];
+      filters.endDate = filterEndDate.toISOString().split('T')[0];
     } else if (selectedPeriod.value.value === 'month') {
       filterStartDate.setDate(1);
       filterStartDate.setHours(0, 0, 0, 0);
+      filterEndDate.setMonth(now.getMonth() + 1, 0);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filters.startDate = filterStartDate.toISOString().split('T')[0];
+      filters.endDate = filterEndDate.toISOString().split('T')[0];
     } else if (selectedPeriod.value.value === 'year') {
       filterStartDate.setMonth(0, 1);
       filterStartDate.setHours(0, 0, 0, 0);
+      filterEndDate.setMonth(11, 31);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filters.startDate = filterStartDate.toISOString().split('T')[0];
+      filters.endDate = filterEndDate.toISOString().split('T')[0];
     } else if (
       selectedPeriod.value.value === 'custom' &&
       startDate.value &&
       endDate.value
     ) {
-      filterStartDate = new Date(startDate.value);
-      const filterEndDate = new Date(endDate.value);
-      filterEndDate.setHours(23, 59, 59, 999); // Set to end of day
-      filtered = filtered.filter((entry) => {
-        const entryDate = new Date(entry.date);
-        return entryDate >= filterStartDate && entryDate <= filterEndDate;
-      });
-      return filtered; // Return early as we've already applied the date filter
+      // Use provided start/end date
+      filters.startDate = startDate.value;
+      filters.endDate = endDate.value;
     }
-
-    filtered = filtered.filter(
-      (entry) => new Date(entry.date) >= filterStartDate
-    );
   }
 
-  if (selectedCategory.value.value) {
-    filtered = filtered.filter(
-      (entry) => entry.category === selectedCategory.value.value
-    );
-  }
-
-  return filtered;
+  return filters;
 });
 
-const paginatedEntries = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredEntries.value.slice(start, end);
-});
+// Charts rely on 'entries' which are populated by 'fetchExpenses' (all/legacy)
+// We filter them client-side for now because 'fetchExpenses' supports server-side filtering
+// but we might want to keep the chart data consistent with the table filter.
+// Actually, 'fetchExpenses' now updates 'entries' based on server response.
+// So if we call fetchExpenses(filters), 'entries' will contain filtered data.
+// So 'filteredEntries' computed prop is redundant IF we fetch strictly filtered data.
+
+// However, the original code had 'entries' as ALL data, and 'filteredEntries' doing client-side filtering.
+// Now we want server-side filtering.
+
+// Strategy:
+// 1. When filters change, call fetchPaginatedExpenses AND fetchExpenses (for charts) with filters.
+// 2. 'entries' will contain the filtered dataset (for charts).
+// 3. 'paginatedExpenses' will contain the page (for table).
+
+const filteredEntries = computed(() => entries.value);
+// We alias entries to filteredEntries to keep chart logic simple,
+// assuming 'entries' is already filtered by the API call.
 
 const barChartData = computed(() => {
   const income = filteredEntries.value.reduce(
@@ -217,17 +239,36 @@ const pieChartData = computed(() => {
 });
 
 // Watchers
-watch([selectedPeriod, selectedCategory], applyFilters);
+watch([selectedPeriod, selectedCategory, startDate, endDate], () => {
+  currentPage.value = 1;
+  refreshData();
+});
 
 // Lifecycle hooks
 onMounted(async () => {
   checkMobile();
   window.addEventListener('resize', checkMobile);
-  await fetchExpenses();
   await fetchCategories();
+  await refreshData();
 });
 
 // Functions
+async function refreshData() {
+  const filters = currentFilters.value;
+
+  // Fetch paginated data for table
+  await fetchPaginatedExpenses({
+    page: currentPage.value,
+    limit: itemsPerPage,
+    ...filters,
+  });
+
+  // Fetch full (filtered) data for charts
+  await fetchExpenses({
+    ...filters,
+  });
+}
+
 function checkMobile() {
   isMobile.value = window.innerWidth <= 768;
 }
@@ -240,20 +281,24 @@ function onChartTabChange(index: number) {
   activeChartTab.value = chartTabItems[index].slot;
 }
 
-function applyFilters() {
-  currentPage.value = 1; // Goes back to first page if the filters changed
-}
-
 function resetFilters() {
   selectedPeriod.value = { label: 'All Time', value: '' };
   selectedCategory.value = { label: 'All Categories', value: '' };
   startDate.value = null;
   endDate.value = null;
   currentPage.value = 1;
+  // Watcher will trigger refreshData
 }
 
 function handlePageChange(page: number) {
   currentPage.value = page;
+  // Only refresh paginated data when changing page
+  const filters = currentFilters.value;
+  fetchPaginatedExpenses({
+    page: currentPage.value,
+    limit: itemsPerPage,
+    ...filters,
+  });
 }
 
 function cancelEditing() {
@@ -267,10 +312,31 @@ function handleSave(updatedExpense: Expense) {
 }
 
 function startEditing(row: any) {
-  const expense = expenses.value.find((e) => e.id === row.id);
+  // Try to find in paginated list first
+  let expense = paginatedExpenses.value.find((e) => e.id === row.id);
+  // If not found (unlikely), check full list
+  if (!expense) {
+    expense = expenses.value.find((e) => e.id === row.id);
+  }
+
   if (expense) {
-    editForm.value = { ...expense };
-    isEditModalOpen.value = true;
+    // Need to un-format amount (remove string format if needed)
+    // but the expense object in 'expenses' is raw data?
+    // No, 'expenses' contains raw data from API.
+
+    // We need to match ID to raw data in 'expenses' ref in useExpenses
+    const rawExpense = expenses.value.find((e) => e.id === row.id);
+    if (rawExpense) {
+      editForm.value = { ...rawExpense };
+      isEditModalOpen.value = true;
+    } else {
+      // Fallback if we only have the formatted entry
+      // We might be missing the split credit/debit if we only have 'amount'
+      // But 'expenses' should have all data if we fetched it for charts.
+      // If we haven't fetched charts (e.g. mobile optimization?), we might have issues.
+      // But currently we always fetch both.
+      console.error('Could not find raw expense data for editing');
+    }
   }
 }
 </script>
