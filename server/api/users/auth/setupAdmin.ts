@@ -32,10 +32,10 @@ export default defineEventHandler(async (event) => {
     const userCount = checkStmt.get() as { count: number };
 
     if (userCount.count > 0) {
-       throw createError({
-         statusCode: 403,
-         statusMessage: 'Setup is only allowed when no users exist',
-       });
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Setup is only allowed when no users exist',
+      });
     }
 
     const result = insertStmt.run(username, hashedPassword, 1, 1);
@@ -43,16 +43,16 @@ export default defineEventHandler(async (event) => {
   });
 
   try {
-      const result = transaction();
-      return { success: true, userId: result.lastInsertRowid };
+    const result = transaction();
+    return { success: true, userId: result.lastInsertRowid };
   } catch (error: any) {
-      if (error.statusCode === 403) {
-          throw error;
-      }
-      throw createError({
-          statusCode: 500,
-          statusMessage: 'Internal Server Error',
-          cause: error
-      });
+    if (error.statusCode === 403) {
+      throw error;
+    }
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Internal Server Error',
+      cause: error,
+    });
   }
 });
