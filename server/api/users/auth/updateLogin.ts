@@ -32,7 +32,9 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const hashedNewPassword = newPassword ? await bcrypt.hash(newPassword, 10) : undefined;
+    const hashedNewPassword = newPassword
+      ? await bcrypt.hash(newPassword, 10)
+      : undefined;
 
     let result;
     if (newUsername === user.username) {

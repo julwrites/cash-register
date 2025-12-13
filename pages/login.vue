@@ -65,7 +65,6 @@ const username = ref('');
 const password = ref('');
 const rememberMe = ref(false);
 const router = useRouter();
-const { setItem } = useLocalStorage();
 const showSetPasswordModal = ref(false);
 const isFirstUser = ref(false);
 const showSetupModal = ref(false);

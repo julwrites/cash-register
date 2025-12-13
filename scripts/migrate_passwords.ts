@@ -22,7 +22,11 @@ for (const user of users) {
   if (!user.password) continue;
 
   // Simple check if already hashed (bcrypt hashes start with $2a$, $2b$, or $2y$)
-  if (user.password.startsWith('$2b$') || user.password.startsWith('$2a$') || user.password.startsWith('$2y$')) {
+  if (
+    user.password.startsWith('$2b$') ||
+    user.password.startsWith('$2a$') ||
+    user.password.startsWith('$2y$')
+  ) {
     console.log(`User ${user.username} already has hashed password.`);
     continue;
   }
@@ -30,7 +34,10 @@ for (const user of users) {
   console.log(`Hashing password for user ${user.username}...`);
   const hashedPassword = bcrypt.hashSync(user.password, 10);
 
-  db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashedPassword, user.id);
+  db.prepare('UPDATE users SET password = ? WHERE id = ?').run(
+    hashedPassword,
+    user.id
+  );
   updatedCount++;
 }
 

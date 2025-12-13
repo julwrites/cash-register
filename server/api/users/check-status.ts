@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody } from 'h3';
-import { initializeDatabase, User } from './users-db';
+import type { User } from './users-db';
+import { initializeDatabase } from './users-db';
 
 export default defineEventHandler(async (event) => {
   const { username } = await readBody(event);

@@ -1,4 +1,4 @@
-import { defineEventHandler, createError } from 'h3';
+import { defineEventHandler } from 'h3';
 import { migrateDescriptionUsage } from './descriptions-db';
 import { requireAdmin } from '../../utils/auth';
 

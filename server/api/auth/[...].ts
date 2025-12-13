@@ -1,7 +1,7 @@
-import { NuxtAuthHandler } from '#auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { initializeDatabase } from '../users/users-db'
-import bcrypt from 'bcrypt'
+import { NuxtAuthHandler } from '#auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { initializeDatabase } from '../users/users-db';
+import bcrypt from 'bcrypt';
 
 // Define a local interface that includes password and is_admin, which are present in the DB but not in the exported User type
 interface DBUser {
@@ -15,68 +15,82 @@ interface DBUser {
 export default NuxtAuthHandler({
   secret: process.env.AUTH_SECRET,
   pages: {
-    login: '/login'
+    login: '/login',
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
-        token.username = user.username
-        token.isAdmin = user.isAdmin
+        token.id = user.id;
+        token.username = user.username;
+        token.isAdmin = user.isAdmin;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as number
-        session.user.username = token.username as string
-        session.user.isAdmin = token.isAdmin as boolean
+        session.user.id = token.id as number;
+        session.user.username = token.username as string;
+        session.user.isAdmin = token.isAdmin as boolean;
       }
-      return session
-    }
+      return session;
+    },
   },
   providers: [
     // @ts-expect-error You need to use .default here for it to work during SSR.
     CredentialsProvider.default({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text', placeholder: '(hint: admin)' },
-        password: { label: 'Password', type: 'password', placeholder: '(hint: admin)' }
+        username: {
+          label: 'Username',
+          type: 'text',
+          placeholder: '(hint: admin)',
+        },
+        password: {
+          label: 'Password',
+          type: 'password',
+          placeholder: '(hint: admin)',
+        },
       },
       async authorize(credentials: any) {
         if (!credentials?.username || !credentials?.password) {
-          return null
+          return null;
         }
 
         try {
-          const db = await initializeDatabase()
-          const user = await db.get('SELECT * FROM users WHERE username = ?', credentials.username) as DBUser
+          const db = await initializeDatabase();
+          const user = (await db.get(
+            'SELECT * FROM users WHERE username = ?',
+            credentials.username
+          )) as DBUser;
 
           if (!user) {
-             return null
+            return null;
           }
 
           if (!user.is_approved) {
             // Or handle not approved user
-             return null
+            return null;
           }
 
           // Verify password
-          const isValid = await bcrypt.compare(credentials.password, user.password || '')
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.password || ''
+          );
           if (!isValid) {
-             return null
+            return null;
           }
 
           return {
-             id: user.id,
-             username: user.username,
-             isAdmin: !!user.is_admin
-          }
+            id: user.id,
+            username: user.username,
+            isAdmin: !!user.is_admin,
+          };
         } catch (error) {
-           console.error('Auth error:', error)
-           return null
+          console.error('Auth error:', error);
+          return null;
         }
-      }
-    })
-  ]
-})
+      },
+    }),
+  ],
+});
