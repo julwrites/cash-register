@@ -2,6 +2,7 @@
 import { defineEventHandler, createError, readBody } from 'h3';
 import type { User } from '../users-db';
 import { initializeDatabase } from '../users-db';
+import bcrypt from 'bcrypt';
 
 export default defineEventHandler(async (event) => {
   const { username, password } = await readBody(event);
@@ -22,10 +23,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'User not found' });
   }
 
-  // Store the password as plain text instead of hashing
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Store the password as hashed
   await db.run(
     'UPDATE users SET password = ?, is_approved = ? WHERE username = ?',
-    [password, 1, username]
+    [hashedPassword, 1, username]
   );
 
   return { success: true };

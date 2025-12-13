@@ -1,22 +1,21 @@
-// server/api/admin/setAdmin.ts
+// server/api/users/auth/setupAdmin.ts
 
 import { defineEventHandler, readBody, createError } from 'h3';
-import jwt from 'jsonwebtoken';
-import { initializeDatabase, secretKey } from '../users-db';
+import { getServerSession } from '#auth';
+import { initializeDatabase } from '../users-db';
 
 export default defineEventHandler(async (event) => {
-  const token = event.req.headers.authorization?.split(' ')[1];
+  const session = await getServerSession(event);
 
-  if (!token) {
+  if (!session) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
   }
 
-  try {
-    const decoded = jwt.verify(token, secretKey) as any;
-    if (!decoded.isAdmin) {
-      throw createError({ statusCode: 403, statusMessage: 'Forbidden' });
-    }
+  if (!session.user.isAdmin) {
+    throw createError({ statusCode: 403, statusMessage: 'Forbidden' });
+  }
 
+  try {
     const { userId, is_admin } = await readBody(event);
     const db = await initializeDatabase();
 

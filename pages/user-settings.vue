@@ -22,16 +22,12 @@ import { ref } from 'vue';
 const newUsername = ref('');
 const newPassword = ref('');
 const message = ref('');
-const { getItem } = useLocalStorage();
 
 function updateLogin() {
-  const token = getItem('authToken');
-
   fetch('/api/users/auth/updateLogin', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       newUsername: newUsername.value,

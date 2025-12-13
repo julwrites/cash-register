@@ -5,7 +5,19 @@ const sw = process.env.SW === 'true';
 export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
-  modules: ['@vite-pwa/nuxt', '@nuxt/ui', '@nuxt/fonts', '@nuxt/eslint'],
+  modules: [
+    '@vite-pwa/nuxt',
+    '@nuxt/ui',
+    '@nuxt/fonts',
+    '@nuxt/eslint',
+    '@sidebase/nuxt-auth',
+  ],
+  auth: {
+    provider: {
+      type: 'authjs',
+    },
+    globalAppMiddleware: false,
+  },
   content: {
     experimental: { nativeSqlite: true },
   },

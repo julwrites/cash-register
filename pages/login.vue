@@ -65,7 +65,6 @@ const username = ref('');
 const password = ref('');
 const rememberMe = ref(false);
 const router = useRouter();
-const { setItem } = useLocalStorage();
 const showSetPasswordModal = ref(false);
 const isFirstUser = ref(false);
 const showSetupModal = ref(false);
@@ -92,7 +91,7 @@ async function checkFirstUser() {
 async function checkUser() {
   if (!showPasswordField.value) {
     try {
-      const response = await $fetch('/api/users/auth/login', {
+      const response = await $fetch('/api/users/check-status', {
         method: 'POST',
         body: { username: username.value },
       });
@@ -111,34 +110,24 @@ async function checkUser() {
   }
 }
 
+const { signIn } = useAuth();
+
 async function login() {
   try {
-    const response = await $fetch('/api/users/auth/login', {
-      method: 'POST',
-      body: {
-        username: username.value,
-        password: password.value,
-        rememberMe: rememberMe.value,
-      },
+    const result = await signIn('credentials', {
+      username: username.value,
+      password: password.value,
+      redirect: false,
     });
 
-    if (response.token) {
-      setItem('authToken', response.token);
-      router.push('/');
-    } else {
-      throw new Error('No token received');
+    if (result?.error) {
+      throw new Error(result.error);
     }
+
+    router.push('/');
   } catch (error) {
     console.error('Login error:', error);
-
-    if (
-      error.status === 403 &&
-      error.data?.statusMessage === 'Account not approved by admin'
-    ) {
-      alert('Your account is awaiting admin approval.');
-    } else {
-      alert('Invalid username or password');
-    }
+    alert('Invalid username or password');
   }
 }
 

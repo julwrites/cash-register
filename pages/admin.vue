@@ -92,7 +92,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-const { getItem } = useLocalStorage();
 
 const users = ref([]);
 const loading = ref(true);
@@ -114,12 +113,7 @@ const migrationResult = ref(null);
 
 onMounted(async () => {
   try {
-    const token = getItem('authToken');
-    const response = await fetch('/api/users/admin/getUsers', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch('/api/users/admin/getUsers');
     if (!response.ok) {
       throw new Error('You do not have permission to access this page');
     }
@@ -175,12 +169,10 @@ async function demoteUser(userId) {
 
 async function createUser() {
   try {
-    const token = getItem('authToken');
     const response = await fetch('/api/users/admin/createUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ username: newUsername.value }),
     });
@@ -208,12 +200,10 @@ async function createUser() {
 async function removeUser(userId) {
   if (confirm('Are you sure you want to remove this user?')) {
     try {
-      const token = getItem('authToken');
       const response = await fetch(`/api/users/admin/deleteUser`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ userId: userId }),
       });
@@ -230,12 +220,10 @@ async function removeUser(userId) {
 
 async function updateAdmin(userId, updates) {
   try {
-    const token = getItem('authToken');
     const response = await fetch(`/api/users/admin/setAdmin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ userId, ...updates }),
     });
@@ -258,12 +246,8 @@ async function triggerDescriptionMigration() {
     migrationLoading.value = true;
     migrationResult.value = null;
 
-    const token = getItem('authToken');
     const response = await fetch('/api/descriptions/migrate', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
 
     if (!response.ok) {
