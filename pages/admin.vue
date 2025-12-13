@@ -92,10 +92,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 const { getItem } = useLocalStorage();
 
-const router = useRouter();
 const users = ref([]);
 const loading = ref(true);
 const error = ref(null);

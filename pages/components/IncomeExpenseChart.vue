@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { Bar } from 'vue-chartjs';
 import {
   Chart as ChartJS,
@@ -27,15 +26,12 @@ ChartJS.register(
   LinearScale
 );
 
-const props = defineProps({
+defineProps({
   chartData: {
     type: Object,
     required: true,
   },
 });
-
-const totalIncome = computed(() => props.chartData.datasets[0].data[0] || 0);
-const totalExpenses = computed(() => props.chartData.datasets[0].data[1] || 0);
 
 const chartOptions = {
   responsive: true,

@@ -1,6 +1,6 @@
 // /Users/julianteh/julwrites/cash-register/server/api/expenses/index.ts
 
-import { defineEventHandler, createError } from 'h3';
+import { defineEventHandler } from 'h3';
 import type { Expense } from './expenses-db';
 import { getDb } from './expenses-db';
 import * as fs from 'fs';
@@ -20,13 +20,7 @@ const getYears = () => {
   return years;
 };
 
-// Utility function to get error message
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  return String(error);
-}
-
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   return await fetchExpenses();
 });
 

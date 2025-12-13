@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import ExpenseForm from './components/ExpenseForm.vue';
 import { defaultExpense } from '../composables/defaultExpense';
 
@@ -36,7 +36,7 @@ async function addExpense(expense: Expense) {
 
     // Show success message
     alert('Expense added successfully!');
-  } catch (error) {
+  } catch {
     alert('Failed to add expense. Please try again.');
   }
 }
