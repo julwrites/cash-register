@@ -2,7 +2,7 @@ import { defineEventHandler, readBody, createError } from 'h3';
 import { getServerSession } from '#auth';
 import bcrypt from 'bcrypt';
 import type { User } from '../users-db';
-import { initializeDatabase } from '../users-db';
+import { getDb } from '../users-db';
 
 export default defineEventHandler(async (event) => {
   try {
@@ -17,13 +17,12 @@ export default defineEventHandler(async (event) => {
     const { newUsername, newPassword } = await readBody(event);
     const userId = session.user.id;
 
-    const db = await initializeDatabase();
+    const db = getDb();
 
     // Check if user exists
-    const user = (await db.get(
-      'SELECT * FROM users WHERE id = ?',
-      userId
-    )) as User & { password?: string };
+    const user = db
+      .prepare('SELECT * FROM users WHERE id = ?')
+      .get(userId) as User & { password?: string };
 
     if (!user) {
       throw createError({
@@ -38,27 +37,30 @@ export default defineEventHandler(async (event) => {
 
     let result;
     if (newUsername === user.username) {
-      result = await db.run(
-        `
+      result = db
+        .prepare(
+          `
         UPDATE users
         SET password = COALESCE(?, password)
         WHERE id = ?
-      `,
-        hashedNewPassword || user.password,
-        userId
-      );
+      `
+        )
+        .run(hashedNewPassword || user.password, userId);
     } else {
-      result = await db.run(
-        `
+      result = db
+        .prepare(
+          `
         UPDATE users
         SET username = COALESCE(?, username),
             password = COALESCE(?, password)
         WHERE id = ?
-      `,
-        newUsername || user.username,
-        hashedNewPassword || user.password,
-        userId
-      );
+      `
+        )
+        .run(
+          newUsername || user.username,
+          hashedNewPassword || user.password,
+          userId
+        );
     }
 
     if (result.changes === 0) {

@@ -1,6 +1,6 @@
 import { NuxtAuthHandler } from '#auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { initializeDatabase } from '../users/users-db';
+import { getDb } from '../users/users-db';
 import bcrypt from 'bcrypt';
 
 // Define a local interface that includes password and is_admin, which are present in the DB but not in the exported User type
@@ -57,11 +57,10 @@ export default NuxtAuthHandler({
         }
 
         try {
-          const db = await initializeDatabase();
-          const user = (await db.get(
-            'SELECT * FROM users WHERE username = ?',
-            credentials.username
-          )) as DBUser;
+          const db = getDb();
+          const user = db
+            .prepare('SELECT * FROM users WHERE username = ?')
+            .get(credentials.username) as DBUser;
 
           if (!user) {
             return null;

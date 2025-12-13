@@ -1,4 +1,3 @@
-// users-db.ts
 import { existsSync, mkdirSync } from 'fs';
 import Database from 'better-sqlite3';
 import * as path from 'path';
@@ -14,53 +13,18 @@ export const secretKey = process.env.AUTH_SECRET;
 export const adminUsername = process.env.ADMIN_USERNAME;
 export const adminPassword = process.env.ADMIN_PASSWORD;
 
-interface DatabaseOperations {
-  run: (...args: any[]) => Promise<any>;
-  get: (...args: any[]) => Promise<any>;
-  all: (...args: any[]) => Promise<any>;
-  db: any;
-}
+let dbInstance: Database.Database | null = null;
 
-export const initializeDatabase = (): Promise<DatabaseOperations> => {
-  return new Promise((resolve: (value: DatabaseOperations) => void, reject) => {
-    try {
-      const db = new Database(databasePath);
-      console.log('Connected to the users database');
+export const getDb = (): Database.Database => {
+  if (dbInstance) return dbInstance;
 
-      // better-sqlite3 is synchronous, so we just wrap in promises
-      const dbRun = (...args: any[]) => {
-        return new Promise((resolve, reject) => {
-          try {
-            const result = db.prepare(args[0]).run(...args.slice(1));
-            resolve(result);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      };
+  console.log('Initializing users database connection');
+  try {
+    const db = new Database(databasePath);
+    console.log('Connected to the users database');
 
-      const dbGet = (...args: any[]) => {
-        return new Promise((resolve, reject) => {
-          try {
-            const result = db.prepare(args[0]).get(...args.slice(1));
-            resolve(result);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      };
-
-      const dbAll = (...args: any[]) => {
-        return new Promise((resolve, reject) => {
-          try {
-            const result = db.prepare(args[0]).all(...args.slice(1));
-            resolve(result);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      };
-      dbRun(`
+    db.prepare(
+      `
         CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username VARCHAR(50) UNIQUE,
@@ -68,102 +32,33 @@ export const initializeDatabase = (): Promise<DatabaseOperations> => {
           is_admin BOOLEAN DEFAULT FALSE,
           is_approved BOOLEAN DEFAULT TRUE
         );
-      `)
-        .then(() => {
-          // Check if admin user exists, if not, create it
-          dbGet('SELECT * FROM users WHERE username = ?', adminUsername)
-            .then((adminUser) => {
-              if (!adminUser && adminUsername && adminPassword) {
-                const hashedPassword = bcrypt.hashSync(adminPassword, 10);
-                dbRun(
-                  'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
-                  adminUsername,
-                  hashedPassword,
-                  1,
-                  1
-                )
-                  .then(() => {
-                    console.log('Admin user created successfully.');
-                    resolve({
-                      run: dbRun,
-                      get: dbGet,
-                      all: dbAll,
-                      db,
-                    });
-                  })
-                  .catch((err) => {
-                    console.error('Error creating admin user', err);
-                    reject(err);
-                  });
-              } else {
-                resolve({
-                  run: dbRun,
-                  get: dbGet,
-                  all: dbAll,
-                  db,
-                });
-              }
-            })
-            .catch((err) => {
-              console.error('Error checking admin user', err);
-              reject(err);
-            });
-        })
-        .catch((err) => {
-          console.error('Error creating table', err);
-          reject(err);
-        });
-    } catch (err) {
-      console.error('Error opening database', err);
-      reject(err);
+      `
+    ).run();
+
+    // Check if admin user exists, if not, create it
+    if (adminUsername && adminPassword) {
+      const adminUser = db
+        .prepare('SELECT * FROM users WHERE username = ?')
+        .get(adminUsername);
+      if (!adminUser) {
+        const hashedPassword = bcrypt.hashSync(adminPassword, 10);
+        db.prepare(
+          'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)'
+        ).run(adminUsername, hashedPassword, 1, 1);
+        console.log('Admin user created successfully.');
+      }
     }
-  });
+
+    dbInstance = db;
+    return db;
+  } catch (err) {
+    console.error('Error opening database', err);
+    throw err;
+  }
 };
+
 export interface User {
   id: number;
   username: string;
   is_approved: boolean;
 }
-
-interface DatabaseOperations {
-  run: (...args: any[]) => Promise<any>;
-  get: (...args: any[]) => Promise<any>;
-  all: (...args: any[]) => Promise<any>;
-  db: any;
-}
-
-let dbPromise: Promise<DatabaseOperations> | null = null;
-
-export default {
-  run: async (...args: any[]) => {
-    if (!dbPromise) {
-      console.log('Initializing users database connection');
-      dbPromise = initializeDatabase();
-    }
-    console.log('Executing users query:', args[0]);
-    return (await dbPromise).run(...args);
-  },
-  get: async (...args: any[]) => {
-    if (!dbPromise) {
-      console.log('Initializing users database connection');
-      dbPromise = initializeDatabase();
-    }
-    console.log('Executing users query:', args[0]);
-    return (await dbPromise).get(...args);
-  },
-  all: async (...args: any[]) => {
-    if (!dbPromise) {
-      console.log('Initializing users database connection');
-      dbPromise = initializeDatabase();
-    }
-    console.log('Executing users query:', args[0]);
-    return (await dbPromise).all(...args);
-  },
-  db: async () => {
-    if (!dbPromise) {
-      console.log('Initializing users database connection');
-      dbPromise = initializeDatabase();
-    }
-    return (await dbPromise).db;
-  },
-};

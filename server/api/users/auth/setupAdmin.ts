@@ -2,7 +2,7 @@
 
 import { defineEventHandler, readBody, createError } from 'h3';
 import { getServerSession } from '#auth';
-import { initializeDatabase } from '../users-db';
+import { getDb } from '../users-db';
 
 export default defineEventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -17,18 +17,18 @@ export default defineEventHandler(async (event) => {
 
   try {
     const { userId, is_admin } = await readBody(event);
-    const db = await initializeDatabase();
+    const db = getDb();
 
-    await db.run(
-      'UPDATE users SET is_admin = ? WHERE id = ?',
+    db.prepare('UPDATE users SET is_admin = ? WHERE id = ?').run(
       is_admin,
       userId
     );
 
-    const updatedUser = await db.get(
-      'SELECT id, username, is_admin, is_approved FROM users WHERE id = ?',
-      userId
-    );
+    const updatedUser = db
+      .prepare(
+        'SELECT id, username, is_admin, is_approved FROM users WHERE id = ?'
+      )
+      .get(userId);
     return updatedUser;
   } catch (error) {
     console.error('Update User API error:', error);
