@@ -120,6 +120,7 @@ const isCreateUserModalOpen = ref(false);
 const newUsername = ref('');
 const migrationLoading = ref(false);
 const migrationResult = ref(null);
+const toast = useToast();
 
 onMounted(async () => {
   try {
@@ -134,6 +135,17 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+function updateRows() {
+  rows.value = users.value.map((user) => {
+    return {
+      id: user.id,
+      name: user.username,
+      role: user.is_admin ? 'Admin' : 'User',
+      status: user.is_approved ? 'Activated' : 'Pending',
+    };
+  });
+}
 
 function actions(row) {
   const items = [];
@@ -270,6 +282,8 @@ async function updateAdmin(userId, updates) {
     const index = users.value.findIndex((user) => user.id === userId);
     if (index !== -1) {
       users.value[index] = updatedUser;
+      updateRows();
+      toast.add({ title: 'User updated successfully', color: 'green' });
     }
     toast.add({ title: 'User role updated', color: 'green' });
   } catch (err) {
@@ -293,9 +307,14 @@ async function triggerDescriptionMigration() {
 
     const result = await response.json();
     migrationResult.value = result;
+    toast.add({ title: 'Migration completed', color: 'green' });
   } catch (err) {
     error.value = err.message;
-    alert(`Migration error: ${err.message}`);
+    toast.add({
+      title: 'Migration failed',
+      description: err.message,
+      color: 'red',
+    });
   } finally {
     migrationLoading.value = false;
   }

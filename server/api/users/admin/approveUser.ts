@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     const { userId } = await readBody(event);
     const db = await initializeDatabase();
 
-    await db.run('UPDATE users SET is_approved = ? WHERE id = ?', true, userId);
+    await db.run('UPDATE users SET is_approved = ? WHERE id = ?', 1, userId);
 
     const updatedUser = await db.get(
       'SELECT id, username, is_admin, is_approved FROM users WHERE id = ?',
