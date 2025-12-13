@@ -8,38 +8,34 @@ describe('Users DB', () => {
   });
 
   it('should initialize and create admin user', async () => {
-    const { default: usersDb } =
-      await import('../../server/api/users/users-db');
+    const { getDb } = await import('../../server/api/users/users-db');
 
-    const db = await usersDb.db();
+    const db = getDb();
     expect(db).toBeDefined();
 
-    const admin = await usersDb.get(
-      'SELECT * FROM users WHERE username = ?',
-      'admin'
-    );
+    const admin = db
+      .prepare('SELECT * FROM users WHERE username = ?')
+      .get('admin') as any;
     expect(admin).toBeDefined();
     expect(admin.username).toBe('admin');
     expect(admin.is_admin).toBe(1);
   });
 
   it('should create a new user', async () => {
-    const { default: usersDb } =
-      await import('../../server/api/users/users-db');
+    const { getDb } = await import('../../server/api/users/users-db');
+    const db = getDb();
     // Ensure we don't duplicate
     try {
-      await usersDb.run(
-        'INSERT INTO users (username, password) VALUES (?, ?)',
+      db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(
         'testuser',
         'pass'
       );
     } catch {
       // Ignore if exists
     }
-    const user = await usersDb.get(
-      'SELECT * FROM users WHERE username = ?',
-      'testuser'
-    );
+    const user = db
+      .prepare('SELECT * FROM users WHERE username = ?')
+      .get('testuser') as any;
     expect(user).toBeDefined();
     expect(user.username).toBe('testuser');
   });

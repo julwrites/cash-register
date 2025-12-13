@@ -1,6 +1,6 @@
 // server/api/users/admin/createUser.ts
 import { defineEventHandler, createError, readBody } from 'h3';
-import { initializeDatabase } from '../users-db';
+import { getDb } from '../users-db';
 import { requireAdmin } from '../../../utils/auth';
 
 export default defineEventHandler(async (event) => {
@@ -15,13 +15,12 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const db = await initializeDatabase();
+    const db = getDb();
 
     // Check if user already exists
-    const existingUser = await db.get(
-      'SELECT * FROM users WHERE username = ?',
-      [username]
-    );
+    const existingUser = db
+      .prepare('SELECT * FROM users WHERE username = ?')
+      .get(username);
     if (existingUser) {
       throw createError({
         statusCode: 409,
@@ -30,13 +29,14 @@ export default defineEventHandler(async (event) => {
     }
 
     // Insert new user without a password
-    const result = await db.run(
-      'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
-      [username, '', 0, 0]
-    );
+    const result = db
+      .prepare(
+        'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)'
+      )
+      .run(username, '', 0, 0);
 
     const newUser = {
-      id: result.lastID,
+      id: result.lastInsertRowid,
       username: username,
       is_admin: false,
       is_approved: false,

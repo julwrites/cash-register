@@ -1,15 +1,16 @@
 // /Users/julianteh/julwrites/cash-register/server/api/categories/index.ts
 
 import { defineEventHandler, readBody, createError } from 'h3';
-import db from './categories-db';
+import { getDb } from './categories-db';
 
 export default defineEventHandler(async (event) => {
   const method = event.node.req.method;
+  const db = getDb();
 
   if (method === 'GET') {
     console.log('Categories GET handler called');
     console.log('Before db.all');
-    const categories = await db.all('SELECT * FROM categories');
+    const categories = db.prepare('SELECT * FROM categories').all();
     console.log('After db.all, categories:', categories);
     return categories;
   }
@@ -24,14 +25,12 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const result = await db.run(
-      'INSERT INTO categories (name) VALUES (?)',
-      newCategory.name
-    );
-    const addedCategory = await db.get(
-      'SELECT * FROM categories WHERE id = ?',
-      result.lastID
-    );
+    const result = db
+      .prepare('INSERT INTO categories (name) VALUES (?)')
+      .run(newCategory.name);
+    const addedCategory = db
+      .prepare('SELECT * FROM categories WHERE id = ?')
+      .get(result.lastInsertRowid);
 
     return addedCategory;
   }

@@ -1,7 +1,7 @@
 // server/api/admin/getUsers.ts
 import { defineEventHandler, createError } from 'h3';
 import type { User } from '../users-db';
-import { initializeDatabase } from '../users-db';
+import { getDb } from '../users-db';
 import { requireAdmin } from '../../../utils/auth';
 
 export default defineEventHandler(async (event) => {
@@ -9,11 +9,11 @@ export default defineEventHandler(async (event) => {
 
   try {
     console.log('getUsers handler called');
-    const db = await initializeDatabase();
+    const db = getDb();
     console.log('Before db.all');
-    const users = (await db.all(
-      'SELECT id, username, is_admin, is_approved FROM users'
-    )) as User[];
+    const users = db
+      .prepare('SELECT id, username, is_admin, is_approved FROM users')
+      .all() as User[];
     console.log('After db.all, users:', users);
     return users;
   } catch (error) {

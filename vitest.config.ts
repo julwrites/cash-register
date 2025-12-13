@@ -7,5 +7,8 @@ export default defineVitestConfig({
     coverage: {
       provider: 'v8',
     },
+    env: {
+      AUTH_ORIGIN: 'http://localhost:3000',
+    },
   },
 });

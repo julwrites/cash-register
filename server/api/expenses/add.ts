@@ -25,23 +25,26 @@ export default defineEventHandler(async (event) => {
 
   try {
     const year = new Date(expense.date).getFullYear();
-    const db = await getDb(year);
-    const result = await db.run(
-      `
+    const db = getDb(year);
+    const result = db
+      .prepare(
+        `
       INSERT INTO expenses (credit, debit, description, date, category)
       VALUES (?, ?, ?, ?, ?)
-    `,
-      expense.credit || 0,
-      expense.debit || 0,
-      expense.description,
-      expense.date,
-      expense.category
-    );
+    `
+      )
+      .run(
+        expense.credit || 0,
+        expense.debit || 0,
+        expense.description,
+        expense.date,
+        expense.category
+      );
 
     // Track description usage for MRU sorting
-    await trackDescriptionUsage(expense.description);
+    trackDescriptionUsage(expense.description);
 
-    return { id: result.lastID, ...expense };
+    return { id: result.lastInsertRowid, ...expense };
   } catch (err: unknown) {
     console.error('Error inserting expense:', err);
     return createError({
