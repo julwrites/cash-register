@@ -16,7 +16,7 @@ const getYears = () => {
     );
 };
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   const years = getYears();
   let allDescriptions: string[] = [];
   for (const year of years) {

@@ -2,7 +2,7 @@
 import { defineEventHandler } from 'h3';
 import { initializeDatabase } from '../users-db';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   const db = await initializeDatabase();
 
   // Check if there are any users in the database
