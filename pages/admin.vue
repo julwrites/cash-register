@@ -110,6 +110,7 @@ const isCreateUserModalOpen = ref(false);
 const newUsername = ref('');
 const migrationLoading = ref(false);
 const migrationResult = ref(null);
+const toast = useToast();
 
 onMounted(async () => {
   try {
@@ -119,14 +120,7 @@ onMounted(async () => {
     }
     users.value = await response.json();
 
-    rows.value = users.value.map((user) => {
-      return {
-        id: user.id,
-        name: user.username,
-        role: user.is_admin ? 'Admin' : 'User',
-        status: user.is_approved ? 'Activated' : 'Pending',
-      };
-    });
+    updateRows();
 
     loading.value = false;
   } catch (err) {
@@ -135,28 +129,79 @@ onMounted(async () => {
   }
 });
 
+function updateRows() {
+  rows.value = users.value.map((user) => {
+    return {
+      id: user.id,
+      name: user.username,
+      role: user.is_admin ? 'Admin' : 'User',
+      status: user.is_approved ? 'Activated' : 'Pending',
+    };
+  });
+}
+
 function actions(row) {
-  return [
-    [
-      {
-        label:
-          row.status === 'Activated' && row.role === 'User'
-            ? 'Promote'
-            : 'Demote',
-        icon:
-          row.role === 'User'
-            ? 'i-heroicons-arrow-up-on-square-20-solid'
-            : 'i-heroicons-arrow-down-on-square-20-solid',
-        click: () =>
-          row.role === 'Admin' ? demoteUser(row.id) : promoteUser(row.id),
+  const items = [];
+
+  if (row.status === 'Pending') {
+    items.push({
+      label: 'Approve',
+      icon: 'i-heroicons-check-20-solid',
+      click: () => approveUser(row.id),
+    });
+  } else {
+    items.push({
+      label:
+        row.status === 'Activated' && row.role === 'User'
+          ? 'Promote'
+          : 'Demote',
+      icon:
+        row.role === 'User'
+          ? 'i-heroicons-arrow-up-on-square-20-solid'
+          : 'i-heroicons-arrow-down-on-square-20-solid',
+      click: () =>
+        row.role === 'Admin' ? demoteUser(row.id) : promoteUser(row.id),
+    });
+  }
+
+  items.push({
+    label: 'Remove',
+    icon: 'i-heroicons-trash-20-solid',
+    click: () => removeUser(row.id),
+  });
+
+  return [items];
+}
+
+async function approveUser(userId) {
+  try {
+    const response = await fetch('/api/users/admin/approveUser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
-        label: 'Remove',
-        icon: 'i-heroicons-check-circle-20-solid',
-        click: () => removeUser(row.id),
-      },
-    ],
-  ];
+      body: JSON.stringify({ userId: userId }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to approve user');
+    }
+
+    const updatedUser = await response.json();
+    const index = users.value.findIndex((user) => user.id === userId);
+    if (index !== -1) {
+      users.value[index] = updatedUser;
+      updateRows();
+      toast.add({ title: 'User approved successfully', color: 'green' });
+    }
+  } catch (err) {
+    error.value = err.message;
+    toast.add({
+      title: 'Failed to approve user',
+      description: err.message,
+      color: 'red',
+    });
+  }
 }
 
 async function promoteUser(userId) {
@@ -183,17 +228,18 @@ async function createUser() {
 
     const newUser = await response.json();
     users.value.push(newUser);
-    rows.value.push({
-      id: newUser.id,
-      name: newUser.username,
-      role: newUser.is_admin ? 'Admin' : 'User',
-      status: newUser.is_approved ? 'Activated' : 'Pending',
-    });
+    updateRows();
 
     isCreateUserModalOpen.value = false;
     newUsername.value = '';
+    toast.add({ title: 'User created successfully', color: 'green' });
   } catch (err) {
     error.value = err.message;
+    toast.add({
+      title: 'Failed to create user',
+      description: err.message,
+      color: 'red',
+    });
   }
 }
 
@@ -211,9 +257,16 @@ async function removeUser(userId) {
       if (!response.ok) {
         throw new Error('Failed to remove user');
       }
-      users.value = users.value.filter((user) => user.Id !== userId);
+      users.value = users.value.filter((user) => user.id !== userId);
+      updateRows();
+      toast.add({ title: 'User removed successfully', color: 'green' });
     } catch (err) {
       error.value = err.message;
+      toast.add({
+        title: 'Failed to remove user',
+        description: err.message,
+        color: 'red',
+      });
     }
   }
 }
@@ -235,9 +288,16 @@ async function updateAdmin(userId, updates) {
     const index = users.value.findIndex((user) => user.id === userId);
     if (index !== -1) {
       users.value[index] = updatedUser;
+      updateRows();
+      toast.add({ title: 'User updated successfully', color: 'green' });
     }
   } catch (err) {
     error.value = err.message;
+    toast.add({
+      title: 'Failed to update user',
+      description: err.message,
+      color: 'red',
+    });
   }
 }
 
@@ -256,9 +316,14 @@ async function triggerDescriptionMigration() {
 
     const result = await response.json();
     migrationResult.value = result;
+    toast.add({ title: 'Migration completed', color: 'green' });
   } catch (err) {
     error.value = err.message;
-    alert(`Migration error: ${err.message}`);
+    toast.add({
+      title: 'Migration failed',
+      description: err.message,
+      color: 'red',
+    });
   } finally {
     migrationLoading.value = false;
   }

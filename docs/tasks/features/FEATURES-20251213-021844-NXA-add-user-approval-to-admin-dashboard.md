@@ -1,6 +1,6 @@
 ---
 id: FEATURES-20251213-021844-NXA
-status: pending
+status: review_requested
 title: Add User Approval to Admin Dashboard
 priority: medium
 created: 2025-12-13 02:18:44
@@ -25,5 +25,13 @@ Enable Admin users to approve pending user registrations directly from the Admin
 3.  **Feedback**: Show a success message (Toast) upon approval and update the list to reflect the new status.
 
 ## Acceptance Criteria
-*   Admin sees an "Approve" option for Pending users.
-*   Clicking "Approve" changes the user's status to Active/Approved in the UI and Database.
+*   [x] Admin sees an "Approve" option for Pending users.
+*   [x] Clicking "Approve" changes the user's status to Active/Approved in the UI and Database.
+
+## Implementation Details
+*   Updated `pages/admin.vue` to include an "Approve" action for pending users.
+*   Implemented `approveUser` method in `pages/admin.vue` which calls `/api/users/admin/approveUser`.
+*   Fixed a bug in `server/api/users/admin/approveUser.ts` where it was passing `true` (boolean) to SQLite which requires `1` (integer).
+*   Fixed a bug in `server/api/users/admin/createUser.ts` where it was passing `false` (boolean) to SQLite.
+*   Added `tests/backend/approve-user.test.ts` to verify database logic for user approval.
+*   Updated `tests/setup.ts` to use unique temporary directories for each test execution to avoid race conditions during parallel testing.

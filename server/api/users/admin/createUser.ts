@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     // Insert new user without a password
     const result = await db.run(
       'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)',
-      [username, '', false, false]
+      [username, '', 0, 0]
     );
 
     const newUser = {
