@@ -3,13 +3,17 @@ import { getDescriptionDb } from './descriptions-db';
 
 export default defineEventHandler(async (_event) => {
   try {
-    const db = await getDescriptionDb();
-    const descriptions = await db.all(`
+    const db = getDescriptionDb();
+    const descriptions = db
+      .prepare(
+        `
       SELECT description
       FROM description_usage
       ORDER BY last_used DESC, usage_count DESC
       LIMIT 1000
-    `);
+    `
+      )
+      .all() as any[];
 
     console.log(`Returning ${descriptions.length} MRU-sorted descriptions`);
     return descriptions.map((d) => d.description);

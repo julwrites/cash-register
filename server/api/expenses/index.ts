@@ -32,13 +32,17 @@ export async function fetchExpenses(): Promise<Expense[]> {
   let allExpenses: Expense[] = [];
   for (const year of years) {
     console.log('Fetching expenses for year:', year);
-    const db = await getDb(year);
-    const expenses = await db.all(`
+    const db = getDb(year);
+    const expenses = db
+      .prepare(
+        `
       SELECT id, credit, debit, description,
         strftime('%Y-%m-%d', date) as date,
         category
       FROM expenses;
-    `);
+    `
+      )
+      .all();
     console.log('Expenses for year', year, ':', expenses);
     allExpenses = allExpenses.concat(expenses as Expense[]);
   }
