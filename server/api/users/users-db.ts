@@ -53,9 +53,10 @@ export const getDb = (): Database.Database => {
         if (password.length < 60) {
           console.log('Admin user password appears truncated, rehashing...');
           const hashedPassword = bcrypt.hashSync(adminPassword, 10);
-          db.prepare(
-            'UPDATE users SET password = ? WHERE username = ?'
-          ).run(hashedPassword, adminUsername);
+          db.prepare('UPDATE users SET password = ? WHERE username = ?').run(
+            hashedPassword,
+            adminUsername
+          );
           console.log('Admin user password updated.');
         }
       }
