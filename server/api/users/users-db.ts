@@ -28,7 +28,7 @@ export const getDb = (): Database.Database => {
         CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username VARCHAR(50) UNIQUE,
-          password VARCHAR(50),
+          password TEXT,
           is_admin BOOLEAN DEFAULT FALSE,
           is_approved BOOLEAN DEFAULT TRUE
         );
@@ -39,13 +39,25 @@ export const getDb = (): Database.Database => {
     if (adminUsername && adminPassword) {
       const adminUser = db
         .prepare('SELECT * FROM users WHERE username = ?')
-        .get(adminUsername);
+        .get(adminUsername) as any;
+
       if (!adminUser) {
         const hashedPassword = bcrypt.hashSync(adminPassword, 10);
         db.prepare(
           'INSERT INTO users (username, password, is_admin, is_approved) VALUES (?, ?, ?, ?)'
         ).run(adminUsername, hashedPassword, 1, 1);
         console.log('Admin user created successfully.');
+      } else {
+        // Check if password is truncated (bcrypt hashes are 60 chars)
+        const password = adminUser.password || '';
+        if (password.length < 60) {
+          console.log('Admin user password appears truncated, rehashing...');
+          const hashedPassword = bcrypt.hashSync(adminPassword, 10);
+          db.prepare(
+            'UPDATE users SET password = ? WHERE username = ?'
+          ).run(hashedPassword, adminUsername);
+          console.log('Admin user password updated.');
+        }
       }
     }
 

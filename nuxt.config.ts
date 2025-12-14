@@ -68,6 +68,17 @@ export default defineNuxtConfig({
     buildDate: new Date().toISOString(),
   },
 
+  runtimeConfig: {
+    // These are public environment variables that are exposed to the client
+    public: {
+      // Add any public env vars here
+    },
+    // Private environment variables that are only available on the server
+    authSecret: process.env.AUTH_SECRET,
+    authOrigin: process.env.AUTH_ORIGIN,
+    nextAuthUrl: process.env.NEXTAUTH_URL,
+  },
+
   vite: {
     logLevel: 'info',
   },

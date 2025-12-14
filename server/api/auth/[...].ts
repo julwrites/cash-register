@@ -12,6 +12,14 @@ interface DBUser {
   is_approved?: number | boolean;
 }
 
+console.log('Auth handler loading, environment variables:', {
+  hasAuthSecret: !!process.env.AUTH_SECRET,
+  hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
+  hasAuthOrigin: !!process.env.AUTH_ORIGIN,
+  nextAuthUrl: process.env.NEXTAUTH_URL,
+  authOrigin: process.env.AUTH_ORIGIN,
+});
+
 export default NuxtAuthHandler({
   secret: process.env.AUTH_SECRET,
   pages: {
@@ -34,6 +42,13 @@ export default NuxtAuthHandler({
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Handle redirect after login
+      // If baseUrl is undefined, use a default
+      const redirectUrl = baseUrl || 'https://expenses.tehj.io';
+      console.log('Redirect callback called:', { url, baseUrl, redirectUrl });
+      return redirectUrl;
+    },
   },
   providers: [
     // @ts-expect-error You need to use .default here for it to work during SSR.
@@ -52,34 +67,55 @@ export default NuxtAuthHandler({
         },
       },
       async authorize(credentials: any) {
+        console.log('Auth authorize called with credentials:', {
+          username: credentials?.username,
+          hasPassword: !!credentials?.password
+        });
+
         if (!credentials?.username || !credentials?.password) {
+          console.log('Auth failed: missing username or password');
           return null;
         }
 
         try {
           const db = getDb();
+          console.log('Database connection obtained, querying for user:', credentials.username);
+
           const user = db
             .prepare('SELECT * FROM users WHERE username = ?')
             .get(credentials.username) as DBUser;
 
+          console.log('User query result:', user ? {
+            id: user.id,
+            username: user.username,
+            is_approved: user.is_approved,
+            has_password: !!user.password
+          } : 'User not found');
+
           if (!user) {
+            console.log('Auth failed: user not found');
             return null;
           }
 
           if (!user.is_approved) {
-            // Or handle not approved user
+            console.log('Auth failed: user not approved');
             return null;
           }
 
           // Verify password
+          console.log('Verifying password...');
           const isValid = await bcrypt.compare(
             credentials.password,
             user.password || ''
           );
+          console.log('Password verification result:', isValid);
+
           if (!isValid) {
+            console.log('Auth failed: invalid password');
             return null;
           }
 
+          console.log('Auth successful for user:', user.username);
           return {
             id: user.id,
             username: user.username,
