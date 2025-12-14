@@ -1,6 +1,6 @@
 ---
 id: SECURITY-20251213-021824-YED
-status: review_requested
+status: completed
 title: Migrate Authentication to NextAuth
 priority: high
 created: 2025-12-13 02:18:24

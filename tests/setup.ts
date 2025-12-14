@@ -1,6 +1,25 @@
 import { afterAll } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import { registerEndpoint } from '@nuxt/test-utils/runtime';
+
+// Mock the auth session endpoint
+registerEndpoint('/api/auth/session', () => ({
+  user: {
+    name: 'Test User',
+    email: 'test@example.com',
+  },
+  expires: '2025-01-01T00:00:00.000Z',
+}));
+
+// Mock categories endpoint
+registerEndpoint('/api/categories', () => [
+  { id: 1, name: 'Food' },
+  { id: 2, name: 'Transport' },
+]);
+
+// Mock descriptions endpoint
+registerEndpoint('/api/descriptions', () => ['Lunch', 'Bus ticket']);
 
 // Use a unique temp directory for each test run
 const tempDir = path.join(
