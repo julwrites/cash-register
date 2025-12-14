@@ -1,6 +1,6 @@
 ---
 id: FEATURES-20251213-021844-NXA
-status: review_requested
+status: completed
 title: Add User Approval to Admin Dashboard
 priority: medium
 created: 2025-12-13 02:18:44
