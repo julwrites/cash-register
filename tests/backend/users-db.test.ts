@@ -39,4 +39,31 @@ describe('Users DB', () => {
     expect(user).toBeDefined();
     expect(user.username).toBe('testuser');
   });
+
+  it('should store full length password hashes', async () => {
+    const { getDb } = await import('../../server/api/users/users-db');
+    const db = getDb();
+    const longHash = 'a'.repeat(60);
+    const username = 'longpassuser';
+
+    try {
+      db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(
+        username,
+        longHash
+      );
+    } catch {
+      // clean up if exists
+      db.prepare('DELETE FROM users WHERE username = ?').run(username);
+      db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(
+        username,
+        longHash
+      );
+    }
+
+    const user = db
+      .prepare('SELECT * FROM users WHERE username = ?')
+      .get(username) as any;
+    expect(user.password.length).toBe(60);
+    expect(user.password).toBe(longHash);
+  });
 });

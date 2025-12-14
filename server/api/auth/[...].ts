@@ -69,7 +69,7 @@ export default NuxtAuthHandler({
       async authorize(credentials: any) {
         console.log('Auth authorize called with credentials:', {
           username: credentials?.username,
-          hasPassword: !!credentials?.password
+          hasPassword: !!credentials?.password,
         });
 
         if (!credentials?.username || !credentials?.password) {
@@ -79,18 +79,26 @@ export default NuxtAuthHandler({
 
         try {
           const db = getDb();
-          console.log('Database connection obtained, querying for user:', credentials.username);
+          console.log(
+            'Database connection obtained, querying for user:',
+            credentials.username
+          );
 
           const user = db
             .prepare('SELECT * FROM users WHERE username = ?')
             .get(credentials.username) as DBUser;
 
-          console.log('User query result:', user ? {
-            id: user.id,
-            username: user.username,
-            is_approved: user.is_approved,
-            has_password: !!user.password
-          } : 'User not found');
+          console.log(
+            'User query result:',
+            user
+              ? {
+                  id: user.id,
+                  username: user.username,
+                  is_approved: user.is_approved,
+                  has_password: !!user.password,
+                }
+              : 'User not found'
+          );
 
           if (!user) {
             console.log('Auth failed: user not found');
