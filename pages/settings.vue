@@ -63,11 +63,7 @@ function onChange(index: number) {
   background-color: #0056b3;
   color: white;
   padding: 8px 20px;
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
-  z-index: 999;
 }
 
 .settings-banner h2 {

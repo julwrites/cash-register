@@ -60,7 +60,7 @@
       <div class="table-responsive">
         <UTable :rows="rows" :columns="columns">
           <template #actions-data="{ row }">
-            <UDropdown :items="actions(row)">
+            <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
               <UButton
                 color="gray"
                 variant="ghost"
