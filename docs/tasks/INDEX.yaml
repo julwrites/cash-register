@@ -5,6 +5,10 @@ docs/tasks/features/FEATURES-20251213-021844-NXA-add-user-approval-to-admin-dash
 
 docs/tasks/features/FEATURES-20251213-021924-RMS-implement-pagination-for-expenses.md:
 
+docs/tasks/features/FEATURES-20251215-013843-THI-refactor-expense-charts-to-use-server-side-aggregation.md:
+
+docs/tasks/features/FEATURES-20251215-013844-ATZ-add-sorting-to-expense-table.md:
+
 docs/tasks/foundation/FOUNDATION-20251212-114704-RKM-initial-project-setup.md:
 
 docs/tasks/foundation/FOUNDATION-20251212-132626-DCF-update-documentation-to-match-codebase.md:
@@ -19,6 +23,12 @@ docs/tasks/infrastructure/INFRASTRUCTURE-20251212-155744-UEZ-fix-ci-pipeline-fai
 
 docs/tasks/presentation/PRESENTATION-20251213-021904-TQK-replace-blocking-alerts-with-toasts.md:
 
+docs/tasks/presentation/PRESENTATION-20251215-013845-IRD-add-dark-mode-toggle.md:
+
 docs/tasks/review/REVIEW-20251213-021759-ZSN-codebase-gap-analysis.md:
 
 docs/tasks/security/SECURITY-20251213-021824-YED-migrate-authentication-to-nextauth.md:
+
+docs/tasks/testing/TESTING-20251214-140255-OCQ-fix-tests-and-investigate-authentication-failure.md:
+
+docs/tasks/testing/TESTING-20251215-013845-DCC-expand-component-test-coverage.md:

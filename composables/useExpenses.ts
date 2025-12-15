@@ -18,12 +18,19 @@ interface FetchParams {
   category?: string;
 }
 
+interface ExpenseSummary {
+  income: number;
+  expenses: number;
+  byCategory: Record<string, number>;
+}
+
 export function useExpenses() {
   const expenses = ref<Expense[]>([]); // For legacy support and charts (all data)
   const entries = ref<any[]>([]); // For legacy support (formatted expenses)
 
   const paginatedExpenses = ref<any[]>([]); // Formatted expenses for the current page
   const totalCount = ref(0); // Total count for pagination
+  const expenseSummary = ref<ExpenseSummary | null>(null);
 
   // Fetch all expenses (legacy behavior + support for filters)
   // This is used for Charts which need the full dataset (or filtered dataset) to calculate aggregates
@@ -87,6 +94,8 @@ export function useExpenses() {
           category: expense.category,
           description: expense.description,
           amount: (expense.credit - expense.debit).toFixed(2),
+          credit: expense.credit,
+          debit: expense.debit,
         }));
         // Sorted by backend already
 
@@ -98,6 +107,25 @@ export function useExpenses() {
       }
     } catch (error) {
       console.error('Error fetching paginated expenses:', error);
+    }
+  }
+
+  async function fetchExpenseSummary(params: FetchParams = {}) {
+    try {
+      const query = new URLSearchParams();
+      if (params.startDate) query.append('startDate', params.startDate);
+      if (params.endDate) query.append('endDate', params.endDate);
+      if (params.category) query.append('category', params.category);
+
+      const response = await fetch(`/api/expenses/summary?${query.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch expense summary');
+      }
+
+      const data = await response.json();
+      expenseSummary.value = data;
+    } catch (error) {
+      console.error('Error fetching expense summary:', error);
     }
   }
 
@@ -196,8 +224,10 @@ export function useExpenses() {
     entries,
     paginatedExpenses,
     totalCount,
+    expenseSummary,
     fetchExpenses,
     fetchPaginatedExpenses,
+    fetchExpenseSummary,
     updateExpense,
     deleteExpense,
   };
