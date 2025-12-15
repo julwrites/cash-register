@@ -103,8 +103,8 @@ export const getExpenseSummary = (
       income: number;
       expenses: number;
     };
-    totalIncome += (totals.income || 0);
-    totalExpenses += (totals.expenses || 0);
+    totalIncome += totals.income || 0;
+    totalExpenses += totals.expenses || 0;
 
     // Category breakdown (only for expenses)
     let catWhereClause = whereClause;

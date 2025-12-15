@@ -66,7 +66,6 @@ import ExpenseTable from './components/ExpenseTable.vue';
 import EditExpenseModal from './components/EditExpenseModal.vue';
 
 const {
-  expenses,
   paginatedExpenses,
   totalCount,
   expenseSummary,

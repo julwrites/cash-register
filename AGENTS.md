@@ -48,6 +48,7 @@ You are an expert Software Engineer working on this project. Your primary respon
 ## Code Style & Standards
 *   Follow the existing patterns in the codebase.
 *   Ensure all new code is covered by tests (if testing infrastructure exists).
+*   **Mandatory Checks**: Before pushing any code, you must ensure `npm run lint`, `npm run test`, and `npm run build` pass. These are enforced via a Husky `pre-push` hook.
 
 ## PR Review Methodology
 When performing a PR review, follow this "Human-in-the-loop" process to ensure depth and efficiency.
