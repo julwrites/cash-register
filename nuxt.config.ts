@@ -9,7 +9,6 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     '@nuxt/ui',
     '@nuxt/fonts',
-    '@nuxt/eslint',
     '@sidebase/nuxt-auth',
   ],
   auth: {

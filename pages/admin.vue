@@ -378,8 +378,10 @@ async function triggerDescriptionMigration() {
 <style scoped>
 .admin-container {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .admin-actions {

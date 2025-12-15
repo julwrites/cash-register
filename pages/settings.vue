@@ -1,9 +1,5 @@
 <template>
   <div class="settings-container">
-    <div class="settings-banner">
-      <h2>User Settings</h2>
-    </div>
-
     <div class="settings-content">
       <UTabs :items="items" class="settings-tabs" @change="onChange" />
 
@@ -59,17 +55,6 @@ function onChange(index: number) {
   overflow-x: hidden;
 }
 
-.settings-banner {
-  background-color: #0056b3;
-  color: white;
-  padding: 8px 20px;
-  width: 100%;
-}
-
-.settings-banner h2 {
-  margin: 0;
-  font-size: 20px;
-}
 
 .settings-content {
   padding: 20px;
