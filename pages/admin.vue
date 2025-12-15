@@ -165,6 +165,12 @@ function actions(row) {
   }
 
   items.push({
+    label: 'Reset Password',
+    icon: 'i-heroicons-lock-closed-20-solid',
+    click: () => resetPassword(row.id, row.name),
+  });
+
+  items.push({
     label: 'Remove',
     icon: 'i-heroicons-trash-20-solid',
     click: () => removeUser(row.id),
@@ -268,6 +274,45 @@ async function removeUser(userId) {
         color: 'red',
       });
     }
+  }
+}
+
+async function resetPassword(userId, username) {
+  const newPassword = prompt(`Enter new password for user "${username}":`);
+  if (!newPassword) {
+    return; // User cancelled
+  }
+
+  if (newPassword.length < 6) {
+    alert('Password must be at least 6 characters long.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/users/auth/setPassword', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username: username, password: newPassword }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to reset password');
+    }
+
+    toast.add({
+      title: 'Password reset successfully',
+      description: `New password for "${username}" has been set.`,
+      color: 'green'
+    });
+  } catch (err) {
+    toast.add({
+      title: 'Failed to reset password',
+      description: err.message,
+      color: 'red',
+    });
   }
 }
 

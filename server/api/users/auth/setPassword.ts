@@ -3,14 +3,24 @@ import { defineEventHandler, createError, readBody } from 'h3';
 import type { User } from '../users-db';
 import { getDb } from '../users-db';
 import bcrypt from 'bcrypt';
+import { getServerSession } from '#auth';
 
 export default defineEventHandler(async (event) => {
+  // Check if user is authenticated and is admin
+  const session = await getServerSession(event);
+  if (!session) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
+  }
+  if (!session.user.isAdmin) {
+    throw createError({ statusCode: 403, statusMessage: 'Forbidden: Admin only' });
+  }
+
   const { username, password } = await readBody(event);
 
   if (!username || !password) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'User ID and password are required',
+      statusMessage: 'Username and password are required',
     });
   }
 
