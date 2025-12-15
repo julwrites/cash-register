@@ -42,6 +42,96 @@ export const getYears = () => {
   return years;
 };
 
+export interface ExpenseSummary {
+  income: number;
+  expenses: number;
+  byCategory: Record<string, number>;
+}
+
+export const getExpenseSummary = (
+  params: FetchExpensesParams
+): ExpenseSummary => {
+  const years = getYears();
+  let allYears = years;
+
+  // Filter years if date range is provided
+  if (params.startDate || params.endDate) {
+    const startYear = params.startDate
+      ? new Date(params.startDate).getFullYear()
+      : -Infinity;
+    const endYear = params.endDate
+      ? new Date(params.endDate).getFullYear()
+      : Infinity;
+
+    allYears = allYears.filter((year) => year >= startYear && year <= endYear);
+  }
+
+  let totalIncome = 0;
+  let totalExpenses = 0;
+  const byCategory: Record<string, number> = {};
+
+  for (const year of allYears) {
+    const db = getDb(year);
+    const conditions: string[] = [];
+    const args: any[] = [];
+
+    if (params.category) {
+      conditions.push('category = ?');
+      args.push(params.category);
+    }
+    if (params.startDate) {
+      conditions.push('date >= ?');
+      args.push(params.startDate);
+    }
+    if (params.endDate) {
+      conditions.push('date <= ?');
+      args.push(params.endDate);
+    }
+
+    const whereClause =
+      conditions.length > 0 ? ' WHERE ' + conditions.join(' AND ') : '';
+
+    // Income/Expense Totals
+    const totalsQuery = `
+      SELECT
+        SUM(credit) as income,
+        SUM(debit) as expenses
+      FROM expenses
+      ${whereClause}
+    `;
+    const totals = db.prepare(totalsQuery).get(...args) as {
+      income: number;
+      expenses: number;
+    };
+    totalIncome += (totals.income || 0);
+    totalExpenses += (totals.expenses || 0);
+
+    // Category breakdown (only for expenses)
+    let catWhereClause = whereClause;
+    if (catWhereClause) {
+      catWhereClause += ' AND debit > 0';
+    } else {
+      catWhereClause = ' WHERE debit > 0';
+    }
+
+    const catQuery = `SELECT category, SUM(debit) as total FROM expenses ${catWhereClause} GROUP BY category`;
+    const catResults = db.prepare(catQuery).all(...args) as {
+      category: string;
+      total: number;
+    }[];
+
+    for (const row of catResults) {
+      byCategory[row.category] = (byCategory[row.category] || 0) + row.total;
+    }
+  }
+
+  return {
+    income: totalIncome,
+    expenses: totalExpenses,
+    byCategory,
+  };
+};
+
 export const fetchExpensesPaginated = (
   params: FetchExpensesParams
 ): PaginatedResponse | Expense[] => {

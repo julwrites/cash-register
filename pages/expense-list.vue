@@ -67,11 +67,11 @@ import EditExpenseModal from './components/EditExpenseModal.vue';
 
 const {
   expenses,
-  entries,
   paginatedExpenses,
   totalCount,
-  fetchExpenses,
+  expenseSummary,
   fetchPaginatedExpenses,
+  fetchExpenseSummary,
   updateExpense,
   deleteExpense,
 } = useExpenses();
@@ -168,35 +168,9 @@ const currentFilters = computed(() => {
   return filters;
 });
 
-// Charts rely on 'entries' which are populated by 'fetchExpenses' (all/legacy)
-// We filter them client-side for now because 'fetchExpenses' supports server-side filtering
-// but we might want to keep the chart data consistent with the table filter.
-// Actually, 'fetchExpenses' now updates 'entries' based on server response.
-// So if we call fetchExpenses(filters), 'entries' will contain filtered data.
-// So 'filteredEntries' computed prop is redundant IF we fetch strictly filtered data.
-
-// However, the original code had 'entries' as ALL data, and 'filteredEntries' doing client-side filtering.
-// Now we want server-side filtering.
-
-// Strategy:
-// 1. When filters change, call fetchPaginatedExpenses AND fetchExpenses (for charts) with filters.
-// 2. 'entries' will contain the filtered dataset (for charts).
-// 3. 'paginatedExpenses' will contain the page (for table).
-
-const filteredEntries = computed(() => entries.value);
-// We alias entries to filteredEntries to keep chart logic simple,
-// assuming 'entries' is already filtered by the API call.
-
 const barChartData = computed(() => {
-  const income = filteredEntries.value.reduce(
-    (sum, entry) => sum + (entry.amount > 0 ? parseFloat(entry.amount) : 0),
-    0
-  );
-  const expenses = filteredEntries.value.reduce(
-    (sum, entry) =>
-      sum + (entry.amount < 0 ? Math.abs(parseFloat(entry.amount)) : 0),
-    0
-  );
+  const income = expenseSummary.value?.income || 0;
+  const expenses = expenseSummary.value?.expenses || 0;
   return {
     labels: ['Income', 'Expenses'],
     datasets: [
@@ -210,16 +184,7 @@ const barChartData = computed(() => {
 });
 
 const pieChartData = computed(() => {
-  const expensesByCategory = filteredEntries.value
-    .filter((entry) => parseFloat(entry.amount) < 0)
-    .reduce(
-      (acc, entry) => {
-        acc[entry.category] =
-          (acc[entry.category] || 0) + Math.abs(parseFloat(entry.amount));
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+  const expensesByCategory = expenseSummary.value?.byCategory || {};
 
   return {
     labels: Object.keys(expensesByCategory),
@@ -263,8 +228,8 @@ async function refreshData() {
     ...filters,
   });
 
-  // Fetch full (filtered) data for charts
-  await fetchExpenses({
+  // Fetch aggregated data for charts
+  await fetchExpenseSummary({
     ...filters,
   });
 }
@@ -312,31 +277,12 @@ function handleSave(updatedExpense: Expense) {
 }
 
 function startEditing(row: any) {
-  // Try to find in paginated list first
-  let expense = paginatedExpenses.value.find((e) => e.id === row.id);
-  // If not found (unlikely), check full list
-  if (!expense) {
-    expense = expenses.value.find((e) => e.id === row.id);
-  }
+  // Find in paginated list
+  const expense = paginatedExpenses.value.find((e) => e.id === row.id);
 
   if (expense) {
-    // Need to un-format amount (remove string format if needed)
-    // but the expense object in 'expenses' is raw data?
-    // No, 'expenses' contains raw data from API.
-
-    // We need to match ID to raw data in 'expenses' ref in useExpenses
-    const rawExpense = expenses.value.find((e) => e.id === row.id);
-    if (rawExpense) {
-      editForm.value = { ...rawExpense };
-      isEditModalOpen.value = true;
-    } else {
-      // Fallback if we only have the formatted entry
-      // We might be missing the split credit/debit if we only have 'amount'
-      // But 'expenses' should have all data if we fetched it for charts.
-      // If we haven't fetched charts (e.g. mobile optimization?), we might have issues.
-      // But currently we always fetch both.
-      console.error('Could not find raw expense data for editing');
-    }
+    editForm.value = { ...expense };
+    isEditModalOpen.value = true;
   }
 }
 </script>
