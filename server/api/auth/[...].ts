@@ -2,6 +2,7 @@ import { NuxtAuthHandler } from '#auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { getDb } from '../users/users-db';
 import bcrypt from 'bcrypt';
+import { resolveRedirectUrl } from '../../utils/redirect-helper';
 
 // Define a local interface that includes password and is_admin, which are present in the DB but not in the exported User type
 interface DBUser {
@@ -44,8 +45,10 @@ export default NuxtAuthHandler({
     },
     async redirect({ url, baseUrl }) {
       // Handle redirect after login
-      // If baseUrl is undefined, use a default
-      const redirectUrl = baseUrl || 'https://expenses.tehj.io';
+      const redirectUrl = resolveRedirectUrl(url, baseUrl, {
+        authOrigin: process.env.AUTH_ORIGIN,
+        nextAuthUrl: process.env.NEXTAUTH_URL,
+      });
       console.log('Redirect callback called:', { url, baseUrl, redirectUrl });
       return redirectUrl;
     },
