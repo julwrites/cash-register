@@ -12,7 +12,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
   }
   if (!session.user.isAdmin) {
-    throw createError({ statusCode: 403, statusMessage: 'Forbidden: Admin only' });
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Forbidden: Admin only',
+    });
   }
 
   const { username, password } = await readBody(event);

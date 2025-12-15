@@ -305,7 +305,7 @@ async function resetPassword(userId, username) {
     toast.add({
       title: 'Password reset successfully',
       description: `New password for "${username}" has been set.`,
-      color: 'green'
+      color: 'green',
     });
   } catch (err) {
     toast.add({
