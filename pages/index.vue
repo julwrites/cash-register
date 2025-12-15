@@ -82,7 +82,7 @@ async function logout() {
   flex-direction: column;
   width: 100%;
   padding-top: 60px;
-  padding-bottom: 40px;
+  padding-bottom: 80px;
 }
 
 .banner {
@@ -160,14 +160,14 @@ async function logout() {
 @media (max-width: 768px) {
   .main-container {
     padding-top: 60px;
-    padding-bottom: 30px;
+    padding-bottom: 80px;
   }
 }
 
 @media (max-width: 640px) {
   .main-container {
     padding-top: 60px;
-    padding-bottom: 20px;
+    padding-bottom: 80px;
   }
 }
 </style>
