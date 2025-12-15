@@ -6,7 +6,10 @@ describe('ExpenseFilters', () => {
   const defaultProps = {
     selectedPeriod: { label: 'This Month', value: 'month' },
     selectedCategory: { label: 'Food', id: 1 },
-    categoryOptions: [{ label: 'Food', id: 1 }, { label: 'Transport', id: 2 }],
+    categoryOptions: [
+      { label: 'Food', id: 1 },
+      { label: 'Transport', id: 2 },
+    ],
     startDate: '',
     endDate: '',
   };
@@ -32,7 +35,7 @@ describe('ExpenseFilters', () => {
     const component = await mountSuspended(ExpenseFilters, {
       props: {
         ...defaultProps,
-        selectedPeriod: { label: 'Custom Range', value: 'custom' }
+        selectedPeriod: { label: 'Custom Range', value: 'custom' },
       },
     });
 
@@ -46,7 +49,7 @@ describe('ExpenseFilters', () => {
         ...defaultProps,
         selectedPeriod: { label: 'Custom Range', value: 'custom' },
         startDate: '2023-01-01',
-        endDate: '2023-01-31'
+        endDate: '2023-01-31',
       },
     });
 

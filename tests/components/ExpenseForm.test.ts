@@ -6,7 +6,7 @@ const toastAdd = vi.fn();
 
 mockNuxtImport('useToast', () => {
   return () => ({
-    add: toastAdd
+    add: toastAdd,
   });
 });
 
@@ -42,15 +42,17 @@ describe('ExpenseForm', () => {
 
     await component.find('form').trigger('submit');
 
-    expect(toastAdd).toHaveBeenCalledWith(expect.objectContaining({
+    expect(toastAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
         title: 'Validation Error',
-        color: 'red'
-    }));
+        color: 'red',
+      })
+    );
     expect(component.emitted('submit')).toBeFalsy();
   });
 
   it('emits submit event with valid data', async () => {
-     const component = await mountSuspended(ExpenseForm, {
+    const component = await mountSuspended(ExpenseForm, {
       props: defaultProps,
     });
 
@@ -64,10 +66,10 @@ describe('ExpenseForm', () => {
 
     expect(component.emitted('submit')).toBeTruthy();
     expect(component.emitted('submit')![0][0]).toMatchObject({
-        date: '2023-10-27',
-        debit: 100,
-        category: 'Food',
-        description: 'Lunch'
+      date: '2023-10-27',
+      debit: 100,
+      category: 'Food',
+      description: 'Lunch',
     });
   });
 });
