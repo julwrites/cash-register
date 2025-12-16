@@ -1,41 +1,89 @@
 <template>
-  <div class="filters">
-    <USelectMenu
-      v-model="localSelectedPeriod"
-      :options="periodOptions"
-      placeholder="Select time period"
-    />
-    <USelectMenu
-      v-model="localSelectedCategory"
-      :options="categoryOptions"
-      placeholder="Select category"
-    />
+  <div class="filters-container">
+    <!-- Desktop Filters -->
+    <div class="filters desktop-filters">
+      <USelectMenu
+        v-model="localSelectedPeriod"
+        :options="periodOptions"
+        placeholder="Select time period"
+      />
+      <USelectMenu
+        v-model="localSelectedCategory"
+        :options="categoryOptions"
+        placeholder="Select category"
+      />
 
-    <div class="filter-actions">
-      <UButton
-        class="filter-reset"
-        variant="outline"
-        @click="$emit('reset-filters')"
-        >Reset Filters</UButton
+      <div class="filter-actions">
+        <UButton
+          class="filter-reset"
+          variant="outline"
+          @click="$emit('reset-filters')"
+          >Reset Filters</UButton
+        >
+      </div>
+
+      <div
+        v-if="localSelectedPeriod.value === 'custom'"
+        class="date-range-picker"
       >
+        <UInput
+          v-model="localStartDate"
+          type="date"
+          placeholder="Start Date"
+          @change="emitDateChange"
+        />
+        <UInput
+          v-model="localEndDate"
+          type="date"
+          placeholder="End Date"
+          @change="emitDateChange"
+        />
+      </div>
     </div>
 
-    <div
-      v-if="localSelectedPeriod.value === 'custom'"
-      class="date-range-picker"
-    >
-      <UInput
-        v-model="localStartDate"
-        type="date"
-        placeholder="Start Date"
-        @change="emitDateChange"
-      />
-      <UInput
-        v-model="localEndDate"
-        type="date"
-        placeholder="End Date"
-        @change="emitDateChange"
-      />
+    <!-- Mobile Filters -->
+    <div class="mobile-filters">
+      <UAccordion :items="[{ label: 'Filters', slot: 'filters' }]">
+        <template #filters>
+          <div class="flex flex-col gap-4 p-2">
+             <USelectMenu
+              v-model="localSelectedPeriod"
+              :options="periodOptions"
+              placeholder="Select time period"
+            />
+            <USelectMenu
+              v-model="localSelectedCategory"
+              :options="categoryOptions"
+              placeholder="Select category"
+            />
+             <div
+              v-if="localSelectedPeriod.value === 'custom'"
+              class="flex flex-col gap-2"
+            >
+              <UInput
+                v-model="localStartDate"
+                type="date"
+                placeholder="Start Date"
+                @change="emitDateChange"
+              />
+              <UInput
+                v-model="localEndDate"
+                type="date"
+                placeholder="End Date"
+                @change="emitDateChange"
+              />
+            </div>
+             <UButton
+              block
+              variant="outline"
+              color="gray"
+              @click="$emit('reset-filters')"
+            >
+              Reset Filters
+            </UButton>
+          </div>
+        </template>
+      </UAccordion>
     </div>
   </div>
 </template>
@@ -123,12 +171,25 @@ const periodOptions = [
   gap: 10px;
 }
 
+.mobile-filters {
+  display: none;
+  margin-bottom: 20px;
+}
+
 :deep(.form-group) {
   flex: 1;
   min-width: 200px;
 }
 
 @media (max-width: 768px) {
+  .desktop-filters {
+    display: none;
+  }
+
+  .mobile-filters {
+    display: block;
+  }
+
   .filters {
     flex-direction: column;
   }

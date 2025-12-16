@@ -27,8 +27,17 @@ describe('ExpenseFilters', () => {
       props: defaultProps,
     });
 
-    await component.find('button.filter-reset').trigger('click');
-    expect(component.emitted('reset-filters')).toBeTruthy();
+    // There are now two reset buttons (desktop and mobile)
+    // We can trigger either one
+    const buttons = component.findAll('button');
+    const resetButton = buttons.find(b => b.text().includes('Reset Filters'));
+
+    if (resetButton) {
+        await resetButton.trigger('click');
+        expect(component.emitted('reset-filters')).toBeTruthy();
+    } else {
+        throw new Error('Reset button not found');
+    }
   });
 
   it('shows date inputs when custom period is selected', async () => {
@@ -40,7 +49,8 @@ describe('ExpenseFilters', () => {
     });
 
     expect(component.find('.date-range-picker').exists()).toBe(true);
-    expect(component.findAll('input[type="date"]').length).toBe(2);
+    // We now have duplicate inputs for mobile/desktop, so we expect 4
+    expect(component.findAll('input[type="date"]').length).toBe(4);
   });
 
   it('emits update events when date changes', async () => {
@@ -54,8 +64,9 @@ describe('ExpenseFilters', () => {
     });
 
     const inputs = component.findAll('input[type="date"]');
+    // Trigger on the first one (Desktop Start Date)
     await inputs[0].setValue('2023-02-01');
-    await inputs[0].trigger('change'); // Helper function calls emitDateChange on change
+    await inputs[0].trigger('change');
 
     expect(component.emitted('update:startDate')).toBeTruthy();
     expect(component.emitted('update:startDate')![0][0]).toBe('2023-02-01');

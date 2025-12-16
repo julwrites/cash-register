@@ -1,6 +1,25 @@
 <template>
   <div class="table-container">
-    <UTable :rows="entries" :columns="columns" table-class="expense-table">
+    <UTable
+      :rows="entries"
+      :columns="columns"
+      table-class="expense-table"
+      :loading="loading"
+    >
+      <template #loading-state>
+        <div class="flex items-center justify-center p-4">
+          <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin w-6 h-6 mr-2" />
+          <span>Loading expenses...</span>
+        </div>
+      </template>
+
+      <template #empty-state>
+        <div v-if="!loading" class="flex flex-col items-center justify-center p-8 text-gray-500">
+          <UIcon name="i-heroicons-clipboard-document-list-20-solid" class="w-12 h-12 mb-2" />
+          <span>No expenses found for this period.</span>
+        </div>
+      </template>
+
       <template #actions-data="{ row }">
         <UDropdown :items="actions(row)">
           <UButton
@@ -24,6 +43,10 @@ defineProps({
     type: Array,
     required: true,
   },
+  loading: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const emit = defineEmits(['edit', 'delete']);
