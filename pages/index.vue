@@ -6,7 +6,11 @@
       </div>
 
       <div class="tab-content">
-        <ExpenseForm v-if="selectedTab === 'form'" />
+        <Dashboard
+          v-if="selectedTab === 'dashboard'"
+          @view-all="selectedTab = 'list'"
+        />
+        <ExpenseForm v-else-if="selectedTab === 'form'" />
         <ExpenseList v-else-if="selectedTab === 'list'" />
       </div>
     </div>
@@ -21,16 +25,21 @@
 import { ref, computed, watch } from 'vue';
 import ExpenseForm from './expense-form.vue';
 import ExpenseList from './expense-list.vue';
+import Dashboard from '@/components/Dashboard.vue';
 import SettingsPage from './settings.vue';
 
 const route = useRoute();
-const selectedTab = ref('form');
+const selectedTab = ref('dashboard');
 const { status, data } = useAuth();
 
 const isLoggedIn = computed(() => status.value === 'authenticated');
 const isAdmin = computed(() => data.value?.user?.isAdmin || false);
 
 const pageItems = [
+  {
+    label: 'Dashboard',
+    slot: 'dashboard',
+  },
   {
     label: 'Add Record',
     slot: 'form',
@@ -48,9 +57,9 @@ function onPageTabChange(index: number) {
 // Set selected tab based on route or default
 watch(() => route.path, (newPath) => {
   if (newPath === '/') {
-    // Keep current selectedTab or default to 'form'
+    // Keep current selectedTab or default to 'dashboard'
     if (!selectedTab.value) {
-      selectedTab.value = 'form';
+      selectedTab.value = 'dashboard';
     }
   }
 }, { immediate: true });
