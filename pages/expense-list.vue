@@ -76,7 +76,7 @@ import ExpenseFilters from './components/ExpenseFilters.vue';
 import IncomeExpenseChart from './components/IncomeExpenseChart.vue';
 import ExpensesByCategoryChart from './components/ExpensesByCategoryChart.vue';
 import ExpenseTable from './components/ExpenseTable.vue';
-import EditExpenseModal from './components/EditExpenseModal.vue';
+import EditExpenseModal from '@/components/EditExpenseModal.vue';
 
 const {
   paginatedExpenses,
