@@ -42,7 +42,12 @@
       No recent transactions found.
     </div>
     <div v-else class="recent-list bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-      <div v-for="expense in recentExpenses" :key="expense.id" class="p-4 border-b border-gray-200 dark:border-gray-700 last:border-0 flex justify-between items-center">
+      <div
+        v-for="expense in recentExpenses"
+        :key="expense.id"
+        class="p-4 border-b border-gray-200 dark:border-gray-700 last:border-0 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        @click="startEditing(expense)"
+      >
         <div>
           <div class="font-medium">{{ expense.description }}</div>
           <div class="text-sm text-gray-500">{{ formatDate(expense.date) }} • {{ expense.category }}</div>
@@ -56,17 +61,34 @@
     <div class="mt-4 text-center">
       <UButton variant="link" @click="$emit('view-all')">View All Transactions</UButton>
     </div>
+
+    <EditExpenseModal
+      v-model:is-open="isEditModalOpen"
+      :expense="editForm"
+      :categories="categories"
+      @save="handleSave"
+      @cancel="cancelEditing"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useExpenses } from '@/composables/useExpenses';
+import { useCategories } from '@/composables/useCategories';
+import EditExpenseModal from '@/components/EditExpenseModal.vue';
+import type { Expense } from '@/types/expense';
 
-const { fetchPaginatedExpenses, fetchExpenseSummary, expenseSummary, paginatedExpenses, loading } = useExpenses();
+const { fetchPaginatedExpenses, fetchExpenseSummary, expenseSummary, paginatedExpenses, loading, updateExpense } = useExpenses();
+const { categoriesByName, fetchCategories } = useCategories();
+const toast = useToast();
 
 const summary = computed(() => expenseSummary.value);
 const recentExpenses = computed(() => paginatedExpenses.value);
+const categories = computed(() => categoriesByName.value);
+
+const isEditModalOpen = ref(false);
+const editForm = ref({});
 
 defineEmits(['view-all']);
 
@@ -81,7 +103,59 @@ function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString();
 }
 
+function startEditing(expense: any) {
+  editForm.value = { ...expense };
+  isEditModalOpen.value = true;
+}
+
+function cancelEditing() {
+  isEditModalOpen.value = false;
+  editForm.value = {};
+}
+
+async function handleSave(updatedExpense: any) {
+  try {
+    await updateExpense(updatedExpense);
+    isEditModalOpen.value = false;
+    toast.add({
+      title: 'Success',
+      description: 'Expense updated successfully.',
+      color: 'green'
+    });
+    // Refresh data
+    refreshData();
+  } catch (e) {
+    toast.add({
+      title: 'Error',
+      description: 'Failed to update expense.',
+      color: 'red'
+    });
+  }
+}
+
+async function refreshData() {
+    // Re-fetch recent expenses to update the list
+    await fetchPaginatedExpenses({
+        page: 1,
+        limit: 5,
+        sort: 'date',
+        order: 'desc'
+    });
+
+    // Also re-fetch summary as amount might have changed
+    const now = new Date();
+    const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+    await fetchExpenseSummary({
+        startDate,
+        endDate,
+        period: 'month'
+    });
+}
+
 onMounted(async () => {
+  await fetchCategories();
+
   const now = new Date();
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
@@ -93,9 +167,7 @@ onMounted(async () => {
     period: 'month'
   });
 
-  // Fetch recent 5 expenses (no date filter for global recent, or filtered? let's stick to global recent for now to show latest activity)
-  // Actually, usually users want to see *recent* activity regardless of month, but summary is for month.
-  // Let's keep recent expenses global.
+  // Fetch recent 5 expenses
   await fetchPaginatedExpenses({
     page: 1,
     limit: 5,

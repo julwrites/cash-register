@@ -1,6 +1,20 @@
 <template>
   <div class="index-container">
     <div v-if="isLoggedIn" class="main-content">
+      <div class="app-header mb-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Expense Tracker</h1>
+        <div class="flex items-center gap-2">
+           <span class="text-sm text-gray-600 dark:text-gray-400">Welcome, {{ data?.user?.username }}</span>
+           <UButton
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-arrow-right-on-rectangle-20-solid"
+              @click="handleLogout"
+              label="Logout"
+            />
+        </div>
+      </div>
+
       <div class="page-tabs">
         <UTabs :items="pageItems" class="internal-tabs" @change="onPageTabChange" />
       </div>
@@ -12,6 +26,7 @@
         />
         <ExpenseForm v-else-if="selectedTab === 'form'" />
         <ExpenseList v-else-if="selectedTab === 'list'" />
+        <SettingsPage v-else-if="selectedTab === 'settings'" />
       </div>
     </div>
     <div v-else class="login-prompt">
@@ -30,7 +45,8 @@ import SettingsPage from './settings.vue';
 
 const route = useRoute();
 const selectedTab = ref('form');
-const { status, data } = useAuth();
+const { status, data, signOut } = useAuth();
+const toast = useToast();
 
 const isLoggedIn = computed(() => status.value === 'authenticated');
 const isAdmin = computed(() => data.value?.user?.isAdmin || false);
@@ -48,10 +64,19 @@ const pageItems = [
     label: 'Expense List',
     slot: 'list',
   },
+  {
+    label: 'Settings',
+    slot: 'settings',
+  },
 ];
 
 function onPageTabChange(index: number) {
   selectedTab.value = pageItems[index].slot;
+}
+
+async function handleLogout() {
+  await signOut({ callbackUrl: '/login' });
+  toast.add({ title: 'Logged out successfully', color: 'green' });
 }
 
 // Set selected tab based on route or default
