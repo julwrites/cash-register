@@ -87,6 +87,36 @@
         </form>
       </UCard>
     </UModal>
+
+    <!-- Reset Password Modal -->
+    <UModal v-model="isResetPasswordModalOpen">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-bold">Reset Password for {{ resetPasswordData.username }}</h3>
+        </template>
+        <form @submit.prevent="executeResetPassword">
+          <UFormGroup label="New Password">
+            <UInput v-model="resetPasswordData.password" type="password" required />
+          </UFormGroup>
+          <div class="flex justify-end mt-4 gap-2">
+            <UButton color="gray" variant="ghost" @click="isResetPasswordModalOpen = false">Cancel</UButton>
+            <UButton type="submit" color="primary">Reset Password</UButton>
+          </div>
+        </form>
+      </UCard>
+    </UModal>
+
+    <!-- Delete User Confirmation Modal -->
+    <UModal v-model="isDeleteUserModalOpen">
+      <div class="p-4">
+        <h3 class="text-lg font-bold mb-2">Confirm Delete</h3>
+        <p class="mb-4">Are you sure you want to delete this user? This action cannot be undone.</p>
+        <div class="flex justify-end gap-2">
+          <UButton color="gray" variant="ghost" @click="isDeleteUserModalOpen = false">Cancel</UButton>
+          <UButton color="red" @click="executeRemoveUser">Delete</UButton>
+        </div>
+      </div>
+    </UModal>
   </div>
 </template>
 
@@ -107,7 +137,11 @@ const columns = [
 ];
 
 const isCreateUserModalOpen = ref(false);
+const isResetPasswordModalOpen = ref(false);
+const isDeleteUserModalOpen = ref(false);
 const newUsername = ref('');
+const resetPasswordData = ref({ userId: null, username: '', password: '' });
+const userToDeleteId = ref(null);
 const migrationLoading = ref(false);
 const migrationResult = ref(null);
 const toast = useToast();
@@ -167,13 +201,13 @@ function actions(row) {
   items.push({
     label: 'Reset Password',
     icon: 'i-heroicons-lock-closed-20-solid',
-    click: () => resetPassword(row.id, row.name),
+    click: () => openResetPasswordModal(row.id, row.name),
   });
 
   items.push({
     label: 'Remove',
     icon: 'i-heroicons-trash-20-solid',
-    click: () => removeUser(row.id),
+    click: () => confirmRemoveUser(row.id),
   });
 
   return [items];
@@ -249,42 +283,55 @@ async function createUser() {
   }
 }
 
-async function removeUser(userId) {
-  if (confirm('Are you sure you want to remove this user?')) {
-    try {
-      const response = await fetch(`/api/users/admin/deleteUser`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: userId }),
-      });
+function confirmRemoveUser(userId) {
+  userToDeleteId.value = userId;
+  isDeleteUserModalOpen.value = true;
+}
 
-      if (!response.ok) {
-        throw new Error('Failed to remove user');
-      }
-      users.value = users.value.filter((user) => user.id !== userId);
-      updateRows();
-      toast.add({ title: 'User removed successfully', color: 'green' });
-    } catch (err) {
-      error.value = err.message;
-      toast.add({
-        title: 'Failed to remove user',
-        description: err.message,
-        color: 'red',
-      });
+async function executeRemoveUser() {
+  if (!userToDeleteId.value) return;
+
+  const userId = userToDeleteId.value;
+  try {
+    const response = await fetch(`/api/users/admin/deleteUser`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: userId }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to remove user');
     }
+    users.value = users.value.filter((user) => user.id !== userId);
+    updateRows();
+    toast.add({ title: 'User removed successfully', color: 'green' });
+    isDeleteUserModalOpen.value = false;
+  } catch (err) {
+    error.value = err.message;
+    toast.add({
+      title: 'Failed to remove user',
+      description: err.message,
+      color: 'red',
+    });
   }
 }
 
-async function resetPassword(userId, username) {
-  const newPassword = prompt(`Enter new password for user "${username}":`);
-  if (!newPassword) {
-    return; // User cancelled
-  }
+function openResetPasswordModal(userId, username) {
+  resetPasswordData.value = { userId, username, password: '' };
+  isResetPasswordModalOpen.value = true;
+}
 
-  if (newPassword.length < 6) {
-    alert('Password must be at least 6 characters long.');
+async function executeResetPassword() {
+  const { username, password } = resetPasswordData.value;
+
+  if (password.length < 6) {
+    toast.add({
+      title: 'Validation Error',
+      description: 'Password must be at least 6 characters long.',
+      color: 'red',
+    });
     return;
   }
 
@@ -294,7 +341,7 @@ async function resetPassword(userId, username) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username: username, password: newPassword }),
+      body: JSON.stringify({ username, password }),
     });
 
     if (!response.ok) {
@@ -307,6 +354,7 @@ async function resetPassword(userId, username) {
       description: `New password for "${username}" has been set.`,
       color: 'green',
     });
+    isResetPasswordModalOpen.value = false;
   } catch (err) {
     toast.add({
       title: 'Failed to reset password',

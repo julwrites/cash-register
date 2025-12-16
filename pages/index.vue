@@ -6,7 +6,11 @@
       </div>
 
       <div class="tab-content">
-        <ExpenseForm v-if="selectedTab === 'form'" />
+        <Dashboard
+          v-if="selectedTab === 'dashboard'"
+          @view-all="selectedTab = 'list'"
+        />
+        <ExpenseForm v-else-if="selectedTab === 'form'" />
         <ExpenseList v-else-if="selectedTab === 'list'" />
       </div>
     </div>
@@ -21,6 +25,7 @@
 import { ref, computed, watch } from 'vue';
 import ExpenseForm from './expense-form.vue';
 import ExpenseList from './expense-list.vue';
+import Dashboard from '@/components/Dashboard.vue';
 import SettingsPage from './settings.vue';
 
 const route = useRoute();
@@ -34,6 +39,10 @@ const pageItems = [
   {
     label: 'Add Record',
     slot: 'form',
+  },
+  {
+    label: 'Dashboard',
+    slot: 'dashboard',
   },
   {
     label: 'Expense List',
