@@ -29,7 +29,7 @@ import Dashboard from '@/components/Dashboard.vue';
 import SettingsPage from './settings.vue';
 
 const route = useRoute();
-const selectedTab = ref('dashboard');
+const selectedTab = ref('form');
 const { status, data } = useAuth();
 
 const isLoggedIn = computed(() => status.value === 'authenticated');
@@ -37,12 +37,12 @@ const isAdmin = computed(() => data.value?.user?.isAdmin || false);
 
 const pageItems = [
   {
-    label: 'Dashboard',
-    slot: 'dashboard',
-  },
-  {
     label: 'Add Record',
     slot: 'form',
+  },
+  {
+    label: 'Dashboard',
+    slot: 'dashboard',
   },
   {
     label: 'Expense List',
@@ -57,9 +57,9 @@ function onPageTabChange(index: number) {
 // Set selected tab based on route or default
 watch(() => route.path, (newPath) => {
   if (newPath === '/') {
-    // Keep current selectedTab or default to 'dashboard'
+    // Keep current selectedTab or default to 'form'
     if (!selectedTab.value) {
-      selectedTab.value = 'dashboard';
+      selectedTab.value = 'form';
     }
   }
 }, { immediate: true });
