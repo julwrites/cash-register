@@ -33,11 +33,13 @@
       <ExpenseTable
         :entries="paginatedExpenses"
         :columns="columns"
+        :loading="loading"
         @edit="startEditing"
-        @delete="deleteExpense"
+        @delete="confirmDelete"
       />
 
       <UPagination
+        v-if="totalCount > 0"
         v-model="currentPage"
         :total="totalCount"
         :per-page="itemsPerPage"
@@ -52,6 +54,17 @@
       @save="handleSave"
       @cancel="cancelEditing"
     />
+
+    <UModal v-model="isDeleteModalOpen">
+      <div class="p-4">
+        <h3 class="text-lg font-bold mb-2">Confirm Delete</h3>
+        <p class="mb-4">Are you sure you want to delete this expense?</p>
+        <div class="flex justify-end gap-2">
+          <UButton color="gray" variant="ghost" @click="isDeleteModalOpen = false">Cancel</UButton>
+          <UButton color="red" @click="executeDelete">Delete</UButton>
+        </div>
+      </div>
+    </UModal>
   </div>
 </template>
 
@@ -69,16 +82,20 @@ const {
   paginatedExpenses,
   totalCount,
   expenseSummary,
+  loading,
   fetchPaginatedExpenses,
   fetchExpenseSummary,
   updateExpense,
-  deleteExpense,
+  deleteExpense: apiDeleteExpense,
 } = useExpenses();
 
 const { categoriesByName, fetchCategories } = useCategories();
+const toast = useToast();
 
 // Reactive variables
 const isEditModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
+const expenseToDeleteId = ref<number | null>(null);
 const editForm = ref({});
 const currentPage = ref(1);
 const itemsPerPage = 10;
@@ -220,17 +237,25 @@ onMounted(async () => {
 async function refreshData() {
   const filters = currentFilters.value;
 
-  // Fetch paginated data for table
-  await fetchPaginatedExpenses({
-    page: currentPage.value,
-    limit: itemsPerPage,
-    ...filters,
-  });
+  try {
+    // Fetch paginated data for table
+    await fetchPaginatedExpenses({
+      page: currentPage.value,
+      limit: itemsPerPage,
+      ...filters,
+    });
 
-  // Fetch aggregated data for charts
-  await fetchExpenseSummary({
-    ...filters,
-  });
+    // Fetch aggregated data for charts
+    await fetchExpenseSummary({
+      ...filters,
+    });
+  } catch (e) {
+    toast.add({
+      title: 'Error',
+      description: 'Failed to load expenses.',
+      color: 'red'
+    });
+  }
 }
 
 function checkMobile() {
@@ -262,6 +287,12 @@ function handlePageChange(page: number) {
     page: currentPage.value,
     limit: itemsPerPage,
     ...filters,
+  }).catch(() => {
+      toast.add({
+      title: 'Error',
+      description: 'Failed to load page.',
+      color: 'red'
+    });
   });
 }
 
@@ -270,9 +301,22 @@ function cancelEditing() {
   editForm.value = {};
 }
 
-function handleSave(updatedExpense: Expense) {
-  updateExpense(updatedExpense);
-  isEditModalOpen.value = false;
+async function handleSave(updatedExpense: Expense) {
+  try {
+    await updateExpense(updatedExpense);
+    isEditModalOpen.value = false;
+    toast.add({
+      title: 'Success',
+      description: 'Expense updated successfully.',
+      color: 'green'
+    });
+  } catch (e) {
+    toast.add({
+      title: 'Error',
+      description: 'Failed to update expense.',
+      color: 'red'
+    });
+  }
 }
 
 function startEditing(row: any) {
@@ -282,6 +326,33 @@ function startEditing(row: any) {
   if (expense) {
     editForm.value = { ...expense };
     isEditModalOpen.value = true;
+  }
+}
+
+function confirmDelete(id: number) {
+  expenseToDeleteId.value = id;
+  isDeleteModalOpen.value = true;
+}
+
+async function executeDelete() {
+  if (expenseToDeleteId.value !== null) {
+    try {
+      await apiDeleteExpense(expenseToDeleteId.value);
+      isDeleteModalOpen.value = false;
+      toast.add({
+        title: 'Success',
+        description: 'Expense deleted successfully.',
+        color: 'green'
+      });
+    } catch (e) {
+      toast.add({
+        title: 'Error',
+        description: 'Failed to delete expense.',
+        color: 'red'
+      });
+    } finally {
+      expenseToDeleteId.value = null;
+    }
   }
 }
 </script>

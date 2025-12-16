@@ -27,6 +27,7 @@ interface ExpenseSummary {
 export function useExpenses() {
   const expenses = ref<Expense[]>([]); // For legacy support and charts (all data)
   const entries = ref<any[]>([]); // For legacy support (formatted expenses)
+  const loading = ref(false); // New loading state
 
   const paginatedExpenses = ref<any[]>([]); // Formatted expenses for the current page
   const totalCount = ref(0); // Total count for pagination
@@ -35,6 +36,7 @@ export function useExpenses() {
   // Fetch all expenses (legacy behavior + support for filters)
   // This is used for Charts which need the full dataset (or filtered dataset) to calculate aggregates
   async function fetchExpenses(params: FetchParams = {}) {
+    loading.value = true;
     try {
       const query = new URLSearchParams();
       if (params.startDate) query.append('startDate', params.startDate);
@@ -66,11 +68,15 @@ export function useExpenses() {
         );
     } catch (error) {
       console.error('Error fetching expenses:', error);
+      throw error; // Re-throw so components can handle it
+    } finally {
+      loading.value = false;
     }
   }
 
   // New function for server-side pagination
   async function fetchPaginatedExpenses(params: FetchParams) {
+    loading.value = true;
     try {
       const query = new URLSearchParams();
       if (params.page) query.append('page', params.page.toString());
@@ -107,10 +113,19 @@ export function useExpenses() {
       }
     } catch (error) {
       console.error('Error fetching paginated expenses:', error);
+      throw error;
+    } finally {
+      loading.value = false;
     }
   }
 
   async function fetchExpenseSummary(params: FetchParams = {}) {
+    // We might not want to set global loading for this one if it's run in parallel with list
+    // But usually they are fetched together. Let's not set loading=true here to avoid flickering if one finishes before other.
+    // Or we could have separate loading states. For now, let's just let fetchPaginatedExpenses handle the main loading state if called together.
+    // If called independently, it might not show loading. Let's add it but be careful.
+    // Actually, `loading` usually implies "fetching data that affects the view".
+    // Let's wrapping it in loading too, assuming they are sequential or we don't mind extending the loading time.
     try {
       const query = new URLSearchParams();
       if (params.startDate) query.append('startDate', params.startDate);
@@ -126,10 +141,12 @@ export function useExpenses() {
       expenseSummary.value = data;
     } catch (error) {
       console.error('Error fetching expense summary:', error);
+      throw error;
     }
   }
 
   async function updateExpense(updatedExpense: any) {
+    loading.value = true;
     try {
       const year = new Date(updatedExpense.date).getFullYear();
       const response = await fetch(
@@ -178,10 +195,14 @@ export function useExpenses() {
       }
     } catch (error) {
       console.error('Error updating expense:', error);
+      throw error;
+    } finally {
+      loading.value = false;
     }
   }
 
   async function deleteExpense(id: number) {
+    loading.value = true;
     try {
       // We need to find the expense to know the year.
       // It might be in 'expenses' or 'paginatedExpenses'
@@ -216,6 +237,9 @@ export function useExpenses() {
       totalCount.value--;
     } catch (error) {
       console.error('Error deleting expense:', error);
+      throw error;
+    } finally {
+      loading.value = false;
     }
   }
 
@@ -225,6 +249,7 @@ export function useExpenses() {
     paginatedExpenses,
     totalCount,
     expenseSummary,
+    loading,
     fetchExpenses,
     fetchPaginatedExpenses,
     fetchExpenseSummary,
