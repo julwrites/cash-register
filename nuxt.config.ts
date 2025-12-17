@@ -10,7 +10,19 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/fonts',
     '@sidebase/nuxt-auth',
+    'nuxt-vuefire',
   ],
+  vuefire: {
+    config: {
+      apiKey: '',
+      authDomain: '',
+      projectId: '',
+      appId: '',
+      storageBucket: '',
+      messagingSenderId: '',
+      measurementId: '',
+    },
+  },
   auth: {
     provider: {
       type: 'authjs',
