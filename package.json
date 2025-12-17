@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test": "vitest run",
-    "lint": "echo 'Lint temporarily disabled due to configuration issues'",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky"
   },

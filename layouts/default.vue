@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <header class="header" v-if="showHeader">
+    <header v-if="showHeader" class="header">
       <div class="header-content">
         <div class="nav-left">
           <UTabs :items="navItems" class="nav-tabs" @change="onNavChange" />
@@ -43,12 +43,7 @@ const navItems = [
   { label: 'Home', slot: 'home' },
 ];
 
-const activeTab = computed(() => {
-  return 'home'; // Only home tab now
-});
-
-function onNavChange(index: number) {
-  const item = navItems[index];
+function onNavChange(_index: number) {
   navigateTo('/');
 }
 

@@ -19,9 +19,9 @@ import { computed } from 'vue';
 import ExpenseForm from '@/pages/components/ExpenseForm.vue';
 
 const props = defineProps({
-  isOpen: Boolean,
-  expense: Object,
-  categories: Array,
+  isOpen: { type: Boolean, default: false },
+  expense: { type: Object, default: () => ({}) },
+  categories: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits(['update:isOpen', 'save', 'cancel']);

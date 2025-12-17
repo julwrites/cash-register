@@ -249,7 +249,7 @@ async function refreshData() {
     await fetchExpenseSummary({
       ...filters,
     });
-  } catch (e) {
+  } catch (_e) {
     toast.add({
       title: 'Error',
       description: 'Failed to load expenses.',
@@ -310,7 +310,7 @@ async function handleSave(updatedExpense: Expense) {
       description: 'Expense updated successfully.',
       color: 'green'
     });
-  } catch (e) {
+  } catch (_e) {
     toast.add({
       title: 'Error',
       description: 'Failed to update expense.',
@@ -344,7 +344,7 @@ async function executeDelete() {
         description: 'Expense deleted successfully.',
         color: 'green'
       });
-    } catch (e) {
+    } catch (_e) {
       toast.add({
         title: 'Error',
         description: 'Failed to delete expense.',

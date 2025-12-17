@@ -92,11 +92,11 @@
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
-  selectedPeriod: Object,
-  selectedCategory: Object,
-  categoryOptions: Array,
-  startDate: String,
-  endDate: String,
+  selectedPeriod: { type: Object, default: () => ({ label: 'All Time', value: '' }) },
+  selectedCategory: { type: Object, default: () => ({ label: 'All Categories', value: '' }) },
+  categoryOptions: { type: Array, default: () => [] },
+  startDate: { type: String, default: '' },
+  endDate: { type: String, default: '' },
 });
 
 const emit = defineEmits([
