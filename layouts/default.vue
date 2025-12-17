@@ -3,11 +3,23 @@
     <header v-if="showHeader" class="header">
       <div class="header-content">
         <div class="nav-left">
-          <UTabs :items="navItems" class="nav-tabs" @change="onNavChange" />
+          <h1 class="text-2xl font-bold mr-6 cursor-pointer" @click="navigateTo('/')">
+            Expense Tracker
+          </h1>
+          <UTabs
+            :items="navItems"
+            :model-value="selectedTabIndex"
+            class="nav-tabs"
+            @change="onNavChange"
+          />
         </div>
 
         <div class="nav-right">
-          <UDropdown :items="settingsItems" :popper="{ placement: 'bottom-end' }">
+          <span class="text-sm mr-4">Welcome, {{ data?.user?.username }}</span>
+          <UDropdown
+            :items="settingsItems"
+            :popper="{ placement: 'bottom-end' }"
+          >
             <UButton
               color="white"
               variant="ghost"
@@ -40,11 +52,20 @@ const isAdmin = computed(() => data.value?.user?.isAdmin || false);
 const showHeader = computed(() => isLoggedIn.value && route.path !== '/login');
 
 const navItems = [
-  { label: 'Home', slot: 'home' },
+  { label: 'Add Record', slot: 'form' },
+  { label: 'Dashboard', slot: 'dashboard' },
+  { label: 'Expense List', slot: 'list' },
 ];
 
-function onNavChange(_index: number) {
-  navigateTo('/');
+const selectedTabIndex = computed(() => {
+  const tab = route.query.tab as string;
+  const index = navItems.findIndex((item) => item.slot === tab);
+  return index === -1 ? 0 : index;
+});
+
+function onNavChange(index: number) {
+  const tab = navItems[index].slot;
+  navigateTo({ path: '/', query: { tab } });
 }
 
 const settingsItems = computed(() => {
