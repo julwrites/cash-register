@@ -14,8 +14,8 @@
       </UFormGroup>
       <UFormGroup label="Description" name="description">
         <USelectMenu
-          :key="formKey"
           id="description"
+          :key="formKey"
           v-model="expenseData.description"
           :options="descriptionOptions"
           required

@@ -12,8 +12,8 @@
               color="gray"
               variant="ghost"
               icon="i-heroicons-arrow-right-on-rectangle-20-solid"
-              @click="handleLogout"
               label="Logout"
+              @click="handleLogout"
             />
           </div>
         </div>
@@ -55,7 +55,6 @@ const { status, data, signOut } = useAuth();
 const toast = useToast();
 
 const isLoggedIn = computed(() => status.value === 'authenticated');
-const isAdmin = computed(() => data.value?.user?.isAdmin || false);
 
 const pageItems = [
   {

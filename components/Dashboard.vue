@@ -77,7 +77,6 @@ import { ref, onMounted, computed } from 'vue';
 import { useExpenses } from '@/composables/useExpenses';
 import { useCategories } from '@/composables/useCategories';
 import EditExpenseModal from '@/components/EditExpenseModal.vue';
-import type { Expense } from '@/types/expense';
 
 const { fetchPaginatedExpenses, fetchExpenseSummary, expenseSummary, paginatedExpenses, loading, updateExpense } = useExpenses();
 const { categoriesByName, fetchCategories } = useCategories();
@@ -124,7 +123,7 @@ async function handleSave(updatedExpense: any) {
     });
     // Refresh data
     refreshData();
-  } catch (e) {
+  } catch (_e) {
     toast.add({
       title: 'Error',
       description: 'Failed to update expense.',

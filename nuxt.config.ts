@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/fonts',
     '@sidebase/nuxt-auth',
+    '@nuxt/eslint',
   ],
   auth: {
     provider: {
