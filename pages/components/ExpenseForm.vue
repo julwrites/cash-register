@@ -14,6 +14,7 @@
       </UFormGroup>
       <UFormGroup label="Description" name="description">
         <USelectMenu
+          :key="formKey"
           id="description"
           v-model="expenseData.description"
           :options="descriptionOptions"
@@ -72,6 +73,7 @@ const expenseData = ref<Expense>({
   ...props.expense,
 });
 
+const formKey = ref(0);
 const descriptionOptions = ref([]);
 const toast = useToast();
 
@@ -97,6 +99,7 @@ async function handleSubmit() {
     await fetchDescriptions();
   }
   expenseData.value = { ...defaultExpense };
+  formKey.value++;
 }
 
 function validateExpense(expense: Expense): boolean {

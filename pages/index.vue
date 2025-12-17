@@ -1,22 +1,30 @@
 <template>
   <div class="index-container">
     <div v-if="isLoggedIn" class="main-content">
-      <div class="app-header mb-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Expense Tracker</h1>
-        <div class="flex items-center gap-2">
-           <span class="text-sm text-gray-600 dark:text-gray-400">Welcome, {{ data?.user?.username }}</span>
-           <UButton
+      <div class="app-header mb-4">
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="text-2xl font-bold">Expense Tracker</h1>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600 dark:text-gray-400"
+              >Welcome, {{ data?.user?.username }}</span
+            >
+            <UButton
               color="gray"
               variant="ghost"
               icon="i-heroicons-arrow-right-on-rectangle-20-solid"
               @click="handleLogout"
               label="Logout"
             />
+          </div>
         </div>
-      </div>
 
-      <div class="page-tabs">
-        <UTabs :items="pageItems" class="internal-tabs" @change="onPageTabChange" />
+        <div class="page-tabs">
+          <UTabs
+            :items="pageItems"
+            class="internal-tabs"
+            @change="onPageTabChange"
+          />
+        </div>
       </div>
 
       <div class="tab-content">
@@ -26,7 +34,6 @@
         />
         <ExpenseForm v-else-if="selectedTab === 'form'" />
         <ExpenseList v-else-if="selectedTab === 'list'" />
-        <SettingsPage v-else-if="selectedTab === 'settings'" />
       </div>
     </div>
     <div v-else class="login-prompt">
@@ -41,7 +48,6 @@ import { ref, computed, watch } from 'vue';
 import ExpenseForm from './expense-form.vue';
 import ExpenseList from './expense-list.vue';
 import Dashboard from '@/components/Dashboard.vue';
-import SettingsPage from './settings.vue';
 
 const route = useRoute();
 const selectedTab = ref('form');
@@ -64,10 +70,6 @@ const pageItems = [
     label: 'Expense List',
     slot: 'list',
   },
-  {
-    label: 'Settings',
-    slot: 'settings',
-  },
 ];
 
 function onPageTabChange(index: number) {
@@ -80,14 +82,18 @@ async function handleLogout() {
 }
 
 // Set selected tab based on route or default
-watch(() => route.path, (newPath) => {
-  if (newPath === '/') {
-    // Keep current selectedTab or default to 'form'
-    if (!selectedTab.value) {
-      selectedTab.value = 'form';
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath === '/') {
+      // Keep current selectedTab or default to 'form'
+      if (!selectedTab.value) {
+        selectedTab.value = 'form';
+      }
     }
-  }
-}, { immediate: true });
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
