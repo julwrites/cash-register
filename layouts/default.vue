@@ -2,19 +2,28 @@
   <div class="layout">
     <header class="header" v-if="showHeader">
       <div class="header-content">
-        <UTabs :items="navItems" class="nav-tabs" @change="onNavChange" />
+        <div class="nav-left">
+          <UTabs :items="navItems" class="nav-tabs" @change="onNavChange" />
+        </div>
+
+        <div class="nav-right">
+          <UDropdown :items="settingsItems" :popper="{ placement: 'bottom-end' }">
+            <UButton
+              color="white"
+              variant="ghost"
+              trailing-icon="i-heroicons-cog-6-tooth-20-solid"
+              class="settings-btn"
+            >
+              Settings
+            </UButton>
+          </UDropdown>
+        </div>
       </div>
     </header>
 
     <main class="main">
       <slot />
     </main>
-
-    <footer class="footer" v-if="showFooter">
-      <div class="footer-content">
-        <UButton class="logout-btn" @click="logout">Logout</UButton>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -22,32 +31,63 @@
 import { computed } from 'vue';
 
 const route = useRoute();
-const { status, signOut } = useAuth();
+const { status, data, signOut } = useAuth();
 
 const isLoggedIn = computed(() => status.value === 'authenticated');
+const isAdmin = computed(() => data.value?.user?.isAdmin || false);
 
-// Show header/footer only when logged in and not on login page
+// Show header only when logged in and not on login page
 const showHeader = computed(() => isLoggedIn.value && route.path !== '/login');
-const showFooter = computed(() => isLoggedIn.value && route.path !== '/login');
 
 const navItems = [
   { label: 'Home', slot: 'home' },
-  { label: 'Settings', slot: 'settings' },
 ];
 
 const activeTab = computed(() => {
-  if (route.path === '/settings') return 'settings';
-  return 'home'; // Default to 'home' for all other pages
+  return 'home'; // Only home tab now
 });
 
 function onNavChange(index: number) {
   const item = navItems[index];
-  if (item.slot === 'settings') {
-    navigateTo('/settings');
-  } else {
-    navigateTo('/');
-  }
+  navigateTo('/');
 }
+
+const settingsItems = computed(() => {
+  const items = [
+    [
+      {
+        label: 'User Settings',
+        icon: 'i-heroicons-user-circle-20-solid',
+        click: () => navigateTo('/settings'),
+      },
+    ],
+  ];
+
+  if (isAdmin.value) {
+    items[0].push(
+      {
+        label: 'Admin',
+        icon: 'i-heroicons-shield-check-20-solid',
+        click: () => navigateTo('/settings?tab=admin'),
+      },
+      {
+        label: 'Manage Categories',
+        icon: 'i-heroicons-tag-20-solid',
+        click: () => navigateTo('/settings?tab=manage-categories'),
+      }
+    );
+  }
+
+  items.push([
+    {
+      label: 'Logout',
+      icon: 'i-heroicons-arrow-left-on-rectangle-20-solid',
+      click: logout,
+    },
+  ]);
+
+  return items;
+});
 
 async function logout() {
   await signOut({ callbackUrl: '/login' });
@@ -78,7 +118,18 @@ async function logout() {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
 }
 
 .nav-tabs {
@@ -97,49 +148,27 @@ async function logout() {
   border-bottom: 2px solid white;
 }
 
+.settings-btn {
+  color: white !important;
+}
+
+.settings-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 .main {
   flex: 1;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 80px 20px 100px; /* Account for fixed header and footer */
+  padding: 80px 20px 40px; /* Account for fixed header (no footer now) */
   box-sizing: border-box;
-}
-
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: #f8f9fa;
-  padding: 10px 20px;
-  text-align: right;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-}
-
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: right;
-}
-
-.logout-btn {
-  padding: 10px 20px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.logout-btn:hover {
-  background-color: #c82333;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .main {
-    padding: 70px 15px 90px;
+    padding: 70px 15px 30px;
   }
 
   .nav-tabs :deep(.u-tab) {
@@ -147,11 +176,16 @@ async function logout() {
     margin-right: 5px;
     font-size: 14px;
   }
+
+  .settings-btn {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
 }
 
 @media (max-width: 640px) {
   .main {
-    padding: 65px 10px 85px;
+    padding: 65px 10px 25px;
   }
 
   .nav-tabs {
@@ -163,6 +197,21 @@ async function logout() {
     padding: 6px 10px;
     margin: 2px;
     font-size: 13px;
+  }
+
+  .settings-btn {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-left, .nav-right {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
