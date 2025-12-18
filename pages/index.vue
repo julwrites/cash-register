@@ -7,6 +7,7 @@
       />
       <ExpenseForm v-else-if="selectedTab === 'form'" />
       <ExpenseList v-else-if="selectedTab === 'list'" />
+      <RecurringExpenses v-else-if="selectedTab === 'recurring'" />
     </UContainer>
 
     <UContainer v-else class="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center">
@@ -31,6 +32,7 @@ import { computed } from 'vue';
 import ExpenseForm from './expense-form.vue';
 import ExpenseList from './expense-list.vue';
 import Dashboard from '@/components/Dashboard.vue';
+import RecurringExpenses from '@/components/RecurringExpenses.vue';
 
 const route = useRoute();
 const { status } = useAuth();
