@@ -51,7 +51,7 @@ defineProps({
   },
   sort: {
     type: Object,
-    default: null,
+    default: undefined,
   }
 });
 
