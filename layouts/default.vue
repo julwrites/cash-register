@@ -1,42 +1,64 @@
 <template>
-  <div class="layout">
-    <header v-if="showHeader" class="header">
-      <div class="header-content">
-        <div class="nav-left">
-          <h1 class="text-2xl font-bold cursor-pointer" @click="navigateTo('/')">
+  <div class="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <header
+      v-if="showHeader"
+      class="sticky top-0 z-50 w-full bg-primary-600 text-white shadow-md"
+    >
+      <UContainer class="flex flex-col md:flex-row justify-between items-center py-2 md:py-0 md:h-16 gap-2">
+        <!-- Left: Logo -->
+        <div class="flex items-center justify-between w-full md:w-auto">
+          <h1
+            class="text-xl font-bold cursor-pointer hover:text-primary-100 transition-colors"
+            @click="navigateTo('/')"
+          >
             Expense Tracker
           </h1>
+          <!-- Mobile User (optional, or just keep layout simple) -->
         </div>
 
-        <div class="nav-center">
+        <!-- Center: Tabs -->
+        <div class="flex-1 flex justify-center w-full md:w-auto order-last md:order-none">
           <UTabs
             :items="navItems"
             :model-value="selectedTabIndex"
-            class="nav-tabs"
+            class="w-full max-w-md"
+            :ui="{
+              list: {
+                background: 'bg-primary-700 dark:bg-primary-800',
+                marker: { background: 'bg-white dark:bg-gray-100' },
+                tab: {
+                  active: 'text-primary-600 dark:text-primary-800',
+                  inactive: 'text-primary-100 hover:text-white',
+                }
+              }
+            }"
             @change="onNavChange"
           />
         </div>
 
-        <div class="nav-right">
-          <span class="text-sm mr-4">Welcome, {{ data?.user?.username }}</span>
+        <!-- Right: User & Settings -->
+        <div class="flex items-center gap-4 justify-end w-full md:w-auto">
+          <span class="text-sm hidden sm:inline font-medium">
+            Welcome, {{ data?.user?.username }}
+          </span>
           <UDropdown
             :items="settingsItems"
-            :popper="{ placement: 'bottom-end' }"
+            :popper="{ placement: 'bottom-end', strategy: 'fixed' }"
           >
             <UButton
               color="white"
               variant="ghost"
               trailing-icon="i-heroicons-cog-6-tooth-20-solid"
-              class="settings-btn"
+              class="hover:bg-primary-500 text-white hover:text-white ring-1 ring-transparent hover:ring-primary-400"
             >
               Settings
             </UButton>
           </UDropdown>
         </div>
-      </div>
+      </UContainer>
     </header>
 
-    <main class="main">
+    <main class="flex-1 w-full">
       <slot />
     </main>
   </div>
@@ -112,135 +134,3 @@ async function logout() {
   await signOut({ callbackUrl: '/login' });
 }
 </script>
-
-<style scoped>
-.layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  width: 100%;
-}
-
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-}
-
-.nav-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
-}
-
-.nav-center {
-  display: flex;
-  justify-content: center;
-  flex: 1;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 1;
-}
-
-.nav-tabs {
-  display: flex;
-}
-
-.nav-tabs :deep(.u-tab) {
-  color: white;
-  padding: 10px 15px;
-  margin-right: 10px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-}
-
-.nav-tabs :deep(.u-tab.active) {
-  border-bottom: 2px solid white;
-}
-
-.settings-btn {
-  color: white !important;
-}
-
-.settings-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.main {
-  flex: 1;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 80px 20px 40px; /* Account for fixed header (no footer now) */
-  box-sizing: border-box;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .main {
-    padding: 70px 15px 30px;
-  }
-
-  .nav-tabs :deep(.u-tab) {
-    padding: 8px 12px;
-    margin-right: 5px;
-    font-size: 14px;
-  }
-
-  .settings-btn {
-    padding: 8px 12px !important;
-    font-size: 14px !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .main {
-    padding: 65px 10px 25px;
-  }
-
-  .nav-tabs {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .nav-tabs :deep(.u-tab) {
-    padding: 6px 10px;
-    margin: 2px;
-    font-size: 13px;
-  }
-
-  .settings-btn {
-    padding: 6px 10px !important;
-    font-size: 13px !important;
-  }
-
-  .header-content {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .nav-left, .nav-right {
-    width: 100%;
-    justify-content: center;
-  }
-}
-</style>
