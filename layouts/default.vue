@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 const route = useRoute();
 const { status, data, signOut } = useAuth();
@@ -80,6 +80,7 @@ const navItems = [
   { label: 'Add Record', slot: 'form' },
   { label: 'Dashboard', slot: 'dashboard' },
   { label: 'Expense List', slot: 'list' },
+  { label: 'Recurring', slot: 'recurring' },
 ];
 
 const selectedTabIndex = computed(() => {
@@ -133,4 +134,20 @@ const settingsItems = computed(() => {
 async function logout() {
   await signOut({ callbackUrl: '/login' });
 }
+
+onMounted(() => {
+  if (isLoggedIn.value) {
+    $fetch('/api/recurring/process', { method: 'POST' })
+      .then((res: any) => {
+        if (res.processed > 0) {
+          useToast().add({
+            title: 'Recurring Expenses Processed',
+            description: `${res.processed} new expenses created.`,
+            color: 'green',
+          });
+        }
+      })
+      .catch(() => {});
+  }
+});
 </script>
