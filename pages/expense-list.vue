@@ -39,13 +39,14 @@
       />
     </div>
     <div v-else class="mb-4 text-sm text-gray-500 italic">
-      Showing the 10 most recent transactions for quick editing. Switch to "All" to search and filter.
+      Showing the 10 most recent transactions for quick editing. Switch to "All" to search, filter, and sort.
     </div>
 
     <div>
       <ExpenseTable
         :entries="paginatedExpenses"
         :columns="columns"
+        v-model:sort="sort"
         :loading="loading"
         @edit="startEditing"
         @delete="confirmDelete"
@@ -119,16 +120,17 @@ const endDate = ref(null);
 const selectedPeriod = ref({ label: 'This Month', value: 'month' });
 const selectedCategory = ref({ label: 'All Categories', value: '' });
 
-// Constants
-const columns = [
-  { key: 'date', label: 'Date' },
-  { key: 'category', label: 'Category' },
-  { key: 'description', label: 'Description' },
-  { key: 'amount', label: 'Amount' },
-  { key: 'actions', label: 'Actions' },
-];
+const sort = ref({ column: 'date', direction: 'desc' as const });
 
 // Computed properties
+const columns = computed(() => [
+  { key: 'date', label: 'Date', sortable: viewMode.value === 'all' },
+  { key: 'category', label: 'Category', sortable: viewMode.value === 'all' },
+  { key: 'description', label: 'Description', sortable: viewMode.value === 'all' },
+  { key: 'amount', label: 'Amount', sortable: viewMode.value === 'all' },
+  { key: 'actions', label: 'Actions' },
+]);
+
 const categories = computed(() => categoriesByName.value);
 
 const categoryOptions = computed(() => [
@@ -193,9 +195,18 @@ watch([selectedPeriod, selectedCategory, startDate, endDate], () => {
   }
 });
 
-watch(viewMode, (_newMode) => {
+watch(viewMode, (newMode) => {
+  if (newMode === 'recent') {
+      sort.value = { column: 'date', direction: 'desc' };
+  }
   currentPage.value = 1; // Reset page on mode switch
   refreshData();
+});
+
+watch(sort, () => {
+    if (viewMode.value === 'all') {
+        refreshData();
+    }
 });
 
 // Lifecycle hooks
@@ -212,8 +223,8 @@ async function refreshData() {
       await fetchPaginatedExpenses({
         page: 1,
         limit: 10,
-        sort: 'date',
-        order: 'desc'
+        sortBy: 'date',
+        sortOrder: 'desc'
       });
     } else {
       // All Mode: Use user selected filters
@@ -222,6 +233,8 @@ async function refreshData() {
         page: currentPage.value,
         limit: itemsPerPage,
         ...filters,
+        sortBy: sort.value.column,
+        sortOrder: sort.value.direction,
       });
     }
   } catch (_e) {
@@ -239,6 +252,7 @@ function resetFilters() {
   startDate.value = null;
   endDate.value = null;
   currentPage.value = 1;
+  sort.value = { column: 'date', direction: 'desc' };
   // Watcher will trigger refreshData
 }
 
@@ -251,6 +265,8 @@ function handlePageChange(page: number) {
         page: currentPage.value,
         limit: itemsPerPage,
         ...filters,
+        sortBy: sort.value.column,
+        sortOrder: sort.value.direction,
       }).catch(() => {
           toast.add({
           title: 'Error',

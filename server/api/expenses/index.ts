@@ -9,6 +9,8 @@ export default defineEventHandler((event) => {
   const startDate = query.startDate as string;
   const endDate = query.endDate as string;
   const category = query.category as string;
+  const sortBy = query.sortBy as string;
+  const sortOrder = query.sortOrder as 'asc' | 'desc';
 
   return fetchExpensesPaginated({
     page,
@@ -16,5 +18,7 @@ export default defineEventHandler((event) => {
     startDate,
     endDate,
     category,
+    sortBy,
+    sortOrder,
   });
 });

@@ -19,6 +19,8 @@ interface FetchExpensesParams {
   startDate?: string;
   endDate?: string;
   category?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 interface PaginatedResponse {
@@ -151,6 +153,10 @@ export const fetchExpensesPaginated = (
     allYears = allYears.filter((year) => year >= startYear && year <= endYear);
   }
 
+  const sortBy = params.sortBy || 'date';
+  const sortOrder = params.sortOrder || 'desc';
+  const isDefaultSort = sortBy === 'date' && sortOrder === 'desc';
+
   // If page/limit are not provided, fall back to "fetch all" behavior (but with filtering support)
   if (!params.page || !params.limit) {
     let allExpenses: Expense[] = [];
@@ -182,16 +188,15 @@ export const fetchExpensesPaginated = (
       const expenses = db.prepare(query).all(...args) as Expense[];
       allExpenses = allExpenses.concat(expenses);
     }
-    // Since we concat results from multiple years which are already sorted by year (desc),
-    // and within each year we sort by date DESC, the result should be roughly sorted.
-    // But to be safe (and because day-level overlap might happen if we didn't sort strictly),
-    // we should rely on the natural order of years [2025, 2024] + internal sort.
+
+    if (!isDefaultSort) {
+      allExpenses.sort(compareExpenses(sortBy, sortOrder));
+    }
     return allExpenses;
   }
 
   const page = params.page || 1;
   const limit = params.limit || 10;
-  const offset = (page - 1) * limit;
 
   // Global Pagination Logic
 
@@ -228,62 +233,130 @@ export const fetchExpensesPaginated = (
   }
 
   // 2. Fetch specific slice
-  const results: Expense[] = [];
-  let currentOffset = offset;
-  let remainingLimit = limit;
+  if (isDefaultSort) {
+    // Optimized path for Date DESC (default)
+    const results: Expense[] = [];
+    let currentOffset = (page - 1) * limit;
+    let remainingLimit = limit;
 
-  for (const year of allYears) {
-    const count = yearCounts.get(year) || 0;
+    for (const year of allYears) {
+      const count = yearCounts.get(year) || 0;
 
-    if (count === 0) continue;
+      if (count === 0) continue;
 
-    if (currentOffset >= count) {
-      currentOffset -= count;
-      continue;
+      if (currentOffset >= count) {
+        currentOffset -= count;
+        continue;
+      }
+
+      // We need records from this year
+      // Effective offset for this year is currentOffset
+      // Effective limit is remainingLimit
+
+      const db = getDb(year);
+      let query = `SELECT id, credit, debit, description, strftime('%Y-%m-%d', date) as date, category FROM expenses`;
+      const conditions: string[] = [];
+      const args: any[] = [];
+
+      if (params.category) {
+        conditions.push('category = ?');
+        args.push(params.category);
+      }
+      if (params.startDate) {
+        conditions.push('date >= ?');
+        args.push(params.startDate);
+      }
+      if (params.endDate) {
+        conditions.push('date <= ?');
+        args.push(params.endDate);
+      }
+
+      if (conditions.length > 0) {
+        query += ' WHERE ' + conditions.join(' AND ');
+      }
+
+      query += ' ORDER BY date DESC LIMIT ? OFFSET ?';
+      args.push(remainingLimit, currentOffset);
+
+      const expenses = db.prepare(query).all(...args) as Expense[];
+      results.push(...expenses);
+
+      remainingLimit -= expenses.length;
+      currentOffset = 0; // Reset offset for subsequent years
+
+      if (remainingLimit <= 0) break;
     }
 
-    // We need records from this year
-    // Effective offset for this year is currentOffset
-    // Effective limit is remainingLimit
+    return {
+      data: results,
+      total: totalCount,
+      page,
+      limit,
+    };
+  } else {
+    // Slow path: fetch all matching, sort, slice
+    let allFiltered: Expense[] = [];
+    for (const year of allYears) {
+        // Skip years with no matches
+        if ((yearCounts.get(year) || 0) === 0) continue;
 
-    const db = getDb(year);
-    let query = `SELECT id, credit, debit, description, strftime('%Y-%m-%d', date) as date, category FROM expenses`;
-    const conditions: string[] = [];
-    const args: any[] = [];
+        const db = getDb(year);
+        let query = `SELECT id, credit, debit, description, strftime('%Y-%m-%d', date) as date, category FROM expenses`;
+        const conditions: string[] = [];
+        const args: any[] = [];
 
-    if (params.category) {
-      conditions.push('category = ?');
-      args.push(params.category);
+        if (params.category) {
+          conditions.push('category = ?');
+          args.push(params.category);
+        }
+        if (params.startDate) {
+          conditions.push('date >= ?');
+          args.push(params.startDate);
+        }
+        if (params.endDate) {
+          conditions.push('date <= ?');
+          args.push(params.endDate);
+        }
+
+        if (conditions.length > 0) {
+          query += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        // Use default sort per year
+        query += ' ORDER BY date DESC';
+
+        const expenses = db.prepare(query).all(...args) as Expense[];
+        allFiltered = allFiltered.concat(expenses);
     }
-    if (params.startDate) {
-      conditions.push('date >= ?');
-      args.push(params.startDate);
-    }
-    if (params.endDate) {
-      conditions.push('date <= ?');
-      args.push(params.endDate);
-    }
 
-    if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
-    }
+    // Sort
+    allFiltered.sort(compareExpenses(sortBy, sortOrder));
 
-    query += ' ORDER BY date DESC LIMIT ? OFFSET ?';
-    args.push(remainingLimit, currentOffset);
+    // Slice
+    const startIndex = (page - 1) * limit;
+    const sliced = allFiltered.slice(startIndex, startIndex + limit);
 
-    const expenses = db.prepare(query).all(...args) as Expense[];
-    results.push(...expenses);
-
-    remainingLimit -= expenses.length;
-    currentOffset = 0; // Reset offset for subsequent years
-
-    if (remainingLimit <= 0) break;
+    return {
+      data: sliced,
+      total: totalCount,
+      page,
+      limit
+    };
   }
-
-  return {
-    data: results,
-    total: totalCount,
-    page,
-    limit,
-  };
 };
+
+function compareExpenses(sortBy: string, sortOrder: 'asc' | 'desc') {
+  return (a: Expense, b: Expense) => {
+    let valA: any = a[sortBy as keyof Expense];
+    let valB: any = b[sortBy as keyof Expense];
+
+    if (sortBy === 'amount') {
+      valA = a.credit - a.debit;
+      valB = b.credit - b.debit;
+    }
+
+    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  };
+}
