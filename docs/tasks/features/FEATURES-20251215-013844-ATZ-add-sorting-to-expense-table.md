@@ -1,6 +1,6 @@
 ---
 id: FEATURES-20251215-013844-ATZ
-status: pending
+status: completed
 title: Add Sorting to Expense Table
 priority: medium
 created: 2025-12-15 01:38:44
@@ -30,3 +30,10 @@ The current expense table supports pagination and filtering but lacks sorting. U
 - Clicking a header sorts the table by that column.
 - Clicking again toggles Ascending/Descending.
 - Sorting works in conjunction with Filtering and Pagination.
+
+## Implementation Notes
+- Implemented dual-path sorting in backend:
+  - Optimized path for default sort (Date DESC).
+  - "Fetch-All-Sort-Slice" path for other sort options to handle cross-year sorting correctly.
+- Updated `ExpenseTable` to support `UTable` sorting.
+- Enabled sorting only in "All" view mode to preserve "Recent" view semantics.

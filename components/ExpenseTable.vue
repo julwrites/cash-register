@@ -5,6 +5,8 @@
       :columns="columns"
       table-class="expense-table"
       :loading="loading"
+      :sort="sort"
+      @update:sort="emit('update:sort', $event)"
     >
       <template #loading-state>
         <div class="flex items-center justify-center p-4">
@@ -46,10 +48,14 @@ defineProps({
   loading: {
     type: Boolean,
     default: false,
+  },
+  sort: {
+    type: Object,
+    default: undefined,
   }
 });
 
-const emit = defineEmits(['edit', 'delete']);
+const emit = defineEmits(['edit', 'delete', 'update:sort']);
 
 function actions(row: any) {
   return [

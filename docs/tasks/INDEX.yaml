@@ -9,6 +9,10 @@ docs/tasks/features/FEATURES-20251215-013843-THI-refactor-expense-charts-to-use-
 
 docs/tasks/features/FEATURES-20251215-013844-ATZ-add-sorting-to-expense-table.md:
 
+docs/tasks/features/FEATURES-20251217-023351-BUN-auto-fill-category-from-description.md:
+
+docs/tasks/features/FEATURES-20251217-023431-ZTM-recurring-expenses-system.md:
+
 docs/tasks/foundation/FOUNDATION-20251212-114704-RKM-initial-project-setup.md:
 
 docs/tasks/foundation/FOUNDATION-20251212-132626-DCF-update-documentation-to-match-codebase.md:
@@ -21,9 +25,23 @@ docs/tasks/infrastructure/INFRASTRUCTURE-20251212-140214-QHJ-improve-development
 
 docs/tasks/infrastructure/INFRASTRUCTURE-20251212-155744-UEZ-fix-ci-pipeline-failures.md:
 
+docs/tasks/infrastructure/INFRASTRUCTURE-20251215-144424-MHH-fix-auth-redirects-to-respect-base-url-environment-variable.md:
+
+docs/tasks/infrastructure/INFRASTRUCTURE-20251217-162153-AET-ensure-build-lint-and-test-pass.md:
+
 docs/tasks/presentation/PRESENTATION-20251213-021904-TQK-replace-blocking-alerts-with-toasts.md:
 
 docs/tasks/presentation/PRESENTATION-20251215-013845-IRD-add-dark-mode-toggle.md:
+
+docs/tasks/presentation/PRESENTATION-20251217-023416-COM-mobile-bottom-navigation.md:
+
+docs/tasks/presentation/PRESENTATION-20251217-023449-LKZ-mobile-card-view-for-expenses.md:
+
+docs/tasks/presentation/PRESENTATION-20251217-023506-GYF-list-view-summary-and-chart-improvements.md:
+
+docs/tasks/presentation/PRESENTATION-20251217-040304-QTJ-ui-refactor-move-tabs-to-header-and-fix-description-reset.md:
+
+docs/tasks/presentation/PRESENTATION-20251217-170600-VRS-header-and-layout-redesign.md:
 
 docs/tasks/review/REVIEW-20251213-021759-ZSN-codebase-gap-analysis.md:
 
