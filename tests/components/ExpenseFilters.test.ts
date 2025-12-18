@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mountSuspended } from '@nuxt/test-utils/runtime';
-import ExpenseFilters from '../../pages/components/ExpenseFilters.vue';
+import ExpenseFilters from '../../components/ExpenseFilters.vue';
 
 describe('ExpenseFilters', () => {
   const defaultProps = {

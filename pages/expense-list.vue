@@ -1,35 +1,48 @@
 <template>
   <div class="expense-list-container">
-    <h3 class="page-title">Past Records</h3>
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="page-title mb-0">Past Records</h3>
 
-    <ExpenseFilters
-      :selected-period="selectedPeriod"
-      :selected-category="selectedCategory"
-      :category-options="categoryOptions"
-      :start-date="startDate"
-      :end-date="endDate"
-      @update:selected-period="selectedPeriod = $event"
-      @update:selected-category="selectedCategory = $event"
-      @update:start-date="startDate = $event"
-      @update:end-date="endDate = $event"
-      @reset-filters="resetFilters"
-    />
-
-    <div class="mobile-tabs">
-      <UTabs :items="tabItems" @change="onTabChange" />
-    </div>
-
-    <div v-show="!isMobile || activeTab === 'charts'" class="charts-container">
-      <UTabs :items="chartTabItems" @change="onChartTabChange" />
-      <div v-if="activeChartTab === 'income-expense'">
-        <IncomeExpenseChart :chart-data="barChartData" />
-      </div>
-      <div v-else-if="activeChartTab === 'category'">
-        <ExpensesByCategoryChart :chart-data="pieChartData" />
+      <!-- View Mode Toggle -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">View Mode:</span>
+        <UButtonGroup size="sm" orientation="horizontal">
+          <UButton
+            :color="viewMode === 'recent' ? 'primary' : 'gray'"
+            variant="solid"
+            label="Recent"
+            @click="viewMode = 'recent'"
+          />
+          <UButton
+            :color="viewMode === 'all' ? 'primary' : 'gray'"
+            variant="solid"
+            label="All"
+            @click="viewMode = 'all'"
+          />
+        </UButtonGroup>
       </div>
     </div>
 
-    <div v-show="!isMobile || activeTab === 'table'">
+    <!-- Filters (Only visible in 'All' mode) -->
+    <div v-if="viewMode === 'all'" class="mb-6">
+      <ExpenseFilters
+        :selected-period="selectedPeriod"
+        :selected-category="selectedCategory"
+        :category-options="categoryOptions"
+        :start-date="startDate"
+        :end-date="endDate"
+        @update:selected-period="selectedPeriod = $event"
+        @update:selected-category="selectedCategory = $event"
+        @update:start-date="startDate = $event"
+        @update:end-date="endDate = $event"
+        @reset-filters="resetFilters"
+      />
+    </div>
+    <div v-else class="mb-4 text-sm text-gray-500 italic">
+      Showing the 10 most recent transactions for quick editing. Switch to "All" to search and filter.
+    </div>
+
+    <div>
       <ExpenseTable
         :entries="paginatedExpenses"
         :columns="columns"
@@ -38,11 +51,13 @@
         @delete="confirmDelete"
       />
 
+      <!-- Pagination (Only visible in 'All' mode) -->
       <UPagination
-        v-if="totalCount > 0"
+        v-if="viewMode === 'all' && totalCount > 0"
         v-model="currentPage"
         :total="totalCount"
         :per-page="itemsPerPage"
+        class="mt-4 justify-center"
         @change="handlePageChange"
       />
     </div>
@@ -72,19 +87,15 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { useExpenses } from '@/composables/useExpenses';
 import { useCategories } from '@/composables/useCategories';
-import ExpenseFilters from './components/ExpenseFilters.vue';
-import IncomeExpenseChart from './components/IncomeExpenseChart.vue';
-import ExpensesByCategoryChart from './components/ExpensesByCategoryChart.vue';
-import ExpenseTable from './components/ExpenseTable.vue';
+import ExpenseFilters from '@/components/ExpenseFilters.vue';
+import ExpenseTable from '@/components/ExpenseTable.vue';
 import EditExpenseModal from '@/components/EditExpenseModal.vue';
 
 const {
   paginatedExpenses,
   totalCount,
-  expenseSummary,
   loading,
   fetchPaginatedExpenses,
-  fetchExpenseSummary,
   updateExpense,
   deleteExpense: apiDeleteExpense,
 } = useExpenses();
@@ -93,6 +104,8 @@ const { categoriesByName, fetchCategories } = useCategories();
 const toast = useToast();
 
 // Reactive variables
+const viewMode = ref<'recent' | 'all'>('recent');
+
 const isEditModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const expenseToDeleteId = ref<number | null>(null);
@@ -106,10 +119,6 @@ const endDate = ref(null);
 const selectedPeriod = ref({ label: 'This Month', value: 'month' });
 const selectedCategory = ref({ label: 'All Categories', value: '' });
 
-const activeTab = ref('table');
-const isMobile = ref(false);
-const activeChartTab = ref('income-expense');
-
 // Constants
 const columns = [
   { key: 'date', label: 'Date' },
@@ -119,17 +128,9 @@ const columns = [
   { key: 'actions', label: 'Actions' },
 ];
 
-const tabItems = [
-  { label: 'Table', slot: 'table' },
-  { label: 'Charts', slot: 'charts' },
-];
-
-const chartTabItems = [
-  { label: 'Income vs Expenses', slot: 'income-expense' },
-  { label: 'Expenses by Category', slot: 'category' },
-];
-
 // Computed properties
+const categories = computed(() => categoriesByName.value);
+
 const categoryOptions = computed(() => [
   { label: 'All Categories', value: '' },
   ...categoriesByName.value.map((cat) => ({
@@ -184,71 +185,45 @@ const currentFilters = computed(() => {
   return filters;
 });
 
-const barChartData = computed(() => {
-  const income = expenseSummary.value?.income || 0;
-  const expenses = expenseSummary.value?.expenses || 0;
-  return {
-    labels: ['Income', 'Expenses'],
-    datasets: [
-      {
-        label: 'Amount',
-        data: [income, expenses],
-        backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-      },
-    ],
-  };
-});
-
-const pieChartData = computed(() => {
-  const expensesByCategory = expenseSummary.value?.byCategory || {};
-
-  return {
-    labels: Object.keys(expensesByCategory),
-    datasets: [
-      {
-        data: Object.values(expensesByCategory),
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-        ],
-      },
-    ],
-  };
-});
-
 // Watchers
 watch([selectedPeriod, selectedCategory, startDate, endDate], () => {
-  currentPage.value = 1;
+  if (viewMode.value === 'all') {
+    currentPage.value = 1;
+    refreshData();
+  }
+});
+
+watch(viewMode, (_newMode) => {
+  currentPage.value = 1; // Reset page on mode switch
   refreshData();
 });
 
 // Lifecycle hooks
 onMounted(async () => {
-  checkMobile();
-  window.addEventListener('resize', checkMobile);
   await fetchCategories();
   await refreshData();
 });
 
 // Functions
 async function refreshData() {
-  const filters = currentFilters.value;
-
   try {
-    // Fetch paginated data for table
-    await fetchPaginatedExpenses({
-      page: currentPage.value,
-      limit: itemsPerPage,
-      ...filters,
-    });
-
-    // Fetch aggregated data for charts
-    await fetchExpenseSummary({
-      ...filters,
-    });
+    if (viewMode.value === 'recent') {
+      // Recent Mode: Force sort by date desc, no filters, limit 10
+      await fetchPaginatedExpenses({
+        page: 1,
+        limit: 10,
+        sort: 'date',
+        order: 'desc'
+      });
+    } else {
+      // All Mode: Use user selected filters
+      const filters = currentFilters.value;
+      await fetchPaginatedExpenses({
+        page: currentPage.value,
+        limit: itemsPerPage,
+        ...filters,
+      });
+    }
   } catch (_e) {
     toast.add({
       title: 'Error',
@@ -256,18 +231,6 @@ async function refreshData() {
       color: 'red'
     });
   }
-}
-
-function checkMobile() {
-  isMobile.value = window.innerWidth <= 768;
-}
-
-function onTabChange(index: number) {
-  activeTab.value = tabItems[index].slot;
-}
-
-function onChartTabChange(index: number) {
-  activeChartTab.value = chartTabItems[index].slot;
 }
 
 function resetFilters() {
@@ -281,19 +244,21 @@ function resetFilters() {
 
 function handlePageChange(page: number) {
   currentPage.value = page;
-  // Only refresh paginated data when changing page
-  const filters = currentFilters.value;
-  fetchPaginatedExpenses({
-    page: currentPage.value,
-    limit: itemsPerPage,
-    ...filters,
-  }).catch(() => {
-      toast.add({
-      title: 'Error',
-      description: 'Failed to load page.',
-      color: 'red'
-    });
-  });
+
+  if (viewMode.value === 'all') {
+      const filters = currentFilters.value;
+      fetchPaginatedExpenses({
+        page: currentPage.value,
+        limit: itemsPerPage,
+        ...filters,
+      }).catch(() => {
+          toast.add({
+          title: 'Error',
+          description: 'Failed to load page.',
+          color: 'red'
+        });
+      });
+  }
 }
 
 function cancelEditing() {
@@ -310,6 +275,8 @@ async function handleSave(updatedExpense: Expense) {
       description: 'Expense updated successfully.',
       color: 'green'
     });
+    // Refresh to show updated data
+    refreshData();
   } catch (_e) {
     toast.add({
       title: 'Error',
@@ -344,6 +311,7 @@ async function executeDelete() {
         description: 'Expense deleted successfully.',
         color: 'green'
       });
+      refreshData();
     } catch (_e) {
       toast.add({
         title: 'Error',
@@ -365,21 +333,6 @@ async function executeDelete() {
 .page-title {
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.charts-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.chart {
-  width: 100%;
-  height: 300px;
-  margin-top: 20px;
 }
 
 :deep(.expense-table) {
@@ -432,19 +385,6 @@ async function executeDelete() {
   width: 100px;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.edit-modal {
-  max-width: 90vw;
-  width: 100%;
-  margin: 0 auto;
-}
-
 :root {
   --color-border-subtle: #e2e8f0;
   --color-background-subtle: #f8fafc;
@@ -457,10 +397,6 @@ async function executeDelete() {
   --color-background-hover: #2d3748;
 }
 
-.mobile-tabs {
-  display: none;
-}
-
 @media (max-width: 1024px) {
   .expense-list-container {
     padding: 10px;
@@ -468,18 +404,6 @@ async function executeDelete() {
 }
 
 @media (max-width: 768px) {
-  .mobile-tabs {
-    display: block;
-    margin-bottom: 20px;
-  }
-
-  .charts-container {
-    flex-direction: column;
-  }
-  .chart {
-    height: 250px;
-    margin-bottom: 30px;
-  }
   .expense-list-container {
     padding: 5px;
   }
@@ -487,28 +411,15 @@ async function executeDelete() {
   :deep(td) {
     padding: 6px;
   }
-  :deep(.chartjs-render-monitor) {
-    max-width: 100%;
-    max-height: 100%;
-  }
 }
 
 @media (max-width: 640px) {
   .expense-list-container {
     padding: 2px;
   }
-  .edit-modal {
-    max-width: 98vw;
-  }
   :deep(th),
   :deep(td) {
     padding: 4px;
-  }
-}
-
-@media (max-width: 480px) {
-  .chart {
-    height: 200px;
   }
 }
 </style>
