@@ -7,7 +7,7 @@ export default defineEventHandler((_event) => {
     const descriptions = db
       .prepare(
         `
-      SELECT description
+      SELECT description, last_category
       FROM description_usage
       ORDER BY last_used DESC, usage_count DESC
       LIMIT 1000
@@ -16,7 +16,10 @@ export default defineEventHandler((_event) => {
       .all() as any[];
 
     console.log(`Returning ${descriptions.length} MRU-sorted descriptions`);
-    return descriptions.map((d) => d.description);
+    return descriptions.map((d) => ({
+      label: d.description,
+      category: d.last_category,
+    }));
   } catch (error) {
     console.error('Error fetching MRU descriptions:', error);
     // Return empty array as fallback

@@ -25,10 +25,19 @@ export const getDescriptionDb = (): Database.Database => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         description TEXT UNIQUE NOT NULL,
         last_used TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        usage_count INTEGER DEFAULT 1
+        usage_count INTEGER DEFAULT 1,
+        last_category TEXT
       );
   `
   ).run();
+
+  try {
+    db.prepare(
+      'ALTER TABLE description_usage ADD COLUMN last_category TEXT'
+    ).run();
+  } catch (_error) {
+    // Column likely already exists
+  }
 
   db.prepare(
     `
@@ -85,13 +94,16 @@ const runMigrationLogic = (
 
     try {
       const expenseDb = getExpenseDb(year);
+      // SQLite Note: When using MAX(date) with GROUP BY, the other non-aggregated columns
+      // (like category) are taken from the row that matches the MAX value.
       const descriptions = expenseDb
         .prepare(
           `
               SELECT
                 description,
                 COUNT(*) as usage_count,
-                MAX(date) as last_used
+                MAX(date) as last_used,
+                category
               FROM expenses
               WHERE description IS NOT NULL AND description != ''
               GROUP BY description
@@ -100,20 +112,29 @@ const runMigrationLogic = (
         .all() as any[];
 
       const stmt = descriptionsDb.prepare(`
-              INSERT INTO description_usage (description, last_used, usage_count)
-              VALUES (?, ?, ?)
+              INSERT INTO description_usage (description, last_used, usage_count, last_category)
+              VALUES (?, ?, ?, ?)
               ON CONFLICT(description)
               DO UPDATE SET
                   last_used = CASE
                     WHEN excluded.last_used > description_usage.last_used THEN excluded.last_used
                     ELSE description_usage.last_used
                   END,
+                  last_category = CASE
+                    WHEN excluded.last_used > description_usage.last_used THEN excluded.last_category
+                    ELSE description_usage.last_category
+                  END,
                   usage_count = description_usage.usage_count + excluded.usage_count
            `);
 
       const insertMany = descriptionsDb.transaction((descs: any[]) => {
         for (const desc of descs) {
-          stmt.run(desc.description, desc.last_used, desc.usage_count);
+          stmt.run(
+            desc.description,
+            desc.last_used,
+            desc.usage_count,
+            desc.category
+          );
         }
       });
 
@@ -132,20 +153,26 @@ const runMigrationLogic = (
   return { totalDescriptions, totalUsageCount, yearsProcessed: years };
 };
 
-export const trackDescriptionUsage = (description: string): void => {
+export const trackDescriptionUsage = (
+  description: string,
+  category: string
+): void => {
   try {
     const db = getDescriptionDb();
     db.prepare(
       `
-            INSERT INTO description_usage (description, last_used, usage_count)
-            VALUES (?, CURRENT_TIMESTAMP, 1)
+            INSERT INTO description_usage (description, last_used, usage_count, last_category)
+            VALUES (?, CURRENT_TIMESTAMP, 1, ?)
             ON CONFLICT(description)
             DO UPDATE SET
                 last_used = CURRENT_TIMESTAMP,
-                usage_count = usage_count + 1
+                usage_count = usage_count + 1,
+                last_category = excluded.last_category
         `
-    ).run(description);
-    console.log(`Tracked description usage: "${description}"`);
+    ).run(description, category);
+    console.log(
+      `Tracked description usage: "${description}" with category "${category}"`
+    );
   } catch (err) {
     console.error('Error tracking description usage:', err);
   }

@@ -1,6 +1,6 @@
 ---
 id: FEATURES-20251217-023351-BUN
-status: pending
+status: completed
 title: Auto-fill Category from Description
 priority: medium
 created: 2025-12-17 02:33:51

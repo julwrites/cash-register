@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       );
 
     // Track description usage for MRU sorting
-    trackDescriptionUsage(expense.description);
+    trackDescriptionUsage(expense.description, expense.category);
 
     return { id: result.lastInsertRowid, ...expense };
   } catch (err: unknown) {

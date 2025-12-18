@@ -1,6 +1,10 @@
 <template>
   <div class="expense-form-container">
-    <UForm class="expense-form" @submit.prevent="handleSubmit">
+    <UForm
+      :state="expenseData"
+      class="expense-form"
+      @submit.prevent="handleSubmit"
+    >
       <UFormGroup label="Date" name="date">
         <UInput id="date" v-model="expenseData.date" type="date" required />
       </UFormGroup>
@@ -52,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { defaultExpense } from '../../composables/defaultExpense';
 import { useCategories } from '@/composables/useCategories';
 
@@ -74,7 +78,10 @@ const expenseData = ref<Expense>({
 });
 
 const formKey = ref(0);
-const descriptionOptions = ref([]);
+const descriptionList = ref<{ label: string; category: string }[]>([]);
+const descriptionOptions = computed(() =>
+  descriptionList.value.map((d) => d.label)
+);
 const toast = useToast();
 
 const categoryOptions = computed(() => [
@@ -84,9 +91,20 @@ const categoryOptions = computed(() => [
 const fetchDescriptions = async () => {
   const response = await fetch('/api/descriptions');
   if (response.ok) {
-    descriptionOptions.value = await response.json();
+    descriptionList.value = await response.json();
   }
 };
+
+watch(
+  () => expenseData.value.description,
+  (newDesc) => {
+    if (!newDesc) return;
+    const match = descriptionList.value.find((d) => d.label === newDesc);
+    if (match && match.category) {
+      expenseData.value.category = match.category;
+    }
+  }
+);
 
 onMounted(async () => {
   await fetchCategories();
