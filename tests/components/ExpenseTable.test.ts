@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mountSuspended, mockComponent } from '@nuxt/test-utils/runtime';
-import ExpenseTable from '../../pages/components/ExpenseTable.vue';
+import ExpenseTable from '../../components/ExpenseTable.vue';
 
 // Mock UDropdown to expose items and trigger clicks
 mockComponent('UDropdown', {

@@ -3,9 +3,12 @@
     <header v-if="showHeader" class="header">
       <div class="header-content">
         <div class="nav-left">
-          <h1 class="text-2xl font-bold mr-6 cursor-pointer" @click="navigateTo('/')">
+          <h1 class="text-2xl font-bold cursor-pointer" @click="navigateTo('/')">
             Expense Tracker
           </h1>
+        </div>
+
+        <div class="nav-center">
           <UTabs
             :items="navItems"
             :model-value="selectedTabIndex"
@@ -136,16 +139,26 @@ async function logout() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
+  flex: 1;
+}
+
+.nav-center {
+  display: flex;
+  justify-content: center;
+  flex: 1;
 }
 
 .nav-right {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex: 1;
 }
 
 .nav-tabs {
