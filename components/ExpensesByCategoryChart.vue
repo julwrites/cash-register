@@ -33,7 +33,11 @@ const chartOptions = {
           const label = context.label || '';
           const value = context.raw || 0;
           const percentage = ((value / totalExpenses.value) * 100).toFixed(2);
-          return `${label}: $${value.toFixed(2)} (${percentage}%)`;
+          const formattedValue = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          }).format(value);
+          return `${label}: ${formattedValue} (${percentage}%)`;
         },
       },
     },
@@ -43,8 +47,7 @@ const chartOptions = {
 
 <style scoped>
 .chart {
-  width: 48%;
+  width: 100%;
   height: 300px;
-  margin-bottom: 20px;
 }
 </style>

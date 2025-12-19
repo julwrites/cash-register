@@ -37,6 +37,14 @@
         @update:end-date="endDate = $event"
         @reset-filters="resetFilters"
       />
+
+      <SummaryCards
+        v-if="expenseSummary"
+        :income="expenseSummary.income"
+        :expenses="expenseSummary.expenses"
+        :loading="loading"
+        class="mt-6"
+      />
     </div>
     <div v-else class="mb-4 text-sm text-gray-500 italic">
       Showing the 10 most recent transactions for quick editing. Switch to "All" to search, filter, and sort.
@@ -91,12 +99,15 @@ import { useCategories } from '@/composables/useCategories';
 import ExpenseFilters from '@/components/ExpenseFilters.vue';
 import ExpenseTable from '@/components/ExpenseTable.vue';
 import EditExpenseModal from '@/components/EditExpenseModal.vue';
+import SummaryCards from '@/components/SummaryCards.vue';
 
 const {
   paginatedExpenses,
   totalCount,
   loading,
   fetchPaginatedExpenses,
+  fetchExpenseSummary,
+  expenseSummary,
   updateExpense,
   deleteExpense: apiDeleteExpense,
 } = useExpenses();
@@ -229,13 +240,18 @@ async function refreshData() {
     } else {
       // All Mode: Use user selected filters
       const filters = currentFilters.value;
-      await fetchPaginatedExpenses({
-        page: currentPage.value,
-        limit: itemsPerPage,
-        ...filters,
-        sortBy: sort.value.column,
-        sortOrder: sort.value.direction,
-      });
+      await Promise.all([
+        fetchPaginatedExpenses({
+          page: currentPage.value,
+          limit: itemsPerPage,
+          ...filters,
+          sortBy: sort.value.column,
+          sortOrder: sort.value.direction,
+        }),
+        fetchExpenseSummary({
+          ...filters
+        })
+      ]);
     }
   } catch (_e) {
     toast.add({
