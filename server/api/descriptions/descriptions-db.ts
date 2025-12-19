@@ -113,7 +113,7 @@ const runMigrationLogic = (
 
       const stmt = descriptionsDb.prepare(`
               INSERT INTO description_usage (description, last_used, usage_count, last_category)
-              VALUES (?, ?, ?, ?)
+              VALUES (@description, @last_used, @usage_count, @last_category)
               ON CONFLICT(description)
               DO UPDATE SET
                   last_used = CASE
@@ -129,12 +129,12 @@ const runMigrationLogic = (
 
       const insertMany = descriptionsDb.transaction((descs: any[]) => {
         for (const desc of descs) {
-          stmt.run(
-            desc.description,
-            desc.last_used,
-            desc.usage_count,
-            desc.category
-          );
+          stmt.run({
+            description: desc.description,
+            last_used: desc.last_used,
+            usage_count: desc.usage_count,
+            last_category: desc.category
+          });
         }
       });
 
@@ -162,14 +162,14 @@ export const trackDescriptionUsage = (
     db.prepare(
       `
             INSERT INTO description_usage (description, last_used, usage_count, last_category)
-            VALUES (?, CURRENT_TIMESTAMP, 1, ?)
+            VALUES (@description, CURRENT_TIMESTAMP, 1, @category)
             ON CONFLICT(description)
             DO UPDATE SET
                 last_used = CURRENT_TIMESTAMP,
                 usage_count = usage_count + 1,
                 last_category = excluded.last_category
         `
-    ).run(description, category);
+    ).run({ description, category });
     console.log(
       `Tracked description usage: "${description}" with category "${category}"`
     );

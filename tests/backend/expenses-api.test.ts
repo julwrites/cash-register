@@ -22,4 +22,36 @@ describe('Expenses API', async () => {
     expect(expense).toBeDefined();
     expect(expense.category).toBe('Food');
   });
+
+  it('should add an expense', async () => {
+    const newExpense = {
+      description: 'New Expense',
+      date: '2023-01-02',
+      category: 'Transport',
+      credit: 0,
+      debit: 50
+    };
+
+    const response: any = await $fetch('/api/expenses/add', {
+      method: 'POST',
+      body: newExpense
+    });
+
+    expect(response).toHaveProperty('id');
+    expect(response).toHaveProperty('description', 'New Expense');
+  });
+
+  it('should fail if missing required fields', async () => {
+    try {
+      await $fetch('/api/expenses/add', {
+        method: 'POST',
+        body: { description: 'Incomplete' }
+      });
+      // Should fail
+      expect(true).toBe(false);
+    } catch (e: any) {
+      expect(e.response.status).toBe(400);
+      expect(e.response._data.statusMessage).toBe('Missing required fields');
+    }
+  });
 });
