@@ -30,16 +30,16 @@ export default defineEventHandler(async (event) => {
       .prepare(
         `
       INSERT INTO expenses (credit, debit, description, date, category)
-      VALUES (?, ?, ?, ?, ?)
+      VALUES (@credit, @debit, @description, @date, @category)
     `
       )
-      .run(
-        expense.credit || 0,
-        expense.debit || 0,
-        expense.description,
-        expense.date,
-        expense.category
-      );
+      .run({
+        credit: expense.credit || 0,
+        debit: expense.debit || 0,
+        description: expense.description,
+        date: expense.date,
+        category: expense.category,
+      });
 
     // Track description usage for MRU sorting
     trackDescriptionUsage(expense.description, expense.category);
