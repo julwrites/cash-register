@@ -3,32 +3,21 @@
     <h3 class="text-xl font-bold mb-4">Dashboard</h3>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <UCard>
-        <div class="text-center">
-          <div class="text-gray-500 text-sm font-medium">Income (This Month)</div>
-          <div class="text-2xl font-bold text-green-600">
-            {{ formatCurrency(summary?.income || 0) }}
-          </div>
-        </div>
-      </UCard>
+    <SummaryCards
+      v-if="summary"
+      :income="summary.income"
+      :expenses="summary.expenses"
+      :loading="loading"
+      class="mb-8"
+    />
 
+    <!-- Charts -->
+    <div v-if="summary" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <UCard>
-        <div class="text-center">
-          <div class="text-gray-500 text-sm font-medium">Expenses (This Month)</div>
-          <div class="text-2xl font-bold text-red-600">
-            {{ formatCurrency(summary?.expenses || 0) }}
-          </div>
-        </div>
+        <IncomeExpenseChart :chart-data="incomeExpenseData" v-if="incomeExpenseData" />
       </UCard>
-
       <UCard>
-        <div class="text-center">
-          <div class="text-gray-500 text-sm font-medium">Balance (This Month)</div>
-          <div class="text-2xl font-bold" :class="(summary?.income || 0) - (summary?.expenses || 0) >= 0 ? 'text-blue-600' : 'text-red-600'">
-            {{ formatCurrency((summary?.income || 0) - (summary?.expenses || 0)) }}
-          </div>
-        </div>
+        <ExpensesByCategoryChart :chart-data="categoryData" v-if="categoryData" />
       </UCard>
     </div>
 
@@ -77,6 +66,9 @@ import { ref, onMounted, computed } from 'vue';
 import { useExpenses } from '@/composables/useExpenses';
 import { useCategories } from '@/composables/useCategories';
 import EditExpenseModal from '@/components/EditExpenseModal.vue';
+import IncomeExpenseChart from '@/components/IncomeExpenseChart.vue';
+import ExpensesByCategoryChart from '@/components/ExpensesByCategoryChart.vue';
+import SummaryCards from '@/components/SummaryCards.vue';
 
 const { fetchPaginatedExpenses, fetchExpenseSummary, expenseSummary, paginatedExpenses, loading, updateExpense } = useExpenses();
 const { categoriesByName, fetchCategories } = useCategories();
@@ -85,6 +77,42 @@ const toast = useToast();
 const summary = computed(() => expenseSummary.value);
 const recentExpenses = computed(() => paginatedExpenses.value);
 const categories = computed(() => categoriesByName.value);
+
+const incomeExpenseData = computed(() => {
+  if (!summary.value) return null;
+  return {
+    labels: ['Income', 'Expenses'],
+    datasets: [
+      {
+        label: 'Amount',
+        backgroundColor: ['#10B981', '#EF4444'],
+        data: [summary.value.income, summary.value.expenses]
+      }
+    ]
+  };
+});
+
+const categoryData = computed(() => {
+  if (!summary.value || !summary.value.byCategory) return null;
+  const categories = Object.keys(summary.value.byCategory);
+  const data = Object.values(summary.value.byCategory);
+
+  // Need colors for categories
+  const backgroundColors = [
+    '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#6366F1', '#EC4899', '#8B5CF6',
+    '#0EA5E9', '#22C55E', '#EAB308', '#818CF8', '#D946EF', '#A855F7'
+  ];
+
+  return {
+    labels: categories,
+    datasets: [
+      {
+        backgroundColor: backgroundColors.slice(0, categories.length),
+        data: data
+      }
+    ]
+  };
+});
 
 const isEditModalOpen = ref(false);
 const editForm = ref({});

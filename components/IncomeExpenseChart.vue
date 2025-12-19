@@ -44,7 +44,11 @@ const chartOptions = {
           const value = context.raw || 0;
           const total = context.dataset.data[0] + context.dataset.data[1];
           const percentage = ((value / total) * 100).toFixed(2);
-          return `${label}: $${value.toFixed(2)} (${percentage}%)`;
+          const formattedValue = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          }).format(value);
+          return `${label}: ${formattedValue} (${percentage}%)`;
         },
       },
     },
@@ -54,8 +58,7 @@ const chartOptions = {
 
 <style scoped>
 .chart {
-  width: 48%;
+  width: 100%;
   height: 300px;
-  margin-bottom: 20px;
 }
 </style>
