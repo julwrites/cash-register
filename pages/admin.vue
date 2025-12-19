@@ -1,7 +1,5 @@
 <template>
   <div class="admin-container">
-    <h2 class="page-title">Admin Dashboard</h2>
-
     <div class="admin-actions mb-4">
       <UButton
         class="mr-2"

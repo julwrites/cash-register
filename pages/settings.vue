@@ -5,6 +5,14 @@
         <h2 class="settings-title">{{ pageTitle }}</h2>
       </div>
 
+      <UTabs
+        v-if="tabs.length > 1"
+        :items="tabs"
+        :model-value="selectedTabIndex"
+        class="mb-6"
+        @change="onTabChange"
+      />
+
       <div class="settings-tab-content">
         <UserSettings v-if="activeTab === 'user-settings'" />
         <AdminPage v-else-if="activeTab === 'admin' && isAdmin" />
@@ -36,6 +44,29 @@ const activeTab = computed(() => {
   if (tab === 'manage-categories' && isAdmin.value) return 'manage-categories';
   return 'user-settings'; // Default
 });
+
+const tabs = computed(() => {
+  const t = [{ label: 'User Settings', slot: 'user-settings' }];
+  if (isAdmin.value) {
+    t.push({ label: 'Admin', slot: 'admin' });
+    t.push({ label: 'Manage Categories', slot: 'manage-categories' });
+  }
+  return t;
+});
+
+const selectedTabIndex = computed(() => {
+  const index = tabs.value.findIndex((t) => t.slot === activeTab.value);
+  return index === -1 ? 0 : index;
+});
+
+function onTabChange(index: number) {
+  const slot = tabs.value[index].slot;
+  if (slot === 'user-settings') {
+    navigateTo('/settings');
+  } else {
+    navigateTo(`/settings?tab=${slot}`);
+  }
+}
 
 const pageTitle = computed(() => {
   switch (activeTab.value) {

@@ -1,7 +1,5 @@
 <template>
   <div class="categories-container">
-    <h2 class="page-title">Manage Categories</h2>
-
     <div class="categories-table">
       <UTable :rows="categoriesByID" :columns="columns">
         <template #actions-data="{ row }">
