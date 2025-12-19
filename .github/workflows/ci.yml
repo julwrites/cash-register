@@ -60,7 +60,7 @@ jobs:
         run: |
           echo "AUTH_SECRET=testsecret" >> .env
           echo "ADMIN_USERNAME=admin" >> .env
-          echo "ADMIN_PASSWORD=password" >> .env
+          echo "ADMIN_PASSWORD=password123" >> .env
           echo "AUTH_ORIGIN=http://localhost:14322" >> .env
           echo "NEXTAUTH_URL=http://localhost:14322" >> .env
           echo "NUXT_AUTH_ORIGIN=http://localhost:14322" >> .env
