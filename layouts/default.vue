@@ -13,7 +13,9 @@
           >
             Expense Tracker
           </h1>
-          <!-- Mobile User (optional, or just keep layout simple) -->
+          <div class="md:hidden">
+            <ColorModeButton />
+          </div>
         </div>
 
         <!-- Center: Tabs -->
@@ -41,6 +43,7 @@
           <span class="text-sm hidden sm:inline font-medium">
             Welcome, {{ data?.user?.username }}
           </span>
+          <ColorModeButton />
           <UDropdown
             :items="settingsItems"
             :popper="{ placement: 'bottom-end', strategy: 'fixed' }"
