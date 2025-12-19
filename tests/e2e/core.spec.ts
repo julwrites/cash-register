@@ -131,5 +131,6 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
 
     // Verify table update
     await expect(page.getByRole('cell').filter({ hasText: '50.00' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Food' })).toBeVisible();
   });
 });
