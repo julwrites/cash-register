@@ -10,5 +10,6 @@ export default defineVitestConfig({
     env: {
       AUTH_ORIGIN: 'http://localhost:3000',
     },
+    exclude: ['node_modules', 'tests/e2e/**'],
   },
 });

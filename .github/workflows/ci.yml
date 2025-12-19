@@ -45,8 +45,29 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Create .env
+        run: |
+          echo "AUTH_SECRET=testsecret" >> .env
+          echo "ADMIN_USERNAME=admin" >> .env
+          echo "ADMIN_PASSWORD=password" >> .env
+          echo "AUTH_ORIGIN=http://localhost:14322" >> .env
+          echo "NEXTAUTH_URL=http://localhost:14322" >> .env
+          echo "NUXT_AUTH_ORIGIN=http://localhost:14322" >> .env
+      - run: npm run test:e2e
+
   docker:
-    needs: [lint, test, build]
+    needs: [lint, test, build, e2e]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:

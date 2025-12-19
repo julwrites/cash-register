@@ -1,0 +1,101 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - banner [ref=e5]:
+      - generic [ref=e6]:
+        - heading [level=1] [ref=e8] [cursor=pointer]: Expense Tracker
+        - tablist [ref=e11]:
+          - tab [ref=e14] [cursor=pointer]:
+            - generic [ref=e15]: Add Record
+          - tab [ref=e16] [cursor=pointer]:
+            - generic [ref=e17]: Dashboard
+          - tab [selected] [ref=e18] [cursor=pointer]:
+            - generic [ref=e19]: Expense List
+          - tab [ref=e20] [cursor=pointer]:
+            - generic [ref=e21]: Recurring
+        - generic [ref=e22]:
+          - generic [ref=e23]: Welcome, admin
+          - button [ref=e24] [cursor=pointer]
+          - button [ref=e27] [cursor=pointer]:
+            - button [ref=e28]: Settings
+    - main [ref=e30]:
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - heading [level=3] [ref=e35]: Past Records
+          - generic [ref=e36]:
+            - generic [ref=e37]: "View Mode:"
+            - generic [ref=e38]:
+              - button [ref=e39] [cursor=pointer]:
+                - generic [ref=e40]: Recent
+              - button [ref=e41] [cursor=pointer]:
+                - generic [ref=e42]: All
+        - generic [ref=e43]: Showing the 10 most recent transactions for quick editing. Switch to "All" to search, filter, and sort.
+        - table [ref=e48]:
+          - rowgroup [ref=e49]:
+            - row [ref=e50]:
+              - columnheader [ref=e51]: Date
+              - columnheader [ref=e52]: Category
+              - columnheader [ref=e53]: Description
+              - columnheader [ref=e54]: Amount
+              - columnheader [ref=e55]: Actions
+          - rowgroup [ref=e56]:
+            - row [ref=e57]:
+              - cell [ref=e58]: 2024-01-15
+              - cell [ref=e59]: Food
+              - cell [ref=e60]: Team Lunch
+              - cell [ref=e61]: "-45.50"
+              - cell [ref=e62]:
+                - button [ref=e64] [cursor=pointer]:
+                  - button [ref=e65]
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e67]:
+    - button "Toggle Nuxt DevTools" [ref=e68] [cursor=pointer]:
+      - img [ref=e69]
+    - generic "Page load time" [ref=e72]:
+      - generic [ref=e73]: "103"
+      - generic [ref=e74]: ms
+    - button "Toggle Component Inspector" [ref=e76] [cursor=pointer]:
+      - img [ref=e77]
+  - generic:
+    - generic:
+      - generic:
+        - dialog:
+          - generic [ref=e85]:
+            - heading "Edit Expense" [level=3] [ref=e87]
+            - generic [ref=e90]:
+              - generic [ref=e91]:
+                - generic [ref=e94]: Date
+                - textbox "Date" [ref=e97]: 2024-01-15
+              - generic [ref=e98]:
+                - generic [ref=e101]: Category
+                - generic [ref=e103]:
+                  - textbox [ref=e104]: Food
+                  - button "Category" [ref=e105] [cursor=pointer]:
+                    - button "Category" [ref=e106]:
+                      - generic [ref=e107]: Food
+              - generic [ref=e108]:
+                - generic [ref=e111]: Description
+                - generic [ref=e113]:
+                  - textbox [ref=e114]: Team Lunch
+                  - button "Description" [ref=e115] [cursor=pointer]:
+                    - button "Description" [ref=e116]:
+                      - generic [ref=e117]: Team Lunch
+              - generic [ref=e118]:
+                - generic [ref=e121]: Debit
+                - spinbutton "Debit" [active] [ref=e124]: "50"
+              - generic [ref=e125]:
+                - generic [ref=e128]: Credit
+                - spinbutton "Credit" [ref=e131]: "0"
+              - generic [ref=e132]:
+                - button "Update" [ref=e133] [cursor=pointer]
+                - button "Cancel" [ref=e134] [cursor=pointer]
+```
