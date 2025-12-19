@@ -14,10 +14,10 @@
     <!-- Charts -->
     <div v-if="summary" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <UCard>
-        <IncomeExpenseChart :chart-data="incomeExpenseData" v-if="incomeExpenseData" />
+        <IncomeExpenseChart v-if="incomeExpenseData" :chart-data="incomeExpenseData" />
       </UCard>
       <UCard>
-        <ExpensesByCategoryChart :chart-data="categoryData" v-if="categoryData" />
+        <ExpensesByCategoryChart v-if="categoryData" :chart-data="categoryData" />
       </UCard>
     </div>
 

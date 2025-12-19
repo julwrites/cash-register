@@ -17,7 +17,7 @@
         </div>
 
         <!-- Center: Tabs -->
-        <div class="flex-1 flex justify-center w-full md:w-auto order-last md:order-none">
+        <div class="flex-1 hidden md:flex justify-center w-full md:w-auto order-last md:order-none">
           <UTabs
             :items="navItems"
             :model-value="selectedTabIndex"
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Right: User & Settings -->
-        <div class="flex items-center gap-4 justify-end w-full md:w-auto">
+        <div class="hidden md:flex items-center gap-4 justify-end w-full md:w-auto">
           <span class="text-sm hidden sm:inline font-medium">
             Welcome, {{ data?.user?.username }}
           </span>
@@ -58,9 +58,10 @@
       </UContainer>
     </header>
 
-    <main class="flex-1 w-full">
+    <main class="flex-1 w-full pb-16 md:pb-0">
       <slot />
     </main>
+    <MobileNavBar v-if="showHeader" />
   </div>
 </template>
 

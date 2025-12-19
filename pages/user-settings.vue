@@ -1,7 +1,5 @@
 <template>
   <div class="settings-container">
-    <h2 class="page-title">User Settings</h2>
-
     <UForm class="settings-form" @submit.prevent="updateLogin">
       <UFormGroup label="New Username" name="username">
         <UInput id="username" v-model="newUsername" type="text" required />
@@ -14,14 +12,32 @@
       >
     </UForm>
     <p v-if="message" class="message">{{ message }}</p>
+
+    <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+      <UButton
+        color="red"
+        variant="outline"
+        icon="i-heroicons-arrow-left-on-rectangle-20-solid"
+        block
+        @click="logout"
+      >
+        Logout
+      </UButton>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+
+const { signOut } = useAuth();
 const newUsername = ref('');
 const newPassword = ref('');
 const message = ref('');
+
+async function logout() {
+  await signOut({ callbackUrl: '/login' });
+}
 
 function updateLogin() {
   fetch('/api/users/auth/updateLogin', {
