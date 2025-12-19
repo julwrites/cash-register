@@ -13,9 +13,7 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
     }
 
     // Wait for checkFirstUser to resolve and UI to update.
-    // waitForResponse can be flaky if request happens too fast or slow.
-    // Using a fixed short wait to allow hydration and API call to complete.
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000);
 
     const setupButton = page.getByRole('button', { name: 'Set Up Admin Account' });
 
@@ -41,8 +39,6 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
   // 3. Login
   await test.step('Login', async () => {
     if (!page.url().includes('/login')) {
-        // Only navigate if we are not already there (e.g. from setup step)
-        // If we are on /, we are good.
         if (page.url().endsWith('/')) return;
 
         await page.goto('/login');
@@ -54,7 +50,18 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
         await page.getByRole('button', { name: 'Continue' }).click();
 
         const passwordInput = page.getByLabel('Password:', { exact: true });
-        await expect(passwordInput).toBeVisible({ timeout: 10000 });
+
+        // Wait for password input or error
+        try {
+            await expect(passwordInput).toBeVisible({ timeout: 10000 });
+        } catch (e) {
+            console.log('Password input not visible');
+            // Check if "Set Password" modal appeared (needsPasswordReset)
+            if (await page.getByText('Set Password').isVisible()) {
+                console.log('Set Password modal appeared instead');
+            }
+            throw e;
+        }
 
         await passwordInput.fill('password123');
         await page.getByRole('button', { name: 'Login' }).click();
@@ -82,7 +89,8 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
 
     // Select Category "Food"
     await page.getByLabel('Category').click();
-    await page.getByText('Food', { exact: true }).click();
+    // Scope to role="option" to avoid strict mode violation
+    await page.locator('[role="option"]').filter({ hasText: 'Food' }).first().click();
 
     // Description
     await page.getByLabel('Description').click();
