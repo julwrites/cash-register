@@ -52,9 +52,9 @@
 
     <div>
       <ExpenseTable
+        v-model:sort="sort"
         :entries="paginatedExpenses"
         :columns="columns"
-        v-model:sort="sort"
         :loading="loading"
         @edit="startEditing"
         @delete="confirmDelete"

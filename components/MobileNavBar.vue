@@ -57,7 +57,7 @@ const items = [
 interface NavItem {
   label: string;
   icon: string;
-  action: () => Promise<void | unknown> | void;
+  action: () => any;
   slot: string;
 }
 

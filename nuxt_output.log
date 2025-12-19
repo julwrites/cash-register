@@ -112,3 +112,6 @@ After db.all, categories: []
 ℹ hmr update /pages/admin.vue, /node_modules/tailwindcss/tailwind.css, /node_modules/tailwindcss/tailwind.css?direct, /pages/admin.vue?macro=true, /@id/virtual:nuxt:%2Fapp%2F.nuxt%2Froutes.mjs
 ℹ hmr update /pages/manage-categories.vue, /node_modules/tailwindcss/tailwind.css, /node_modules/tailwindcss/tailwind.css?direct, /pages/manage-categories.vue?macro=true, /@id/virtual:nuxt:%2Fapp%2F.nuxt%2Froutes.mjs
 ℹ hmr update /components/MobileNavBar.vue?direct&vue&type=style&index=0&scoped=38998cc6&lang.css, /components/MobileNavBar.vue, /node_modules/tailwindcss/tailwind.css, /node_modules/tailwindcss/tailwind.css?direct
+ℹ hmr update /components/MobileNavBar.vue?direct&vue&type=style&index=0&scoped=38998cc6&lang.css, /components/MobileNavBar.vue, /node_modules/tailwindcss/tailwind.css, /node_modules/tailwindcss/tailwind.css?direct (x2)
+ℹ hmr update /components/Dashboard.vue?direct&vue&type=style&index=0&scoped=5533fda9&lang.css, /components/Dashboard.vue, /node_modules/tailwindcss/tailwind.css, /node_modules/tailwindcss/tailwind.css?direct
+ℹ hmr update /pages/expense-list.vue, /pages/expense-list.vue?direct&vue&type=style&index=0&scoped=b0f18a12&lang.css, /node_modules/tailwindcss/tailwind.css, /node_modules/tailwindcss/tailwind.css?direct, /pages/expense-list.vue?macro=true, /@id/virtual:nuxt:%2Fapp%2F.nuxt%2Froutes.mjs
