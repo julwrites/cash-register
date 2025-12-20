@@ -58,7 +58,10 @@ export default defineEventHandler(async (event) => {
 
       // Track description usage
       if (updatedExpense.description) {
-        trackDescriptionUsage(updatedExpense.description);
+        trackDescriptionUsage(
+          updatedExpense.description,
+          updatedExpense.category
+        );
       }
 
       return { id: Number(id), ...updatedExpense };
@@ -98,7 +101,10 @@ export default defineEventHandler(async (event) => {
 
       // Track description usage
       if (updatedExpense.description) {
-        trackDescriptionUsage(updatedExpense.description);
+        trackDescriptionUsage(
+          updatedExpense.description,
+          updatedExpense.category
+        );
       }
 
       return { id: insertResult.lastInsertRowid, ...updatedExpense };
