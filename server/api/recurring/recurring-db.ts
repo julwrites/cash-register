@@ -133,14 +133,30 @@ export function processRecurringExpenses(): number {
       const expenseDb = getExpenseDb(year);
 
       try {
-        expenseDb
+        // Check for duplicate before inserting
+        // We look for an exact match on date, description, category, and debit amount
+        const existing = expenseDb
           .prepare(
-            `INSERT INTO expenses (credit, debit, description, date, category) VALUES (?, ?, ?, ?, ?)`
+            `SELECT 1 FROM expenses WHERE date = ? AND description = ? AND category = ? AND debit = ?`
           )
-          .run(0, rule.amount, rule.description, expenseDateStr, rule.category);
+          .get(expenseDateStr, rule.description, rule.category, rule.amount);
 
-        trackDescriptionUsage(rule.description, rule.category);
-        processedCount++;
+        if (!existing) {
+          expenseDb
+            .prepare(
+              `INSERT INTO expenses (credit, debit, description, date, category) VALUES (?, ?, ?, ?, ?)`
+            )
+            .run(0, rule.amount, rule.description, expenseDateStr, rule.category);
+
+          trackDescriptionUsage(rule.description, rule.category);
+          processedCount++;
+        } else {
+          // Log that we skipped a duplicate, but we still count it as a "modification" to the rule state
+          // so that the next_due_date advances.
+          // console.log(`Skipping duplicate recurring expense: ${rule.description} on ${expenseDateStr}`);
+        }
+
+        // Always increment modifications so we advance the date
         modifications++;
       } catch (_e) {
         console.error(
