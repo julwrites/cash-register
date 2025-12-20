@@ -1,10 +1,10 @@
 <template>
-  <div class="container mx-auto px-4">
-    <UCard class="max-w-sm mx-auto mt-10">
-      <h1 class="text-center text-2xl font-bold mb-6">
+  <div class="login-page">
+    <UCard class="login-card">
+      <h1 class="login-title">
         {{ isFirstUser ? 'Welcome' : 'Login' }}
       </h1>
-      <div v-if="isFirstUser" class="space-y-4">
+      <div v-if="isFirstUser" class="first-user-msg">
         <p>
           It looks like you're the first user. Let's set up your admin account.
         </p>
@@ -12,7 +12,7 @@
           Set Up Admin Account
         </UButton>
       </div>
-      <form v-else class="flex flex-col gap-4" @submit.prevent="checkUser">
+      <form v-else class="login-form" @submit.prevent="checkUser">
         <UFormGroup label="Username" name="username" required>
           <UInput
             id="username"
@@ -40,7 +40,7 @@
           <UCheckbox v-model="rememberMe" label="Remember me" />
         </div>
 
-        <UButton type="submit" color="primary" block class="mt-2">
+        <UButton type="submit" color="primary" block class="submit-btn">
           {{ showPasswordField ? 'Login' : 'Continue' }}
         </UButton>
       </form>
@@ -163,3 +163,41 @@ function onAccountSetup() {
   isFirstUser.value = false;
 }
 </script>
+
+<style scoped>
+.login-page {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  padding-top: 4rem;
+  width: 100%;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 24rem;
+}
+
+.login-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.first-user-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.submit-btn {
+  margin-top: 0.5rem;
+}
+</style>

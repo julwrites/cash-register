@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full">
-    <h3 class="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Add New Record</h3>
+  <div class="page-container">
+    <h3 class="page-title">Add New Record</h3>
     <ExpenseForm
       :expense="newExpense"
       submit-button-text="Submit"
@@ -47,3 +47,21 @@ async function addExpense(expense: Expense) {
   }
 }
 </script>
+
+<style scoped>
+.page-container {
+  width: 100%;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #111827; /* gray-900 */
+}
+
+:global(.dark) .page-title {
+  color: white;
+}
+</style>

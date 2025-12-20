@@ -1,29 +1,25 @@
 <template>
-  <div class="w-full">
+  <div class="table-container">
     <!-- Desktop Table View -->
-    <div class="hidden md:block overflow-x-auto">
+    <div class="desktop-view">
       <UTable
         :rows="entries"
         :columns="columns"
         :loading="loading"
         :sort="sort"
-        class="w-full"
-        :ui="{
-          td: { base: 'max-w-[300px] truncate' },
-          th: { base: 'whitespace-nowrap' }
-        }"
+        class="expense-table"
         @update:sort="emit('update:sort', $event)"
       >
         <template #loading-state>
-          <div class="flex items-center justify-center p-4">
-            <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin w-6 h-6 mr-2" />
+          <div class="loading-state">
+            <UIcon name="i-heroicons-arrow-path-20-solid" class="spinner" />
             <span>Loading expenses...</span>
           </div>
         </template>
 
         <template #empty-state>
-          <div v-if="!loading" class="flex flex-col items-center justify-center p-8 text-gray-500">
-            <UIcon name="i-heroicons-clipboard-document-list-20-solid" class="w-12 h-12 mb-2" />
+          <div v-if="!loading" class="empty-state">
+            <UIcon name="i-heroicons-clipboard-document-list-20-solid" class="empty-icon" />
             <span>No expenses found for this period.</span>
           </div>
         </template>
@@ -45,31 +41,31 @@
     </div>
 
     <!-- Mobile Card View -->
-    <div class="block md:hidden space-y-4">
-      <div v-if="loading" class="flex items-center justify-center p-8 text-gray-500">
-         <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin w-6 h-6 mr-2" />
+    <div class="mobile-view">
+      <div v-if="loading" class="loading-state">
+         <UIcon name="i-heroicons-arrow-path-20-solid" class="spinner" />
          <span>Loading expenses...</span>
       </div>
 
-      <div v-else-if="entries.length === 0" class="flex flex-col items-center justify-center p-8 text-gray-500">
-         <UIcon name="i-heroicons-clipboard-document-list-20-solid" class="w-12 h-12 mb-2" />
+      <div v-else-if="entries.length === 0" class="empty-state">
+         <UIcon name="i-heroicons-clipboard-document-list-20-solid" class="empty-icon" />
          <span>No expenses found for this period.</span>
       </div>
 
       <template v-else>
-        <div v-for="row in entries" :key="row.id" class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-          <div class="flex justify-between items-start mb-2">
-            <span class="text-sm text-gray-500 dark:text-gray-400">{{ row.date }}</span>
-            <span :class="['font-bold', getAmountColor(row)]">{{ row.amount }}</span>
+        <div v-for="row in entries" :key="row.id" class="mobile-card">
+          <div class="mobile-header">
+            <span class="mobile-date">{{ row.date }}</span>
+            <span :class="['mobile-amount', getAmountColor(row)]">{{ row.amount }}</span>
           </div>
 
-          <div class="mb-3 font-semibold text-gray-900 dark:text-gray-100 truncate">
+          <div class="mobile-desc">
             {{ row.description }}
           </div>
 
-          <div class="flex justify-between items-center">
+          <div class="mobile-footer">
             <UBadge color="gray" variant="solid" size="xs">{{ row.category }}</UBadge>
-            <div class="flex gap-2">
+            <div class="mobile-actions">
               <UButton
                 color="gray"
                 variant="ghost"
@@ -132,8 +128,170 @@ function actions(row: Record<string, any>) {
 }
 
 function getAmountColor(row: Record<string, any>) {
-  if (row.credit > 0) return 'text-green-600 dark:text-green-400';
-  if (row.debit > 0) return 'text-red-600 dark:text-red-400';
-  return 'text-gray-900 dark:text-gray-100';
+  if (row.credit > 0) return 'amount-positive';
+  if (row.debit > 0) return 'amount-negative';
+  return 'amount-neutral';
 }
 </script>
+
+<style scoped>
+.table-container {
+  width: 100%;
+}
+
+.desktop-view {
+  display: none;
+  overflow-x: auto;
+}
+
+@media (min-width: 768px) {
+  .desktop-view {
+    display: block;
+  }
+}
+
+.expense-table {
+  width: 100%;
+}
+
+/* Target internal table cells for styling previously in :ui prop */
+:deep(td) {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:deep(th) {
+  white-space: nowrap;
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6b7280; /* gray-500 */
+}
+
+.empty-icon {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-view {
+  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-view {
+    display: none;
+  }
+}
+
+.mobile-card {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .mobile-card {
+  border-color: #374151; /* gray-700 */
+  background-color: #1f2937; /* gray-800 */
+}
+
+.mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-date {
+  font-size: 0.875rem;
+  color: #6b7280; /* gray-500 */
+}
+
+:global(.dark) .mobile-date {
+  color: #9ca3af; /* gray-400 */
+}
+
+.mobile-amount {
+  font-weight: 700;
+}
+
+.mobile-desc {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #111827; /* gray-900 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:global(.dark) .mobile-desc {
+  color: #f3f4f6; /* gray-100 */
+}
+
+.mobile-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Semantic Amount Colors */
+.amount-positive {
+  color: #16a34a; /* green-600 */
+}
+
+:global(.dark) .amount-positive {
+  color: #4ade80; /* green-400 */
+}
+
+.amount-negative {
+  color: #dc2626; /* red-600 */
+}
+
+:global(.dark) .amount-negative {
+  color: #f87171; /* red-400 */
+}
+
+.amount-neutral {
+  color: #111827; /* gray-900 */
+}
+
+:global(.dark) .amount-neutral {
+  color: #f3f4f6; /* gray-100 */
+}
+</style>

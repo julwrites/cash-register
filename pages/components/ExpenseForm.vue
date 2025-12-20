@@ -1,12 +1,12 @@
 <template>
-  <div class="w-full">
+  <div class="form-container">
     <UForm
       :state="expenseData"
-      class="grid grid-cols-1 md:grid-cols-2 gap-6"
+      class="form-grid"
       @submit.prevent="handleSubmit"
     >
       <UFormGroup label="Date" name="date">
-        <UInput id="date" v-model="expenseData.date" type="date" required class="w-full" />
+        <UInput id="date" v-model="expenseData.date" type="date" required class="form-input" />
       </UFormGroup>
 
       <UFormGroup label="Category" name="category">
@@ -15,11 +15,11 @@
           v-model="expenseData.category"
           :options="categoryOptions"
           required
-          class="w-full"
+          class="form-input"
         />
       </UFormGroup>
 
-      <UFormGroup label="Description" name="description" class="md:col-span-2">
+      <UFormGroup label="Description" name="description" class="full-width-field">
         <USelectMenu
           id="description"
           :key="formKey"
@@ -28,7 +28,7 @@
           required
           creatable
           searchable
-          class="w-full"
+          class="form-input"
         />
       </UFormGroup>
 
@@ -39,7 +39,7 @@
           type="number"
           step="0.01"
           min="0"
-          class="w-full"
+          class="form-input"
         />
       </UFormGroup>
 
@@ -50,11 +50,11 @@
           type="number"
           step="0.01"
           min="0"
-          class="w-full"
+          class="form-input"
         />
       </UFormGroup>
 
-      <div class="flex justify-end gap-4 md:col-span-2 mt-4">
+      <div class="form-actions">
         <UButton type="button" color="gray" variant="ghost" @click="cancelEdit">Cancel</UButton>
         <UButton type="submit" color="primary">{{
           props.submitButtonText
@@ -156,3 +156,40 @@ function cancelEdit() {
   emits('cancel');
 }
 </script>
+
+<style scoped>
+.form-container {
+  width: 100%;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.form-input {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .full-width-field {
+    grid-column: span 2;
+  }
+
+  .form-actions {
+    grid-column: span 2;
+  }
+}
+</style>

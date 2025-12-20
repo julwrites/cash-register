@@ -1,46 +1,36 @@
 <template>
-  <div class="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+  <div class="layout-root">
     <header
       v-if="showHeader"
-      class="sticky top-0 z-50 w-full bg-primary-600 text-white shadow-md"
+      class="app-header"
     >
-      <UContainer class="flex flex-col md:flex-row justify-between items-center py-2 md:py-0 md:h-16 gap-2">
+      <div class="header-inner">
         <!-- Left: Logo -->
-        <div class="flex items-center justify-between w-full md:w-auto">
+        <div class="logo-section">
           <h1
-            class="text-xl font-bold cursor-pointer hover:text-primary-100 transition-colors"
+            class="logo-text"
             @click="navigateTo('/')"
           >
             Expense Tracker
           </h1>
-          <div class="md:hidden">
+          <div class="mobile-only">
             <ColorModeButton />
           </div>
         </div>
 
         <!-- Center: Tabs -->
-        <div class="flex-1 hidden md:flex justify-center w-full md:w-auto order-last md:order-none">
+        <div class="tabs-section desktop-only">
           <UTabs
             :items="navItems"
             :model-value="selectedTabIndex"
-            class="w-full max-w-md"
-            :ui="{
-              list: {
-                background: 'bg-primary-700 dark:bg-primary-800',
-                marker: { background: 'bg-white dark:bg-gray-100' },
-                tab: {
-                  active: 'text-primary-600 dark:text-primary-800',
-                  inactive: 'text-primary-100 hover:text-white',
-                }
-              }
-            }"
+            class="nav-tabs"
             @change="onNavChange"
           />
         </div>
 
         <!-- Right: User & Settings -->
-        <div class="hidden md:flex items-center gap-4 justify-end w-full md:w-auto">
-          <span class="text-sm hidden sm:inline font-medium">
+        <div class="user-section desktop-only">
+          <span class="welcome-text">
             Welcome, {{ data?.user?.username }}
           </span>
           <ColorModeButton />
@@ -52,16 +42,16 @@
               color="white"
               variant="ghost"
               trailing-icon="i-heroicons-cog-6-tooth-20-solid"
-              class="hover:bg-primary-500 text-white hover:text-white ring-1 ring-transparent hover:ring-primary-400"
+              class="settings-btn"
             >
               Settings
             </UButton>
           </UDropdown>
         </div>
-      </UContainer>
+      </div>
     </header>
 
-    <main class="flex-1 w-full pb-16 md:pb-0">
+    <main class="main-content">
       <slot />
     </main>
     <MobileNavBar v-if="showHeader" />
@@ -155,3 +145,141 @@ onMounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.layout-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+  transition: background-color 0.2s;
+}
+
+:global(.dark) .layout-root {
+  background-color: var(--color-gray-900);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  background-color: var(--color-primary-600);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.header-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .header-inner {
+    flex-direction: row;
+    padding: 0 1rem;
+    height: 4rem;
+  }
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .logo-section {
+    width: auto;
+  }
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.logo-text:hover {
+  color: var(--color-primary-100);
+}
+
+.tabs-section {
+  flex: 1;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .tabs-section {
+    width: auto;
+  }
+}
+
+.user-section {
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .user-section {
+    width: auto;
+  }
+}
+
+.welcome-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .welcome-text {
+    display: inline;
+  }
+}
+
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+  .desktop-only {
+    display: flex;
+  }
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  padding-bottom: 4rem;
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    padding-bottom: 0;
+  }
+}
+
+.nav-tabs {
+  width: 100%;
+  max-width: 28rem;
+}
+</style>

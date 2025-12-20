@@ -8,7 +8,7 @@
       @click="isDark = !isDark"
     />
     <template #fallback>
-      <div class="w-8 h-8" />
+      <div class="fallback-placeholder" />
     </template>
   </ClientOnly>
 </template>
@@ -24,3 +24,10 @@ const isDark = computed({
   }
 })
 </script>
+
+<style scoped>
+.fallback-placeholder {
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+}
+</style>

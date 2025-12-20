@@ -1,33 +1,33 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <UCard :ui="{ body: { padding: 'px-4 py-5 sm:p-6' } }">
-      <div class="text-center">
-        <div class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total Income</div>
-        <div class="text-2xl font-bold text-green-600 dark:text-green-400 min-h-[32px] flex items-center justify-center">
-          <USkeleton v-if="loading" class="h-8 w-24" />
+  <div class="summary-grid">
+    <UCard class="summary-card">
+      <div class="card-content">
+        <div class="card-label">Total Income</div>
+        <div class="card-value-container income-value">
+          <USkeleton v-if="loading" class="skeleton" />
           <span v-else>{{ formatCurrency(income) }}</span>
         </div>
       </div>
     </UCard>
 
-    <UCard :ui="{ body: { padding: 'px-4 py-5 sm:p-6' } }">
-      <div class="text-center">
-        <div class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total Expenses</div>
-        <div class="text-2xl font-bold text-red-600 dark:text-red-400 min-h-[32px] flex items-center justify-center">
-          <USkeleton v-if="loading" class="h-8 w-24" />
+    <UCard class="summary-card">
+      <div class="card-content">
+        <div class="card-label">Total Expenses</div>
+        <div class="card-value-container expense-value">
+          <USkeleton v-if="loading" class="skeleton" />
           <span v-else>{{ formatCurrency(expenses) }}</span>
         </div>
       </div>
     </UCard>
 
-    <UCard :ui="{ body: { padding: 'px-4 py-5 sm:p-6' } }">
-      <div class="text-center">
-        <div class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Net Balance</div>
+    <UCard class="summary-card">
+      <div class="card-content">
+        <div class="card-label">Net Balance</div>
         <div
-          class="text-2xl font-bold min-h-[32px] flex items-center justify-center"
-          :class="balance >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'"
+          class="card-value-container"
+          :class="balance >= 0 ? 'balance-positive' : 'balance-negative'"
         >
-          <USkeleton v-if="loading" class="h-8 w-24" />
+          <USkeleton v-if="loading" class="skeleton" />
           <span v-else>{{ formatCurrency(balance) }}</span>
         </div>
       </div>
@@ -53,3 +53,91 @@ function formatCurrency(amount: number) {
   }).format(amount);
 }
 </script>
+
+<style scoped>
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.summary-card {
+  /* You can target UCard specific parts via deep selectors if needed,
+     but defaults are usually fine. */
+}
+
+/* Optional: Override UCard padding if it's too much/little */
+/*
+:deep(.u-card-body) {
+  padding: 1.25rem;
+}
+*/
+
+.card-content {
+  text-align: center;
+}
+
+.card-label {
+  color: #6b7280; /* gray-500 */
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+:global(.dark) .card-label {
+  color: #9ca3af; /* gray-400 */
+}
+
+.card-value-container {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.income-value {
+  color: #16a34a; /* green-600 */
+}
+
+:global(.dark) .income-value {
+  color: #4ade80; /* green-400 */
+}
+
+.expense-value {
+  color: #dc2626; /* red-600 */
+}
+
+:global(.dark) .expense-value {
+  color: #f87171; /* red-400 */
+}
+
+.balance-positive {
+  color: #2563eb; /* blue-600 */
+}
+
+:global(.dark) .balance-positive {
+  color: #60a5fa; /* blue-400 */
+}
+
+.balance-negative {
+  color: #dc2626; /* red-600 */
+}
+
+:global(.dark) .balance-negative {
+  color: #f87171; /* red-400 */
+}
+
+.skeleton {
+  height: 2rem;
+  width: 6rem;
+}
+</style>

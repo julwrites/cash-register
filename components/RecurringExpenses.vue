@@ -1,20 +1,20 @@
 <template>
-  <div class="space-y-4">
-    <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold">Recurring Expenses</h2>
-      <div class="space-x-2">
+  <div class="recurring-container">
+    <div class="header-row">
+      <h2 class="section-title">Recurring Expenses</h2>
+      <div class="actions-group">
         <UButton :loading="processing" icon="i-heroicons-arrow-path" color="gray" @click="processRules">
-          <span class="hidden sm:inline">Process Now</span>
+          <span class="desktop-label">Process Now</span>
         </UButton>
         <UButton icon="i-heroicons-plus" @click="openModal()">
-          <span class="hidden sm:inline">Add Rule</span>
-          <span class="sm:hidden">Add</span>
+          <span class="desktop-label">Add Rule</span>
+          <span class="mobile-label">Add</span>
         </UButton>
       </div>
     </div>
 
     <!-- Desktop Table -->
-    <div class="hidden md:block">
+    <div class="desktop-table-container">
       <UTable :loading="loading" :rows="rules" :columns="columns">
          <template #actions-data="{ row }">
           <UDropdown :items="actions(row)">
@@ -28,33 +28,33 @@
     </div>
 
     <!-- Mobile Cards -->
-    <div class="md:hidden space-y-4">
-      <div v-if="loading" class="flex justify-center p-4">
-        <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin w-6 h-6 mr-2" />
+    <div class="mobile-cards-container">
+      <div v-if="loading" class="loading-state">
+        <UIcon name="i-heroicons-arrow-path-20-solid" class="spinner" />
         <span>Loading...</span>
       </div>
-      <div v-else-if="rules.length === 0" class="text-center text-gray-500 py-8">
+      <div v-else-if="rules.length === 0" class="empty-state">
         No recurring rules found.
       </div>
-      <div v-for="rule in rules" v-else :key="rule.id" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-        <div class="flex justify-between items-start mb-2">
+      <div v-for="rule in rules" v-else :key="rule.id" class="mobile-card">
+        <div class="card-header">
           <div>
-            <div class="font-bold text-lg">{{ rule.description }}</div>
-            <div class="text-sm text-gray-500">{{ rule.category }} • {{ rule.frequency }}</div>
+            <div class="card-title">{{ rule.description }}</div>
+            <div class="card-meta">{{ rule.category }} • {{ rule.frequency }}</div>
           </div>
-          <div class="font-bold text-lg">
+          <div class="card-amount">
             {{ formatCurrency(rule.amount) }}
           </div>
         </div>
 
-        <div class="flex justify-between items-center mt-4">
-          <div class="text-sm">
-            <span class="text-gray-500">Next Due:</span> {{ rule.next_due_date }}
-            <UBadge :color="rule.active ? 'green' : 'gray'" size="xs" class="ml-2">
+        <div class="card-footer">
+          <div class="card-status">
+            <span class="status-label">Next Due:</span> {{ rule.next_due_date }}
+            <UBadge :color="rule.active ? 'green' : 'gray'" size="xs" class="status-badge">
               {{ rule.active ? 'Active' : 'Inactive' }}
             </UBadge>
           </div>
-          <div class="flex gap-2">
+          <div class="card-actions">
              <UButton color="gray" variant="ghost" icon="i-heroicons-pencil-square-20-solid" @click="openModal(rule)" />
              <UButton color="red" variant="ghost" icon="i-heroicons-trash-20-solid" @click="deleteRule(rule.id)" />
           </div>
@@ -65,10 +65,10 @@
     <UModal v-model="isModalOpen">
       <UCard>
         <template #header>
-          <h3 class="font-semibold">{{ editingId ? 'Edit Rule' : 'Add Rule' }}</h3>
+          <h3 class="modal-header-title">{{ editingId ? 'Edit Rule' : 'Add Rule' }}</h3>
         </template>
 
-        <UForm class="space-y-4" :state="formData" @submit="saveRule">
+        <UForm class="form-content" :state="formData" @submit="saveRule">
           <UFormGroup label="Description" name="description" required>
             <UInput v-model="formData.description" />
           </UFormGroup>
@@ -93,7 +93,7 @@
             <UToggle v-model="formData.active" />
           </UFormGroup>
 
-          <div class="flex justify-end gap-2">
+          <div class="form-actions">
             <UButton color="gray" variant="ghost" @click="isModalOpen = false">Cancel</UButton>
             <UButton type="submit" color="primary">Save</UButton>
           </div>
@@ -234,3 +234,169 @@ function formatCurrency(amount: number) {
   }).format(amount);
 }
 </script>
+
+<style scoped>
+.recurring-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.actions-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.desktop-label {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .desktop-label {
+    display: inline;
+  }
+}
+
+.mobile-label {
+  display: inline;
+}
+
+@media (min-width: 640px) {
+  .mobile-label {
+    display: none;
+  }
+}
+
+.desktop-table-container {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-table-container {
+    display: block;
+  }
+}
+
+.mobile-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-cards-container {
+    display: none;
+  }
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  color: #6b7280; /* gray-500 */
+  padding: 2rem 0;
+}
+
+.mobile-card {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb; /* gray-200 */
+}
+
+:global(.dark) .mobile-card {
+  background-color: #1f2937; /* gray-800 */
+  border-color: #374151; /* gray-700 */
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.card-meta {
+  font-size: 0.875rem;
+  color: #6b7280; /* gray-500 */
+}
+
+.card-amount {
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.card-status {
+  font-size: 0.875rem;
+}
+
+.status-label {
+  color: #6b7280; /* gray-500 */
+}
+
+.status-badge {
+  margin-left: 0.5rem;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.modal-header-title {
+  font-weight: 600;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+</style>

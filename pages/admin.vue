@@ -1,13 +1,13 @@
 <template>
-  <div class="max-w-7xl mx-auto p-4 space-y-6">
-    <div class="flex flex-wrap gap-2 items-center">
+  <div class="admin-container">
+    <div class="action-bar">
       <UButton
-        class="mr-2"
+        class="action-btn"
         label="Create New User"
         @click="isCreateUserModalOpen = true"
       />
       <UButton
-        class="mr-2"
+        class="action-btn"
         label="Migrate Descriptions"
         :loading="migrationLoading"
         color="green"
@@ -15,16 +15,16 @@
       />
     </div>
 
-    <div v-if="migrationResult" class="mb-4">
+    <div v-if="migrationResult" class="migration-status">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-bold">Migration Status</h3>
+          <h3 class="card-title">Migration Status</h3>
         </template>
-        <div v-if="migrationResult.success" class="text-green-600">
+        <div v-if="migrationResult.success" class="status-success">
           <p><strong>✓ Migration completed successfully!</strong></p>
-          <div v-if="migrationResult.statistics" class="mt-2 text-sm">
+          <div v-if="migrationResult.statistics" class="stats-container">
             <p><strong>Statistics:</strong></p>
-            <ul class="list-disc list-inside">
+            <ul class="stats-list">
               <li>
                 Total descriptions:
                 {{ migrationResult.statistics.totalDescriptions }}
@@ -43,21 +43,21 @@
             </ul>
           </div>
         </div>
-        <div v-else class="text-red-600">
+        <div v-else class="status-error">
           <p><strong>✗ Migration failed</strong></p>
-          <p class="mt-1">
+          <p class="error-msg">
             {{ migrationResult.error || 'Unknown error occurred' }}
           </p>
         </div>
       </UCard>
     </div>
 
-    <div v-if="loading" class="flex justify-center p-8">
-      <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin w-8 h-8 text-primary-500" />
+    <div v-if="loading" class="loading-container">
+      <UIcon name="i-heroicons-arrow-path-20-solid" class="spinner" />
     </div>
-    <div v-else-if="error" class="text-red-500 p-4 border border-red-200 rounded">{{ error }}</div>
-    <div v-else class="overflow-x-auto">
-      <UTable :rows="rows" :columns="columns" class="w-full">
+    <div v-else-if="error" class="error-banner">{{ error }}</div>
+    <div v-else class="table-container">
+      <UTable :rows="rows" :columns="columns" class="users-table">
         <template #actions-data="{ row }">
           <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
             <UButton
@@ -73,13 +73,13 @@
     <UModal v-model="isCreateUserModalOpen">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-bold">Create New User</h3>
+          <h3 class="card-title">Create New User</h3>
         </template>
         <form @submit.prevent="createUser">
           <UFormGroup label="Username" name="username">
             <UInput v-model="newUsername" type="text" required />
           </UFormGroup>
-          <UButton type="submit" color="primary" class="mt-4" block>Create User</UButton>
+          <UButton type="submit" color="primary" class="form-submit-btn" block>Create User</UButton>
         </form>
       </UCard>
     </UModal>
@@ -88,13 +88,13 @@
     <UModal v-model="isResetPasswordModalOpen">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-bold">Reset Password for {{ resetPasswordData.username }}</h3>
+          <h3 class="card-title">Reset Password for {{ resetPasswordData.username }}</h3>
         </template>
         <form @submit.prevent="executeResetPassword">
           <UFormGroup label="New Password" name="password">
             <UInput v-model="resetPasswordData.password" type="password" required />
           </UFormGroup>
-          <div class="flex justify-end mt-4 gap-2">
+          <div class="modal-actions">
             <UButton color="gray" variant="ghost" @click="isResetPasswordModalOpen = false">Cancel</UButton>
             <UButton type="submit" color="primary">Reset Password</UButton>
           </div>
@@ -106,11 +106,11 @@
     <UModal v-model="isDeleteUserModalOpen">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-bold">Confirm Delete</h3>
+          <h3 class="card-title">Confirm Delete</h3>
         </template>
-        <div class="p-4">
-          <p class="mb-4">Are you sure you want to delete this user? This action cannot be undone.</p>
-          <div class="flex justify-end gap-2">
+        <div class="modal-body">
+          <p class="modal-text">Are you sure you want to delete this user? This action cannot be undone.</p>
+          <div class="modal-actions">
             <UButton color="gray" variant="ghost" @click="isDeleteUserModalOpen = false">Cancel</UButton>
             <UButton color="red" @click="executeRemoveUser">Delete</UButton>
           </div>
@@ -422,3 +422,108 @@ async function triggerDescriptionMigration() {
   }
 }
 </script>
+
+<style scoped>
+.admin-container {
+  max-width: 80rem; /* max-w-7xl */
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.action-btn {
+  margin-right: 0.5rem;
+}
+
+.migration-status {
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.status-success {
+  color: #16a34a; /* green-600 */
+}
+
+.status-error {
+  color: #dc2626; /* red-600 */
+}
+
+.stats-container {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.stats-list {
+  list-style-type: disc;
+  list-style-position: inside;
+}
+
+.error-msg {
+  margin-top: 0.25rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  color: #3b82f6; /* primary-500 */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-banner {
+  color: #ef4444; /* red-500 */
+  padding: 1rem;
+  border: 1px solid #fecaca; /* red-200 */
+  border-radius: 0.25rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+}
+
+.form-submit-btn {
+  margin-top: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-text {
+  margin-bottom: 1rem;
+}
+</style>
