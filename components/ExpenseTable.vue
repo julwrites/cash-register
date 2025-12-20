@@ -1,13 +1,17 @@
 <template>
-  <div class="expense-list-wrapper">
+  <div class="w-full">
     <!-- Desktop Table View -->
-    <div class="table-container hidden md:block">
+    <div class="hidden md:block overflow-x-auto">
       <UTable
         :rows="entries"
         :columns="columns"
-        table-class="expense-table"
         :loading="loading"
         :sort="sort"
+        class="w-full"
+        :ui="{
+          td: { base: 'max-w-[300px] truncate' },
+          th: { base: 'whitespace-nowrap' }
+        }"
         @update:sort="emit('update:sort', $event)"
       >
         <template #loading-state>
@@ -24,8 +28,12 @@
           </div>
         </template>
 
+        <template #amount-data="{ row }">
+          <span :class="getAmountColor(row)">{{ row.amount }}</span>
+        </template>
+
         <template #actions-data="{ row }">
-          <UDropdown :items="actions(row)">
+          <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
             <UButton
               color="gray"
               variant="ghost"
@@ -37,7 +45,7 @@
     </div>
 
     <!-- Mobile Card View -->
-    <div class="mobile-cards block md:hidden space-y-4">
+    <div class="block md:hidden space-y-4">
       <div v-if="loading" class="flex items-center justify-center p-8 text-gray-500">
          <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin w-6 h-6 mr-2" />
          <span>Loading expenses...</span>
@@ -49,13 +57,13 @@
       </div>
 
       <template v-else>
-        <div v-for="row in entries" :key="row.id" class="expense-card p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+        <div v-for="row in entries" :key="row.id" class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
           <div class="flex justify-between items-start mb-2">
             <span class="text-sm text-gray-500 dark:text-gray-400">{{ row.date }}</span>
             <span :class="['font-bold', getAmountColor(row)]">{{ row.amount }}</span>
           </div>
 
-          <div class="mb-3 font-semibold text-gray-900 dark:text-gray-100">
+          <div class="mb-3 font-semibold text-gray-900 dark:text-gray-100 truncate">
             {{ row.description }}
           </div>
 
@@ -129,168 +137,3 @@ function getAmountColor(row: Record<string, any>) {
   return 'text-gray-900 dark:text-gray-100';
 }
 </script>
-
-<style scoped>
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.expense-list-container {
-  width: 100%;
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.filters {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.charts-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.chart {
-  width: 48%;
-  height: 300px;
-  margin-bottom: 20px;
-}
-
-:deep(.expense-table) {
-  min-width: 100%;
-  width: max-content;
-  table-layout: fixed;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-:deep(th),
-:deep(td) {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--color-border-subtle);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-:deep(th) {
-  background-color: var(--color-background-subtle);
-  font-weight: bold;
-}
-
-:deep(tr:hover) {
-  background-color: var(--color-background-hover);
-  transition: background-color 0.3s ease;
-}
-
-/* Define specific widths for each column */
-:deep(th:nth-child(1)),
-:deep(td:nth-child(1)) {
-  width: 100px; /* Date column */
-}
-
-:deep(th:nth-child(2)),
-:deep(td:nth-child(2)) {
-  width: 150px; /* Category column */
-}
-
-:deep(th:nth-child(3)),
-:deep(td:nth-child(3)) {
-  width: 300px; /* Description column */
-}
-
-:deep(th:nth-child(4)),
-:deep(td:nth-child(4)) {
-  width: 100px; /* Amount column */
-}
-
-:deep(th:nth-child(5)),
-:deep(td:nth-child(5)) {
-  width: 100px; /* Actions column */
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.modal-title {
-  font-size: 18px;
-  font-weight: semibold;
-}
-
-.edit-modal {
-  max-width: 90vw;
-  width: 100%;
-  margin: 0 auto;
-}
-
-:root {
-  --color-border-subtle: #e2e8f0;
-  --color-background-subtle: #f8fafc;
-  --color-background-hover: #f1f5f9;
-}
-
-:root.dark {
-  --color-border-subtle: #2d3748;
-  --color-background-subtle: #1a202c;
-  --color-background-hover: #2d3748;
-}
-
-@media (max-width: 1024px) {
-  .expense-list-container {
-    padding: 10px;
-  }
-}
-
-@media (max-width: 768px) {
-  .expense-list-container {
-    padding: 5px;
-  }
-
-  :deep(th),
-  :deep(td) {
-    padding: 6px;
-  }
-
-  .chart {
-    width: 100%;
-  }
-}
-
-@media (max-width: 640px) {
-  .expense-list-container {
-    padding: 2px;
-  }
-
-  .edit-modal {
-    max-width: 98vw;
-  }
-
-  :deep(th),
-  :deep(td) {
-    padding: 4px;
-  }
-}
-</style>

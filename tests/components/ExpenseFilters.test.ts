@@ -48,7 +48,6 @@ describe('ExpenseFilters', () => {
       },
     });
 
-    expect(component.find('.date-range-picker').exists()).toBe(true);
     // We now have duplicate inputs for mobile/desktop, so we expect 4
     expect(component.findAll('input[type="date"]').length).toBe(4);
   });

@@ -1,6 +1,6 @@
 <template>
-  <div class="admin-container">
-    <div class="admin-actions mb-4">
+  <div class="max-w-7xl mx-auto p-4 space-y-6">
+    <div class="flex flex-wrap gap-2 items-center">
       <UButton
         class="mr-2"
         label="Create New User"
@@ -15,7 +15,7 @@
       />
     </div>
 
-    <div v-if="migrationResult" class="migration-status mb-4">
+    <div v-if="migrationResult" class="mb-4">
       <UCard>
         <template #header>
           <h3 class="text-lg font-bold">Migration Status</h3>
@@ -52,22 +52,22 @@
       </UCard>
     </div>
 
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    <div v-else class="users-table">
-      <div class="table-responsive">
-        <UTable :rows="rows" :columns="columns">
-          <template #actions-data="{ row }">
-            <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
-              <UButton
-                color="gray"
-                variant="ghost"
-                icon="i-heroicons-ellipsis-horizontal-20-solid"
-              />
-            </UDropdown>
-          </template>
-        </UTable>
-      </div>
+    <div v-if="loading" class="flex justify-center p-8">
+      <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin w-8 h-8 text-primary-500" />
+    </div>
+    <div v-else-if="error" class="text-red-500 p-4 border border-red-200 rounded">{{ error }}</div>
+    <div v-else class="overflow-x-auto">
+      <UTable :rows="rows" :columns="columns" class="w-full">
+        <template #actions-data="{ row }">
+          <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
+            <UButton
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-ellipsis-horizontal-20-solid"
+            />
+          </UDropdown>
+        </template>
+      </UTable>
     </div>
 
     <UModal v-model="isCreateUserModalOpen">
@@ -76,12 +76,10 @@
           <h3 class="text-lg font-bold">Create New User</h3>
         </template>
         <form @submit.prevent="createUser">
-          <UFormGroup label="Username">
+          <UFormGroup label="Username" name="username">
             <UInput v-model="newUsername" type="text" required />
           </UFormGroup>
-          <UButton type="submit" color="primary" class="mt-4"
-            >Create User</UButton
-          >
+          <UButton type="submit" color="primary" class="mt-4" block>Create User</UButton>
         </form>
       </UCard>
     </UModal>
@@ -93,7 +91,7 @@
           <h3 class="text-lg font-bold">Reset Password for {{ resetPasswordData.username }}</h3>
         </template>
         <form @submit.prevent="executeResetPassword">
-          <UFormGroup label="New Password">
+          <UFormGroup label="New Password" name="password">
             <UInput v-model="resetPasswordData.password" type="password" required />
           </UFormGroup>
           <div class="flex justify-end mt-4 gap-2">
@@ -106,14 +104,18 @@
 
     <!-- Delete User Confirmation Modal -->
     <UModal v-model="isDeleteUserModalOpen">
-      <div class="p-4">
-        <h3 class="text-lg font-bold mb-2">Confirm Delete</h3>
-        <p class="mb-4">Are you sure you want to delete this user? This action cannot be undone.</p>
-        <div class="flex justify-end gap-2">
-          <UButton color="gray" variant="ghost" @click="isDeleteUserModalOpen = false">Cancel</UButton>
-          <UButton color="red" @click="executeRemoveUser">Delete</UButton>
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-bold">Confirm Delete</h3>
+        </template>
+        <div class="p-4">
+          <p class="mb-4">Are you sure you want to delete this user? This action cannot be undone.</p>
+          <div class="flex justify-end gap-2">
+            <UButton color="gray" variant="ghost" @click="isDeleteUserModalOpen = false">Cancel</UButton>
+            <UButton color="red" @click="executeRemoveUser">Delete</UButton>
+          </div>
         </div>
-      </div>
+      </UCard>
     </UModal>
   </div>
 </template>
@@ -420,70 +422,3 @@ async function triggerDescriptionMigration() {
   }
 }
 </script>
-
-<style scoped>
-.admin-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.admin-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.loading,
-.error,
-.users-table {
-  margin-bottom: 20px;
-}
-
-.table-responsive {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-:deep(.u-table) {
-  width: 100%;
-  min-width: 600px;
-  border-collapse: collapse;
-}
-
-:deep(.u-table th),
-:deep(.u-table td) {
-  padding: 10px;
-  border: 1px solid #ccc;
-  white-space: nowrap;
-}
-
-:deep(.u-table th) {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-:deep(.u-dropdown) {
-  min-width: auto;
-}
-
-@media (max-width: 768px) {
-  :deep(.u-table) {
-    font-size: 14px;
-  }
-
-  :deep(.u-table th),
-  :deep(.u-table td) {
-    padding: 8px;
-  }
-}
-</style>
