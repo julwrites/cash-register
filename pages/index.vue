@@ -1,11 +1,13 @@
 <template>
   <div class="h-full">
-    <UContainer v-if="isLoggedIn" class="py-6 sm:py-8">
+    <UContainer v-if="isLoggedIn" class="py-6 sm:py-8" :ui="{ constrained: 'max-w-full' }">
       <Dashboard
         v-if="selectedTab === 'dashboard'"
         @view-all="navigateToList"
       />
-      <ExpenseForm v-else-if="selectedTab === 'form'" />
+      <div v-else-if="selectedTab === 'form'" class="max-w-2xl mx-auto">
+        <ExpenseForm />
+      </div>
       <ExpenseList v-else-if="selectedTab === 'list'" />
       <RecurringExpenses v-else-if="selectedTab === 'recurring'" />
     </UContainer>
