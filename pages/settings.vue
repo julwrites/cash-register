@@ -9,7 +9,7 @@
         v-if="tabs.length > 1"
         :items="tabs"
         :model-value="selectedTabIndex"
-        class="mb-6"
+        class="tabs-container"
         @change="onTabChange"
       />
 
@@ -123,6 +123,14 @@ watch(
   font-size: 24px;
   font-weight: 600;
   color: #2d3748;
+}
+
+:global(.dark) .settings-title {
+  color: #f3f4f6;
+}
+
+.tabs-container {
+  margin-bottom: 1.5rem;
 }
 
 .settings-tab-content {

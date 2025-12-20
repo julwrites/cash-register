@@ -1,18 +1,19 @@
 <template>
   <div class="dashboard-container">
-    <h3 class="text-xl font-bold mb-4">Dashboard</h3>
+    <h3 class="dashboard-title">Dashboard</h3>
 
     <!-- Summary Cards -->
-    <SummaryCards
-      v-if="summary"
-      :income="summary.income"
-      :expenses="summary.expenses"
-      :loading="loading"
-      class="mb-8"
-    />
+    <div class="summary-section">
+      <SummaryCards
+        v-if="summary"
+        :income="summary.income"
+        :expenses="summary.expenses"
+        :loading="loading"
+      />
+    </div>
 
     <!-- Charts -->
-    <div v-if="summary" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div v-if="summary" class="charts-grid">
       <UCard>
         <IncomeExpenseChart v-if="incomeExpenseData" :chart-data="incomeExpenseData" />
       </UCard>
@@ -22,32 +23,32 @@
     </div>
 
     <!-- Recent Transactions -->
-    <h4 class="text-lg font-bold mb-2">Recent Transactions</h4>
-    <div v-if="loading" class="flex justify-center p-4">
-      <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin w-6 h-6 mr-2" />
+    <h4 class="recent-title">Recent Transactions</h4>
+    <div v-if="loading" class="loading-container">
+      <UIcon name="i-heroicons-arrow-path-20-solid" class="spinner" />
       <span>Loading...</span>
     </div>
-    <div v-else-if="recentExpenses.length === 0" class="text-gray-500 text-center p-4">
+    <div v-else-if="recentExpenses.length === 0" class="no-data">
       No recent transactions found.
     </div>
-    <div v-else class="recent-list bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <div v-else class="recent-list">
       <div
         v-for="expense in recentExpenses"
         :key="expense.id"
-        class="p-4 border-b border-gray-200 dark:border-gray-700 last:border-0 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        class="transaction-item"
         @click="startEditing(expense)"
       >
-        <div>
-          <div class="font-medium">{{ expense.description }}</div>
-          <div class="text-sm text-gray-500">{{ formatDate(expense.date) }} • {{ expense.category }}</div>
+        <div class="transaction-info">
+          <div class="transaction-desc">{{ expense.description }}</div>
+          <div class="transaction-meta">{{ formatDate(expense.date) }} • {{ expense.category }}</div>
         </div>
-        <div class="font-bold" :class="expense.amount < 0 ? 'text-red-500' : 'text-green-500'">
+        <div class="transaction-amount" :class="expense.amount < 0 ? 'amount-negative' : 'amount-positive'">
           {{ formatCurrency(expense.amount) }}
         </div>
       </div>
     </div>
 
-    <div class="mt-4 text-center">
+    <div class="view-all-container">
       <UButton variant="link" @click="$emit('view-all')">View All Transactions</UButton>
     </div>
 
@@ -207,5 +208,126 @@ onMounted(async () => {
 <style scoped>
 .dashboard-container {
   width: 100%;
+}
+
+.dashboard-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.summary-section {
+  margin-bottom: 2rem;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.recent-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.no-data {
+  text-align: center;
+  padding: 1rem;
+  color: #6b7280; /* gray-500 */
+}
+
+.recent-list {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+:global(.dark) .recent-list {
+  background-color: #1f2937; /* gray-800 */
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+:global(.dark) .transaction-item {
+  border-bottom-color: #374151; /* gray-700 */
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.transaction-item:hover {
+  background-color: #f9fafb; /* gray-50 */
+}
+
+:global(.dark) .transaction-item:hover {
+  background-color: #374151; /* gray-700 */
+}
+
+.transaction-info {
+  /* container for text */
+}
+
+.transaction-desc {
+  font-weight: 500;
+}
+
+.transaction-meta {
+  font-size: 0.875rem;
+  color: #6b7280; /* gray-500 */
+}
+
+.transaction-amount {
+  font-weight: 700;
+}
+
+.amount-negative {
+  color: #ef4444; /* red-500 */
+}
+
+.amount-positive {
+  color: #22c55e; /* green-500 */
+}
+
+.view-all-container {
+  margin-top: 1rem;
+  text-align: center;
 }
 </style>

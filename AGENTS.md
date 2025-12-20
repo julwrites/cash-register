@@ -46,9 +46,10 @@ You are an expert Software Engineer working on this project. Your primary respon
 *   **Memories**: Refer to `docs/memories/` for long-term project context.
 
 ## UI Standards
-*   **Nuxt UI & Tailwind CSS**: All UI components must use [Nuxt UI](https://ui.nuxt.com/) components and Tailwind CSS utility classes.
-*   **No Custom/Legacy CSS**: Avoid creating custom CSS classes or using legacy classes (e.g., `.btn`, `.form-group`). Use Tailwind utilities for layout, spacing, and typography.
-*   **Consistency**: Adhere to the design system provided by Nuxt UI.
+*   **Nuxt UI**: Use [Nuxt UI](https://ui.nuxt.com/) components for UI elements (Buttons, Inputs, Modals, etc.).
+*   **Plain CSS for Layout**: Do NOT use Tailwind utility classes (e.g., `flex`, `p-4`, `w-full`). Instead, use semantic class names and `<style scoped>` blocks with standard CSS.
+*   **Responsive Design**: Use standard CSS `@media` queries for responsive layouts.
+*   **Consistency**: Adhere to the design system provided by Nuxt UI, but implement layout and positioning via plain CSS.
 
 ## Code Style & Standards
 *   Follow the existing patterns in the codebase.

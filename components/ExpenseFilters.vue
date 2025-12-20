@@ -1,21 +1,21 @@
 <template>
-  <div class="space-y-4">
+  <div class="filters-container">
     <!-- Desktop Filters -->
-    <div class="hidden md:flex flex-wrap gap-4 items-start">
+    <div class="desktop-filters">
       <USelectMenu
         v-model="localSelectedPeriod"
         :options="periodOptions"
         placeholder="Select time period"
-        class="min-w-[200px]"
+        class="filter-select"
       />
       <USelectMenu
         v-model="localSelectedCategory"
         :options="categoryOptions"
         placeholder="Select category"
-        class="min-w-[200px]"
+        class="filter-select"
       />
 
-      <div class="flex gap-2" v-if="localSelectedPeriod.value === 'custom'">
+      <div v-if="localSelectedPeriod.value === 'custom'" class="date-range-group">
         <UInput
           v-model="localStartDate"
           type="date"
@@ -30,7 +30,7 @@
         />
       </div>
 
-      <div class="ml-auto">
+      <div class="reset-btn-wrapper">
         <UButton
           color="red"
           variant="outline"
@@ -41,10 +41,10 @@
     </div>
 
     <!-- Mobile Filters -->
-    <div class="md:hidden">
+    <div class="mobile-filters">
       <UAccordion :items="[{ label: 'Filters', slot: 'filters' }]">
         <template #filters>
-          <div class="flex flex-col gap-4 p-2">
+          <div class="mobile-filter-content">
              <USelectMenu
               v-model="localSelectedPeriod"
               :options="periodOptions"
@@ -57,7 +57,7 @@
             />
              <div
               v-if="localSelectedPeriod.value === 'custom'"
-              class="flex flex-col gap-2"
+              class="mobile-filter-content"
             >
               <UInput
                 v-model="localStartDate"
@@ -146,3 +146,54 @@ const periodOptions = [
   { label: 'Custom Range', value: 'custom' },
 ];
 </script>
+
+<style scoped>
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.desktop-filters {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
+
+.filter-select {
+  min-width: 200px;
+}
+
+.date-range-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.reset-btn-wrapper {
+  margin-left: auto;
+}
+
+.mobile-filters {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .mobile-filters {
+    display: none;
+  }
+}
+
+.mobile-filter-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+</style>
