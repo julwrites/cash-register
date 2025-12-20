@@ -1,6 +1,6 @@
 <template>
-  <div class="expense-form-container">
-    <h3 class="page-title">Add New Record</h3>
+  <div class="w-full">
+    <h3 class="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Add New Record</h3>
     <ExpenseForm
       :expense="newExpense"
       submit-button-text="Submit"
@@ -47,77 +47,3 @@ async function addExpense(expense: Expense) {
   }
 }
 </script>
-
-<style scoped>
-.expense-form-container {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-:deep(.form-group) {
-  margin-bottom: 20px;
-}
-
-:deep(label) {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-:deep(input),
-:deep(select),
-:deep(textarea) {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: 4px;
-}
-
-:deep(button[type='submit']) {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-:deep(button[type='submit']:hover) {
-  background-color: #0056b3;
-}
-
-:root {
-  --color-border-subtle: #e2e8f0;
-}
-
-:root.dark {
-  --color-border-subtle: #2d3748;
-}
-
-@media (max-width: 1024px) {
-  .expense-form-container {
-    padding: 10px;
-  }
-}
-
-@media (max-width: 768px) {
-  .expense-form-container {
-    padding: 5px;
-  }
-}
-
-@media (max-width: 640px) {
-  .expense-form-container {
-    padding: 2px;
-  }
-}
-</style>
