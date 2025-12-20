@@ -2,11 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { processRecurringExpenses, addRecurring, getRecurringDb, type RecurringExpense } from '../../server/api/recurring/recurring-db';
 
 // Mock dependencies
-const { mockGetDb, mockPrepare, mockRun } = vi.hoisted(() => {
+const { mockGetDb, mockPrepare, mockRun, mockGet } = vi.hoisted(() => {
   const mockRun = vi.fn();
-  const mockPrepare = vi.fn(() => ({ run: mockRun }));
+  const mockGet = vi.fn();
+  // Chainable mock: prepare returns object with run and get
+  const mockPrepare = vi.fn(() => ({ run: mockRun, get: mockGet }));
   const mockGetDb = vi.fn(() => ({ prepare: mockPrepare }));
-  return { mockGetDb, mockPrepare, mockRun };
+  return { mockGetDb, mockPrepare, mockRun, mockGet };
 });
 
 vi.mock('../../server/api/expenses/expenses-db', () => ({
@@ -27,6 +29,7 @@ describe('Recurring Expenses DB', () => {
     mockRun.mockClear();
     mockPrepare.mockClear();
     mockGetDb.mockClear();
+    mockGet.mockClear();
   });
 
   afterEach(() => {
@@ -120,5 +123,44 @@ describe('Recurring Expenses DB', () => {
       const db = getRecurringDb();
       const row = db.prepare('SELECT * FROM recurring_expenses').get() as RecurringExpense;
       expect(row.next_due_date).toBe('2025-05-01');
+  });
+
+  it('should skip duplicate expenses but advance due date', () => {
+      // Set today to 2025-01-01
+      vi.setSystemTime(new Date('2025-01-01'));
+
+      const expense: RecurringExpense = {
+          amount: 100,
+          description: 'Netflix',
+          category: 'Entertainment',
+          frequency: 'monthly',
+          next_due_date: '2025-01-01',
+          active: true
+      };
+
+      addRecurring(expense);
+
+      // Simulate finding a duplicate for the check-query
+      mockGet.mockReturnValueOnce({ id: 999 });
+
+      const count = processRecurringExpenses();
+
+      // Should count as processed (0 insertions, but processedCount increments in current logic?
+      // Actually, my code only increments processedCount if !existing.
+      // So let's check expectations.
+      // If deduplicated, processedCount should be 0 (inserted), but modification logic runs.
+      // Wait, let's check code:
+      // if (!existing) { processedCount++ } else { ... }
+      // modifications++ always.
+
+      expect(count).toBe(0);
+
+      // Insert should NOT be called
+      expect(mockRun).not.toHaveBeenCalled();
+
+      // But Date SHOULD advance
+      const db = getRecurringDb();
+      const row = db.prepare('SELECT * FROM recurring_expenses').get() as RecurringExpense;
+      expect(row.next_due_date).toBe('2025-02-01');
   });
 });
