@@ -1,8 +1,10 @@
 <template>
-  <div class="container">
-    <UCard class="login-card">
-      <h1 class="text-center mb-lg">{{ isFirstUser ? 'Welcome' : 'Login' }}</h1>
-      <div v-if="isFirstUser">
+  <div class="container mx-auto px-4">
+    <UCard class="max-w-sm mx-auto mt-10">
+      <h1 class="text-center text-2xl font-bold mb-6">
+        {{ isFirstUser ? 'Welcome' : 'Login' }}
+      </h1>
+      <div v-if="isFirstUser" class="space-y-4">
         <p>
           It looks like you're the first user. Let's set up your admin account.
         </p>
@@ -10,36 +12,35 @@
           Set Up Admin Account
         </UButton>
       </div>
-      <form v-else class="login-form" @submit.prevent="checkUser">
-        <div class="form-group">
-          <label for="username" class="form-label">Username:</label>
+      <form v-else class="flex flex-col gap-4" @submit.prevent="checkUser">
+        <UFormGroup label="Username" name="username" required>
           <UInput
             id="username"
             v-model="username"
             type="text"
-            class="form-input"
             required
           />
-        </div>
-        <div v-if="showPasswordField" class="form-group">
-          <label for="password" class="form-label">Password:</label>
+        </UFormGroup>
+
+        <UFormGroup
+          v-if="showPasswordField"
+          label="Password"
+          name="password"
+          required
+        >
           <UInput
             id="password"
             v-model="password"
             type="password"
-            class="form-input"
             required
           />
-        </div>
-        <div v-if="showPasswordField" class="form-group">
+        </UFormGroup>
+
+        <div v-if="showPasswordField">
           <UCheckbox v-model="rememberMe" label="Remember me" />
         </div>
-        <UButton
-          type="submit"
-          color="primary"
-          block
-          class="btn btn-primary login-button"
-        >
+
+        <UButton type="submit" color="primary" block class="mt-2">
           {{ showPasswordField ? 'Login' : 'Continue' }}
         </UButton>
       </form>
@@ -56,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import SetPassword from './components/SetPassword.vue';
 import SetupAdminAccount from './components/SetupAdminAccount.vue';
@@ -162,20 +163,3 @@ function onAccountSetup() {
   isFirstUser.value = false;
 }
 </script>
-
-<style scoped>
-.login-card {
-  max-width: 400px;
-  margin: var(--spacing-xl) auto;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.login-button {
-  margin-top: var(--spacing-md);
-}
-</style>

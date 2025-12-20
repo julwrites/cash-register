@@ -1,31 +1,21 @@
 <template>
-  <div class="filters-container">
+  <div class="space-y-4">
     <!-- Desktop Filters -->
-    <div class="filters desktop-filters">
+    <div class="hidden md:flex flex-wrap gap-4 items-start">
       <USelectMenu
         v-model="localSelectedPeriod"
         :options="periodOptions"
         placeholder="Select time period"
+        class="min-w-[200px]"
       />
       <USelectMenu
         v-model="localSelectedCategory"
         :options="categoryOptions"
         placeholder="Select category"
+        class="min-w-[200px]"
       />
 
-      <div class="filter-actions">
-        <UButton
-          class="filter-reset"
-          variant="outline"
-          @click="$emit('reset-filters')"
-          >Reset Filters</UButton
-        >
-      </div>
-
-      <div
-        v-if="localSelectedPeriod.value === 'custom'"
-        class="date-range-picker"
-      >
+      <div class="flex gap-2" v-if="localSelectedPeriod.value === 'custom'">
         <UInput
           v-model="localStartDate"
           type="date"
@@ -39,10 +29,19 @@
           @change="emitDateChange"
         />
       </div>
+
+      <div class="ml-auto">
+        <UButton
+          color="red"
+          variant="outline"
+          @click="$emit('reset-filters')"
+          >Reset Filters</UButton
+        >
+      </div>
     </div>
 
     <!-- Mobile Filters -->
-    <div class="mobile-filters">
+    <div class="md:hidden">
       <UAccordion :items="[{ label: 'Filters', slot: 'filters' }]">
         <template #filters>
           <div class="flex flex-col gap-4 p-2">
@@ -75,8 +74,8 @@
             </div>
              <UButton
               block
+              color="red"
               variant="outline"
-              color="gray"
               @click="$emit('reset-filters')"
             >
               Reset Filters
@@ -147,68 +146,3 @@ const periodOptions = [
   { label: 'Custom Range', value: 'custom' },
 ];
 </script>
-
-<style scoped>
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.filter-actions {
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-}
-
-.filter-reset {
-  color: var(--color-danger);
-}
-
-.date-range-picker {
-  display: flex;
-  gap: 10px;
-}
-
-.mobile-filters {
-  display: none;
-  margin-bottom: 20px;
-}
-
-:deep(.form-group) {
-  flex: 1;
-  min-width: 200px;
-}
-
-@media (max-width: 768px) {
-  .desktop-filters {
-    display: none;
-  }
-
-  .mobile-filters {
-    display: block;
-  }
-
-  .filters {
-    flex-direction: column;
-  }
-
-  :deep(.form-group) {
-    width: 100%;
-  }
-
-  .filter-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .filter-actions button {
-    flex: 1;
-  }
-
-  .date-range-picker {
-    flex-direction: column;
-  }
-}
-</style>

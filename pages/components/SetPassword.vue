@@ -1,39 +1,30 @@
 <template>
-  <div class="set-password-modal">
-    <h2 class="text-center mb-lg">Set Your Password</h2>
-    <form class="set-password-form" @submit.prevent="setPassword">
-      <div class="form-group">
-        <label for="password" class="form-label">New Password:</label>
+  <UCard>
+    <template #header>
+      <h2 class="text-xl font-bold text-center">Set Your Password</h2>
+    </template>
+    <form class="flex flex-col gap-4" @submit.prevent="setPassword">
+      <UFormGroup label="New Password" name="password" required>
         <UInput
           id="password"
           v-model="password"
           type="password"
-          class="form-input"
           required
         />
-      </div>
-      <div class="form-group">
-        <label for="confirmPassword" class="form-label"
-          >Confirm Password:</label
-        >
+      </UFormGroup>
+      <UFormGroup label="Confirm Password" name="confirmPassword" required>
         <UInput
           id="confirmPassword"
           v-model="confirmPassword"
           type="password"
-          class="form-input"
           required
         />
-      </div>
-      <UButton
-        type="submit"
-        color="primary"
-        block
-        class="btn btn-primary set-password-button"
-      >
+      </UFormGroup>
+      <UButton type="submit" color="primary" block class="mt-4">
         Set Password
       </UButton>
     </form>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -94,19 +85,3 @@ async function setPassword() {
   }
 }
 </script>
-
-<style scoped>
-.set-password-modal {
-  padding: var(--spacing-md);
-}
-
-.set-password-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.set-password-button {
-  margin-top: var(--spacing-md);
-}
-</style>

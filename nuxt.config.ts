@@ -21,7 +21,6 @@ export default defineNuxtConfig({
   content: {
     experimental: { nativeSqlite: true },
   },
-  css: ['~/assets/css/global.css'],
   colorMode: {
     preference: 'system', // default value of $colorMode.preference
     fallback: 'dark', // fallback value if not system preference found

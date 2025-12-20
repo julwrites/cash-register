@@ -45,6 +45,11 @@ You are an expert Software Engineer working on this project. Your primary respon
 *   **Security**: Refer to `docs/security/` for risk assessments and mitigations.
 *   **Memories**: Refer to `docs/memories/` for long-term project context.
 
+## UI Standards
+*   **Nuxt UI & Tailwind CSS**: All UI components must use [Nuxt UI](https://ui.nuxt.com/) components and Tailwind CSS utility classes.
+*   **No Custom/Legacy CSS**: Avoid creating custom CSS classes or using legacy classes (e.g., `.btn`, `.form-group`). Use Tailwind utilities for layout, spacing, and typography.
+*   **Consistency**: Adhere to the design system provided by Nuxt UI.
+
 ## Code Style & Standards
 *   Follow the existing patterns in the codebase.
 *   Ensure all new code is covered by tests (if testing infrastructure exists).

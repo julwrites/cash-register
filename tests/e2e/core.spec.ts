@@ -19,9 +19,9 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
 
     if (await setupButton.isVisible()) {
       await setupButton.click();
-      await page.getByLabel('Username:').fill('admin');
-      await page.getByLabel('Password:', { exact: true }).fill('password123');
-      await page.getByLabel('Confirm Password:').fill('password123');
+      await page.getByLabel('Username').fill('admin');
+      await page.getByLabel('Password', { exact: true }).fill('password123');
+      await page.getByLabel('Confirm Password').fill('password123');
       await page.getByRole('button', { name: 'Create Admin Account' }).click();
 
       await expect(page.getByText('Admin account set up successfully')).toBeVisible();
@@ -44,12 +44,12 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
         await page.goto('/login');
     }
 
-    const usernameInput = page.getByLabel('Username:');
+    const usernameInput = page.getByLabel('Username');
     if (await usernameInput.isVisible()) {
         await usernameInput.fill('admin');
         await page.getByRole('button', { name: 'Continue' }).click();
 
-        const passwordInput = page.getByLabel('Password:', { exact: true });
+        const passwordInput = page.getByLabel('Password', { exact: true });
 
         // Wait for password input or error
         try {

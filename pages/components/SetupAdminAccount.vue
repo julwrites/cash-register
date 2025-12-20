@@ -1,49 +1,38 @@
 <template>
-  <div class="setup-admin-modal">
-    <h2 class="text-center mb-lg">Set Up Admin Account</h2>
-    <form class="setup-admin-form" @submit.prevent="setupAccount">
-      <div class="form-group">
-        <label for="username" class="form-label">Username:</label>
+  <UCard>
+    <template #header>
+      <h2 class="text-xl font-bold text-center">Set Up Admin Account</h2>
+    </template>
+    <form class="flex flex-col gap-4" @submit.prevent="setupAccount">
+      <UFormGroup label="Username" name="username" required>
         <UInput
           id="username"
           v-model="username"
           type="text"
-          class="form-input"
           required
         />
-      </div>
-      <div class="form-group">
-        <label for="password" class="form-label">Password:</label>
+      </UFormGroup>
+      <UFormGroup label="Password" name="password" required>
         <UInput
           id="password"
           v-model="password"
           type="password"
-          class="form-input"
           required
         />
-      </div>
-      <div class="form-group">
-        <label for="confirmPassword" class="form-label"
-          >Confirm Password:</label
-        >
+      </UFormGroup>
+      <UFormGroup label="Confirm Password" name="confirmPassword" required>
         <UInput
           id="confirmPassword"
           v-model="confirmPassword"
           type="password"
-          class="form-input"
           required
         />
-      </div>
-      <UButton
-        type="submit"
-        color="primary"
-        block
-        class="btn btn-primary setup-admin-button"
-      >
+      </UFormGroup>
+      <UButton type="submit" color="primary" block class="mt-4">
         Create Admin Account
       </UButton>
     </form>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -87,19 +76,3 @@ async function setupAccount() {
   }
 }
 </script>
-
-<style scoped>
-.setup-admin-modal {
-  padding: var(--spacing-md);
-}
-
-.setup-admin-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.setup-admin-button {
-  margin-top: var(--spacing-md);
-}
-</style>
