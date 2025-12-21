@@ -269,6 +269,10 @@ onMounted(() => {
 .main-content {
   flex: 1;
   width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
   padding-bottom: 4rem;
 }
 
