@@ -1,9 +1,9 @@
 <template>
   <UCard>
     <template #header>
-      <h2 class="text-xl font-bold text-center">Set Up Admin Account</h2>
+      <h2 class="form-title">Set Up Admin Account</h2>
     </template>
-    <form class="flex flex-col gap-4" @submit.prevent="setupAccount">
+    <form class="setup-form" @submit.prevent="setupAccount">
       <UFormGroup label="Username" name="username" required>
         <UInput
           id="username"
@@ -28,7 +28,7 @@
           required
         />
       </UFormGroup>
-      <UButton type="submit" color="primary" block class="mt-4">
+      <UButton type="submit" color="primary" block class="submit-button">
         Create Admin Account
       </UButton>
     </form>
@@ -76,3 +76,21 @@ async function setupAccount() {
   }
 }
 </script>
+
+<style scoped>
+.form-title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  text-align: center;
+}
+
+.setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* gap-4 */
+}
+
+.submit-button {
+  margin-top: 1rem; /* mt-4 */
+}
+</style>

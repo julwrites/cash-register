@@ -1,6 +1,6 @@
 <template>
-  <div class="max-w-4xl mx-auto space-y-6">
-    <div class="overflow-x-auto">
+  <div class="categories-container">
+    <div class="table-container">
       <UTable :rows="categoriesByID" :columns="columns">
         <template #actions-data="{ row }">
           <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
@@ -17,17 +17,17 @@
     <UModal v-model="isEditModalOpen">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-bold">Edit Category</h3>
+          <h3 class="modal-title">Edit Category</h3>
         </template>
         <UForm
           :state="editFormState"
-          class="space-y-4"
+          class="edit-form"
           @submit="handleUpdateCategory"
         >
           <UFormGroup label="Category Name" name="name">
             <UInput v-model="editFormState.name" />
           </UFormGroup>
-          <div class="flex justify-end gap-2">
+          <div class="modal-actions">
             <UButton color="gray" variant="ghost" @click="isEditModalOpen = false">Cancel</UButton>
             <UButton type="submit" color="primary">Update</UButton>
           </div>
@@ -35,16 +35,16 @@
       </UCard>
     </UModal>
 
-    <div class="mt-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-      <h3 class="text-lg font-semibold mb-4">Add Category</h3>
-      <UForm :state="newCategoryState" class="flex flex-col sm:flex-row gap-4 items-end" @submit="handleAddCategory">
-        <UFormGroup label="Name" name="name" class="flex-1 w-full">
+    <div class="add-category-section">
+      <h3 class="section-title">Add Category</h3>
+      <UForm :state="newCategoryState" class="add-category-form" @submit="handleAddCategory">
+        <UFormGroup label="Name" name="name" class="name-input-group">
           <UInput
             v-model="newCategoryState.name"
             placeholder="Enter new category name"
           />
         </UFormGroup>
-        <UButton type="submit" color="primary" class="w-full sm:w-auto">Add Category</UButton>
+        <UButton type="submit" color="primary" class="submit-button">Add Category</UButton>
       </UForm>
     </div>
   </div>
@@ -141,3 +141,80 @@ function startEditCategory(category: { id: number; name: string }) {
   isEditModalOpen.value = true;
 }
 </script>
+
+<style scoped>
+.categories-container {
+  max-width: 56rem; /* max-w-4xl */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* space-y-6 */
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.modal-title {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 700; /* font-bold */
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem; /* gap-2 */
+}
+
+.add-category-section {
+  margin-top: 1.5rem; /* mt-6 */
+  padding: 1rem; /* p-4 */
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+  border-radius: 0.5rem; /* rounded-lg */
+}
+
+:global(.dark) .add-category-section {
+  border-color: #374151; /* dark:border-gray-700 */
+}
+
+.section-title {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.add-category-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* gap-4 */
+  align-items: flex-end;
+}
+
+@media (min-width: 640px) { /* sm: */
+  .add-category-form {
+    flex-direction: row;
+  }
+}
+
+.name-input-group {
+  flex: 1;
+  width: 100%;
+}
+
+.submit-button {
+  width: 100%;
+}
+
+@media (min-width: 640px) { /* sm: */
+  .submit-button {
+    width: auto;
+  }
+}
+</style>
