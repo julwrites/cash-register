@@ -19,17 +19,25 @@ const props = defineProps({
   },
 });
 
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === 'dark');
+
 const totalExpenses = computed(() =>
-  props.chartData.datasets[0].data.reduce((acc, curr) => acc + curr, 0)
+  props.chartData.datasets[0].data.reduce((acc: number, curr: number) => acc + curr, 0)
 );
 
-const chartOptions = {
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
+    legend: {
+      labels: {
+        color: isDark.value ? '#e5e7eb' : '#374151',
+      },
+    },
     tooltip: {
       callbacks: {
-        label: (context) => {
+        label: (context: any) => {
           const label = context.label || '';
           const value = context.raw || 0;
           const percentage = ((value / totalExpenses.value) * 100).toFixed(2);
@@ -42,7 +50,7 @@ const chartOptions = {
       },
     },
   },
-};
+}));
 </script>
 
 <style scoped>

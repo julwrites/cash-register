@@ -261,18 +261,18 @@ onMounted(async () => {
 .no-data {
   text-align: center;
   padding: 1rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-text-muted);
 }
 
 .recent-list {
-  background-color: white;
+  background-color: var(--color-bg-card);
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
 :global(.dark) .recent-list {
-  background-color: #1f2937; /* gray-800 */
+  /* Handled by vars */
 }
 
 .transaction-item {
@@ -280,13 +280,13 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  border-bottom: 1px solid var(--color-border);
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 :global(.dark) .transaction-item {
-  border-bottom-color: #374151; /* gray-700 */
+  /* Handled by vars */
 }
 
 .transaction-item:last-child {
@@ -294,11 +294,11 @@ onMounted(async () => {
 }
 
 .transaction-item:hover {
-  background-color: #f9fafb; /* gray-50 */
+  background-color: var(--color-bg-hover);
 }
 
 :global(.dark) .transaction-item:hover {
-  background-color: #374151; /* gray-700 */
+  /* Handled by vars */
 }
 
 .transaction-info {
@@ -311,7 +311,11 @@ onMounted(async () => {
 
 .transaction-meta {
   font-size: 0.875rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-text-muted);
+}
+
+:global(.dark) .transaction-meta {
+  /* Handled by vars */
 }
 
 .transaction-amount {
@@ -319,11 +323,11 @@ onMounted(async () => {
 }
 
 .amount-negative {
-  color: #ef4444; /* red-500 */
+  color: var(--color-danger);
 }
 
 .amount-positive {
-  color: #22c55e; /* green-500 */
+  color: var(--color-success);
 }
 
 .view-all-container {

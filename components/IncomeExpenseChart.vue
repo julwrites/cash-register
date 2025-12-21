@@ -6,6 +6,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Bar } from 'vue-chartjs';
 import {
   Chart as ChartJS,
@@ -33,13 +34,39 @@ defineProps({
   },
 });
 
-const chartOptions = {
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === 'dark');
+
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  scales: {
+    x: {
+      ticks: {
+        color: isDark.value ? '#e5e7eb' : '#374151',
+      },
+      grid: {
+        color: isDark.value ? '#374151' : '#e5e7eb',
+      },
+    },
+    y: {
+      ticks: {
+        color: isDark.value ? '#e5e7eb' : '#374151',
+      },
+      grid: {
+        color: isDark.value ? '#374151' : '#e5e7eb',
+      },
+    },
+  },
   plugins: {
+    legend: {
+      labels: {
+        color: isDark.value ? '#e5e7eb' : '#374151',
+      },
+    },
     tooltip: {
       callbacks: {
-        label: (context) => {
+        label: (context: any) => {
           const label = context.dataset.label || '';
           const value = context.raw || 0;
           const total = context.dataset.data[0] + context.dataset.data[1];
@@ -53,7 +80,7 @@ const chartOptions = {
       },
     },
   },
-};
+}));
 </script>
 
 <style scoped>

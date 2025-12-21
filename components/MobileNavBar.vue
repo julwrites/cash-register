@@ -80,15 +80,14 @@ function isActive(item: NavItem) {
   left: 0;
   right: 0;
   z-index: 50;
-  background-color: white;
-  border-top: 1px solid #e5e7eb; /* gray-200 */
+  background-color: var(--color-bg-card);
+  border-top: 1px solid var(--color-border);
   padding-bottom: env(safe-area-inset-bottom);
   display: block;
 }
 
 :global(.dark) .mobile-nav-bar {
-  background-color: #111827; /* gray-900 */
-  border-top-color: #1f2937; /* gray-800 */
+  /* Handled by vars */
 }
 
 @media (min-width: 768px) {
@@ -115,12 +114,12 @@ function isActive(item: NavItem) {
   background: none;
   border: none;
   cursor: pointer;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-text-muted);
   transition: color 0.2s;
 }
 
 :global(.dark) .nav-item {
-  color: #9ca3af; /* gray-400 */
+  /* Handled by vars */
 }
 
 .nav-item:focus {
@@ -128,19 +127,19 @@ function isActive(item: NavItem) {
 }
 
 .nav-item:hover {
-  color: #374151; /* gray-700 */
+  color: var(--color-text-body);
 }
 
 :global(.dark) .nav-item:hover {
-  color: #e5e7eb; /* gray-200 */
+  /* Handled by vars */
 }
 
 .nav-item-active {
-  color: #2563eb !important; /* primary-600 */
+  color: var(--color-primary) !important;
 }
 
 :global(.dark) .nav-item-active {
-  color: #60a5fa !important; /* primary-400 */
+  /* Handled by vars */
 }
 
 .nav-icon {

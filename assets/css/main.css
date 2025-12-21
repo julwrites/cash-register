@@ -1,0 +1,83 @@
+:root {
+  /* Primitive Colors - Tailwind Palette References */
+  --p-primary-600: #2563eb;
+  --p-primary-500: #3b82f6;
+  --p-primary-400: #60a5fa;
+  --p-primary-100: #dbeafe;
+
+  --p-gray-900: #111827;
+  --p-gray-800: #1f2937;
+  --p-gray-700: #374151;
+  --p-gray-600: #4b5563;
+  --p-gray-500: #6b7280;
+  --p-gray-400: #9ca3af;
+  --p-gray-200: #e5e7eb;
+  --p-gray-100: #f3f4f6;
+  --p-gray-50: #f9fafb;
+
+  --p-green-600: #16a34a;
+  --p-green-500: #22c55e;
+  --p-green-400: #4ade80;
+
+  --p-red-600: #dc2626;
+  --p-red-500: #ef4444;
+  --p-red-400: #f87171;
+
+  /* Semantic Tokens - Light Mode (Default) */
+  --color-primary: var(--p-primary-600);
+  
+  --color-bg-body: var(--p-gray-50);
+  --color-text-body: var(--p-gray-900);
+  --color-text-muted: var(--p-gray-500);
+  
+  --color-bg-card: #ffffff;
+  --color-border-card: var(--p-gray-200);
+  
+  --color-bg-header: var(--p-primary-600);
+  --color-text-header: #ffffff;
+  --color-header-border: transparent;
+  
+  --color-border: var(--p-gray-200);
+  --color-bg-hover: var(--p-gray-50);
+  --color-bg-input: var(--p-gray-50);
+
+  --color-success: var(--p-green-600);
+  --color-danger: var(--p-red-600);
+  
+  /* Chart Colors */
+  --color-chart-text: var(--p-gray-700);
+  --color-chart-grid: var(--p-gray-200);
+}
+
+.dark {
+  /* Semantic Tokens - Dark Mode */
+  --color-bg-body: var(--p-gray-900);
+  --color-text-body: var(--p-gray-100);
+  --color-text-muted: var(--p-gray-400);
+  
+  --color-bg-card: var(--p-gray-800);
+  --color-border-card: var(--p-gray-700);
+  
+  --color-bg-header: var(--p-gray-800);
+  --color-text-header: #ffffff;
+  --color-header-border: var(--p-gray-700);
+  
+  --color-border: var(--p-gray-700);
+  --color-bg-hover: var(--p-gray-700);
+  --color-bg-input: var(--p-gray-900);
+
+  --color-success: var(--p-green-400);
+  --color-danger: var(--p-red-400);
+
+  /* Chart Colors */
+  --color-chart-text: var(--p-gray-200);
+  --color-chart-grid: var(--p-gray-700);
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg-body);
+  color: var(--color-text-body);
+  transition: background-color 0.2s, color 0.2s;
+}

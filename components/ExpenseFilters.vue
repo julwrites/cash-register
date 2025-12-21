@@ -7,12 +7,14 @@
         :options="periodOptions"
         placeholder="Select time period"
         class="filter-select"
+        :popper="{ strategy: 'fixed' }"
       />
       <USelectMenu
         v-model="localSelectedCategory"
         :options="categoryOptions"
         placeholder="Select category"
         class="filter-select"
+        :popper="{ strategy: 'fixed' }"
       />
 
       <div v-if="localSelectedPeriod.value === 'custom'" class="date-range-group">
@@ -20,12 +22,14 @@
           v-model="localStartDate"
           type="date"
           placeholder="Start Date"
+          class="filter-input"
           @change="emitDateChange"
         />
         <UInput
           v-model="localEndDate"
           type="date"
           placeholder="End Date"
+          class="filter-input"
           @change="emitDateChange"
         />
       </div>
@@ -49,11 +53,15 @@
               v-model="localSelectedPeriod"
               :options="periodOptions"
               placeholder="Select time period"
+              class="filter-select"
+              :popper="{ strategy: 'fixed' }"
             />
             <USelectMenu
               v-model="localSelectedCategory"
               :options="categoryOptions"
               placeholder="Select category"
+              class="filter-select"
+              :popper="{ strategy: 'fixed' }"
             />
              <div
               v-if="localSelectedPeriod.value === 'custom'"
@@ -63,12 +71,14 @@
                 v-model="localStartDate"
                 type="date"
                 placeholder="Start Date"
+                class="filter-input"
                 @change="emitDateChange"
               />
               <UInput
                 v-model="localEndDate"
                 type="date"
                 placeholder="End Date"
+                class="filter-input"
                 @change="emitDateChange"
               />
             </div>
@@ -169,6 +179,11 @@ const periodOptions = [
 
 .filter-select {
   min-width: 200px;
+}
+
+.filter-select :deep(button), .filter-input :deep(input) {
+  background-color: var(--color-bg-input) !important;
+  color: var(--color-text-body);
 }
 
 .date-range-group {

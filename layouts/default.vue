@@ -151,12 +151,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--color-gray-50);
+  background-color: var(--color-bg-body);
   transition: background-color 0.2s;
-}
-
-:global(.dark) .layout-root {
-  background-color: var(--color-gray-900);
 }
 
 .app-header {
@@ -164,9 +160,15 @@ onMounted(() => {
   top: 0;
   z-index: 50;
   width: 100%;
-  background-color: var(--color-primary-600);
-  color: white;
+  background-color: var(--color-bg-header);
+  color: var(--color-text-header);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--color-header-border);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+:global(.dark) .app-header {
+  /* handled by vars */
 }
 
 .header-inner {

@@ -374,11 +374,11 @@ async function executeDelete() {
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
-  color: #111827; /* gray-900 */
+  color: var(--color-text-body);
 }
 
 :global(.dark) .page-title {
-  color: white;
+  /* Handled by vars */
 }
 
 .view-mode-group {
@@ -390,11 +390,11 @@ async function executeDelete() {
 .view-mode-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #4b5563; /* gray-600 */
+  color: var(--color-text-muted);
 }
 
 :global(.dark) .view-mode-label {
-  color: #9ca3af; /* gray-400 */
+  /* Handled by vars */
 }
 
 .filters-section {

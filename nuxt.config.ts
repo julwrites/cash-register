@@ -5,6 +5,7 @@ const sw = process.env.SW === 'true';
 export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
+  css: ['~/assets/css/main.css'],
   modules: [
     '@vite-pwa/nuxt',
     '@nuxt/ui',

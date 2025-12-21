@@ -6,7 +6,14 @@
       @submit.prevent="handleSubmit"
     >
       <UFormGroup label="Date" name="date">
-        <UInput id="date" v-model="expenseData.date" type="date" required class="form-input" />
+        <UInput
+          id="date"
+          v-model="expenseData.date"
+          type="date"
+          required
+          color="gray"
+          class="form-input dark:text-white"
+        />
       </UFormGroup>
 
       <UFormGroup label="Category" name="category">
@@ -15,7 +22,9 @@
           v-model="expenseData.category"
           :options="categoryOptions"
           required
-          class="form-input"
+          color="gray"
+          class="form-input dark:text-white"
+          :popper="{ strategy: 'fixed' }"
         />
       </UFormGroup>
 
@@ -28,7 +37,9 @@
           required
           creatable
           searchable
-          class="form-input"
+          color="gray"
+          class="form-input dark:text-white"
+          :popper="{ strategy: 'fixed' }"
         />
       </UFormGroup>
 
@@ -39,7 +50,8 @@
           type="number"
           step="0.01"
           min="0"
-          class="form-input"
+          color="gray"
+          class="form-input dark:text-white"
         />
       </UFormGroup>
 
@@ -50,7 +62,8 @@
           type="number"
           step="0.01"
           min="0"
-          class="form-input"
+          color="gray"
+          class="form-input dark:text-white"
         />
       </UFormGroup>
 
@@ -170,6 +183,15 @@ function cancelEdit() {
 
 .form-input {
   width: 100%;
+  background-color: var(--color-bg-input) !important;
+}
+
+/* Ensure deep nested input elements follow the theme if needed, 
+   though Nuxt UI components should now handle this via app.config.ts */
+:deep(input), :deep(select), :deep(textarea), :deep(button) {
+  background-color: var(--color-bg-input) !important;
+  color: var(--color-text-body);
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .form-actions {
