@@ -1,9 +1,9 @@
 <template>
   <UCard>
     <template #header>
-      <h2 class="text-xl font-bold text-center">Set Your Password</h2>
+      <h2 class="form-title">Set Your Password</h2>
     </template>
-    <form class="flex flex-col gap-4" @submit.prevent="setPassword">
+    <form class="password-form" @submit.prevent="setPassword">
       <UFormGroup label="New Password" name="password" required>
         <UInput
           id="password"
@@ -20,7 +20,7 @@
           required
         />
       </UFormGroup>
-      <UButton type="submit" color="primary" block class="mt-4">
+      <UButton type="submit" color="primary" block class="submit-button">
         Set Password
       </UButton>
     </form>
@@ -85,3 +85,21 @@ async function setPassword() {
   }
 }
 </script>
+
+<style scoped>
+.form-title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  text-align: center;
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* gap-4 */
+}
+
+.submit-button {
+  margin-top: 1rem; /* mt-4 */
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
-  <div class="max-w-xl mx-auto">
-    <form class="space-y-6" @submit.prevent="updateLogin">
+  <div class="settings-container">
+    <form class="settings-form" @submit.prevent="updateLogin">
       <UFormGroup label="New Username" name="username" required>
         <UInput id="username" v-model="newUsername" type="text" required />
       </UFormGroup>
@@ -12,7 +12,7 @@
       </div>
     </form>
 
-    <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+    <div class="logout-section">
       <UButton
         color="red"
         variant="outline"
@@ -69,3 +69,27 @@ async function updateLogin() {
   }
 }
 </script>
+
+<style scoped>
+.settings-container {
+  max-width: 36rem; /* max-w-xl */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* space-y-6 */
+}
+
+.logout-section {
+  margin-top: 2rem; /* mt-8 */
+  padding-top: 2rem; /* pt-8 */
+  border-top: 1px solid #e5e7eb; /* border-gray-200 */
+}
+
+:global(.dark) .logout-section {
+  border-color: #374151; /* dark:border-gray-700 */
+}
+</style>
