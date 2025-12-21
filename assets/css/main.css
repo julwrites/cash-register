@@ -81,3 +81,21 @@ body {
   color: var(--color-text-body);
   transition: background-color 0.2s, color 0.2s;
 }
+
+/* Global Form Input Overrides */
+.form-input, 
+.form-select, 
+.form-textarea,
+.form-multiselect {
+  background-color: var(--color-bg-input) !important;
+  color: var(--color-text-body);
+}
+
+/* Ensure nested elements in Nuxt UI components also inherit the background */
+.form-input button,
+.form-input input,
+.form-select button,
+.form-select select {
+  background-color: var(--color-bg-input) !important;
+  color: var(--color-text-body);
+}

@@ -24,7 +24,6 @@
           required
           color="gray"
           class="form-input dark:text-white"
-          :popper="{ strategy: 'fixed' }"
         />
       </UFormGroup>
 
@@ -39,7 +38,6 @@
           searchable
           color="gray"
           class="form-input dark:text-white"
-          :popper="{ strategy: 'fixed' }"
         />
       </UFormGroup>
 
@@ -183,15 +181,6 @@ function cancelEdit() {
 
 .form-input {
   width: 100%;
-  background-color: var(--color-bg-input) !important;
-}
-
-/* Ensure deep nested input elements follow the theme if needed, 
-   though Nuxt UI components should now handle this via app.config.ts */
-:deep(input), :deep(select), :deep(textarea), :deep(button) {
-  background-color: var(--color-bg-input) !important;
-  color: var(--color-text-body);
-  transition: background-color 0.2s, color 0.2s;
 }
 
 .form-actions {

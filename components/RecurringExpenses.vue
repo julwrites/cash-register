@@ -74,7 +74,7 @@
           </UFormGroup>
 
           <UFormGroup label="Category" name="category" required>
-             <USelectMenu v-model="formData.category" :options="categories" searchable creatable />
+             <USelectMenu v-model="formData.category" :options="categories" searchable creatable class="form-input" />
           </UFormGroup>
 
           <UFormGroup label="Amount" name="amount" required>
@@ -82,7 +82,7 @@
           </UFormGroup>
 
           <UFormGroup label="Frequency" name="frequency" required>
-            <USelectMenu v-model="formData.frequency" :options="['weekly', 'monthly', 'yearly']" />
+            <USelectMenu v-model="formData.frequency" :options="['weekly', 'monthly', 'yearly']" class="form-input" />
           </UFormGroup>
 
           <UFormGroup label="Next Due Date" name="next_due_date" required>
