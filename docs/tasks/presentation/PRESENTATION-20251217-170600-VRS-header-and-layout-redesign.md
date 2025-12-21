@@ -1,6 +1,6 @@
 ---
 id: PRESENTATION-20251217-170600-VRS
-status: review_requested
+status: completed
 title: Header and Layout Redesign
 priority: medium
 created: 2025-12-17 17:06:00
@@ -12,15 +12,16 @@ type: task
 # Header and Layout Redesign
 
 ## Description
-The current layout uses custom scoped CSS and hardcoded colors which contradicts the usage of Nuxt UI (Tailwind CSS). This task aims to modernize the application layout by refactoring the global header and main page structure to use Tailwind utility classes and Nuxt UI configuration.
+The previous layout used inconsistent styling. This task refactored the global header and main page structure to use a consistent Semantic CSS approach, adhering to the project's "No Tailwind Utilities" policy, while integrating with Nuxt UI components.
 
 ## Plan
-1.  **Unify Color System**: Create `app.config.ts` to set the Nuxt UI primary color to 'blue', matching the legacy `#007bff`.
-2.  **Refactor Header**: Rewrite `layouts/default.vue` to use Tailwind classes (`flex`, `sticky`, `bg-primary-600`) and remove custom CSS.
-3.  **Refactor Page Layout**: Rewrite `pages/index.vue` to use `UContainer` and utility classes.
-4.  **Responsive Design**: Ensure the header adapts gracefully to mobile screens using standard Tailwind breakpoints.
+1.  **Unify Color System**: Created `app.config.ts` to set the Nuxt UI primary color to 'blue'.
+2.  **Refactor Header**: Refactored `layouts/default.vue` to use semantic classes (`.app-header`, `.header-inner`) and removed legacy hardcoded styles, ensuring responsive design via media queries.
+3.  **Refactor Page Layout**: Updated `pages/index.vue` to use semantic layout containers.
+4.  **Responsive Design**: Ensured the header adapts gracefully to mobile screens (hiding tabs, showing mobile nav).
 
 ## Implementation Details
 - **Theme**: Blue primary, Cool gray.
-- **Header**: Sticky top, primary background, white text.
-- **Navigation**: `UTabs` integrated into the header.
+- **Header**: Sticky top, primary background.
+- **Navigation**: `UTabs` for desktop, `MobileNavBar` for mobile.
+- **Styling**: Scoped CSS with semantic classes and global CSS variables.
