@@ -15,6 +15,9 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json ./
 
+# Copy config files to ensure postinstall scripts (nuxt prepare) run correctly
+COPY nuxt.config.ts app.config.ts ./
+
 # Install node-gyp for native module builds
 RUN npm install -g node-gyp
 
