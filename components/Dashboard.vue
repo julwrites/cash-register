@@ -261,7 +261,7 @@ onMounted(async () => {
 .no-data {
   text-align: center;
   padding: 1rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
 }
 
 .recent-list {
@@ -272,7 +272,7 @@ onMounted(async () => {
 }
 
 :global(.dark) .recent-list {
-  background-color: #1f2937; /* gray-800 */
+  background-color: var(--color-gray-800);
 }
 
 .transaction-item {
@@ -280,13 +280,13 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  border-bottom: 1px solid var(--color-gray-200);
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 :global(.dark) .transaction-item {
-  border-bottom-color: #374151; /* gray-700 */
+  border-bottom-color: var(--color-gray-700);
 }
 
 .transaction-item:last-child {
@@ -294,11 +294,11 @@ onMounted(async () => {
 }
 
 .transaction-item:hover {
-  background-color: #f9fafb; /* gray-50 */
+  background-color: var(--color-gray-50);
 }
 
 :global(.dark) .transaction-item:hover {
-  background-color: #374151; /* gray-700 */
+  background-color: var(--color-gray-700);
 }
 
 .transaction-info {
@@ -311,7 +311,7 @@ onMounted(async () => {
 
 .transaction-meta {
   font-size: 0.875rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
 }
 
 .transaction-amount {
@@ -319,11 +319,11 @@ onMounted(async () => {
 }
 
 .amount-negative {
-  color: #ef4444; /* red-500 */
+  color: var(--color-red-500);
 }
 
 .amount-positive {
-  color: #22c55e; /* green-500 */
+  color: var(--color-green-500);
 }
 
 .view-all-container {

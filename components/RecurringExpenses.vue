@@ -321,7 +321,7 @@ function formatCurrency(amount: number) {
 
 .empty-state {
   text-align: center;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
   padding: 2rem 0;
 }
 
@@ -330,12 +330,12 @@ function formatCurrency(amount: number) {
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb; /* gray-200 */
+  border: 1px solid var(--color-gray-200);
 }
 
 :global(.dark) .mobile-card {
-  background-color: #1f2937; /* gray-800 */
-  border-color: #374151; /* gray-700 */
+  background-color: var(--color-gray-800);
+  border-color: var(--color-gray-700);
 }
 
 .card-header {
@@ -352,7 +352,7 @@ function formatCurrency(amount: number) {
 
 .card-meta {
   font-size: 0.875rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
 }
 
 .card-amount {
@@ -372,7 +372,7 @@ function formatCurrency(amount: number) {
 }
 
 .status-label {
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
 }
 
 .status-badge {

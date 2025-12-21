@@ -81,14 +81,14 @@ function isActive(item: NavItem) {
   right: 0;
   z-index: 50;
   background-color: white;
-  border-top: 1px solid #e5e7eb; /* gray-200 */
+  border-top: 1px solid var(--color-gray-200);
   padding-bottom: env(safe-area-inset-bottom);
   display: block;
 }
 
 :global(.dark) .mobile-nav-bar {
-  background-color: #111827; /* gray-900 */
-  border-top-color: #1f2937; /* gray-800 */
+  background-color: var(--color-gray-900);
+  border-top-color: var(--color-gray-800);
 }
 
 @media (min-width: 768px) {
@@ -115,12 +115,12 @@ function isActive(item: NavItem) {
   background: none;
   border: none;
   cursor: pointer;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
   transition: color 0.2s;
 }
 
 :global(.dark) .nav-item {
-  color: #9ca3af; /* gray-400 */
+  color: var(--color-gray-400);
 }
 
 .nav-item:focus {
@@ -128,19 +128,19 @@ function isActive(item: NavItem) {
 }
 
 .nav-item:hover {
-  color: #374151; /* gray-700 */
+  color: var(--color-gray-700);
 }
 
 :global(.dark) .nav-item:hover {
-  color: #e5e7eb; /* gray-200 */
+  color: var(--color-gray-200);
 }
 
 .nav-item-active {
-  color: #2563eb !important; /* primary-600 */
+  color: var(--color-primary-600) !important;
 }
 
 :global(.dark) .nav-item-active {
-  color: #60a5fa !important; /* primary-400 */
+  color: var(--color-primary-400) !important;
 }
 
 .nav-icon {

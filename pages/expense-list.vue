@@ -374,7 +374,7 @@ async function executeDelete() {
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
-  color: #111827; /* gray-900 */
+  color: var(--color-gray-900);
 }
 
 :global(.dark) .page-title {
@@ -390,11 +390,11 @@ async function executeDelete() {
 .view-mode-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #4b5563; /* gray-600 */
+  color: var(--color-gray-600);
 }
 
 :global(.dark) .view-mode-label {
-  color: #9ca3af; /* gray-400 */
+  color: var(--color-gray-400);
 }
 
 .filters-section {
@@ -408,7 +408,7 @@ async function executeDelete() {
 .recent-mode-hint {
   margin-bottom: 1rem;
   font-size: 0.875rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
   font-style: italic;
 }
 

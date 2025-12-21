@@ -85,14 +85,14 @@ function formatCurrency(amount: number) {
 }
 
 .card-label {
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 0.25rem;
 }
 
 :global(.dark) .card-label {
-  color: #9ca3af; /* gray-400 */
+  color: var(--color-gray-400);
 }
 
 .card-value-container {
@@ -105,35 +105,35 @@ function formatCurrency(amount: number) {
 }
 
 .income-value {
-  color: #16a34a; /* green-600 */
+  color: var(--color-green-600);
 }
 
 :global(.dark) .income-value {
-  color: #4ade80; /* green-400 */
+  color: var(--color-green-400);
 }
 
 .expense-value {
-  color: #dc2626; /* red-600 */
+  color: var(--color-red-600);
 }
 
 :global(.dark) .expense-value {
-  color: #f87171; /* red-400 */
+  color: var(--color-red-400);
 }
 
 .balance-positive {
-  color: #2563eb; /* blue-600 */
+  color: var(--color-primary-600);
 }
 
 :global(.dark) .balance-positive {
-  color: #60a5fa; /* blue-400 */
+  color: var(--color-primary-400);
 }
 
 .balance-negative {
-  color: #dc2626; /* red-600 */
+  color: var(--color-red-600);
 }
 
 :global(.dark) .balance-negative {
-  color: #f87171; /* red-400 */
+  color: var(--color-red-400);
 }
 
 .skeleton {

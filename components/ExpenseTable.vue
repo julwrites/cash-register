@@ -191,7 +191,7 @@ function getAmountColor(row: Record<string, any>) {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
 }
 
 .empty-icon {
@@ -216,14 +216,14 @@ function getAmountColor(row: Record<string, any>) {
 .mobile-card {
   padding: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb; /* gray-200 */
+  border: 1px solid var(--color-gray-200);
   background-color: white;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 :global(.dark) .mobile-card {
-  border-color: #374151; /* gray-700 */
-  background-color: #1f2937; /* gray-800 */
+  border-color: var(--color-gray-700);
+  background-color: var(--color-gray-800);
 }
 
 .mobile-header {
@@ -235,11 +235,11 @@ function getAmountColor(row: Record<string, any>) {
 
 .mobile-date {
   font-size: 0.875rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
 }
 
 :global(.dark) .mobile-date {
-  color: #9ca3af; /* gray-400 */
+  color: var(--color-gray-400);
 }
 
 .mobile-amount {
@@ -249,14 +249,14 @@ function getAmountColor(row: Record<string, any>) {
 .mobile-desc {
   margin-bottom: 0.75rem;
   font-weight: 600;
-  color: #111827; /* gray-900 */
+  color: var(--color-gray-900);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 :global(.dark) .mobile-desc {
-  color: #f3f4f6; /* gray-100 */
+  color: var(--color-gray-100);
 }
 
 .mobile-footer {
@@ -272,26 +272,26 @@ function getAmountColor(row: Record<string, any>) {
 
 /* Semantic Amount Colors */
 .amount-positive {
-  color: #16a34a; /* green-600 */
+  color: var(--color-green-600);
 }
 
 :global(.dark) .amount-positive {
-  color: #4ade80; /* green-400 */
+  color: var(--color-green-400);
 }
 
 .amount-negative {
-  color: #dc2626; /* red-600 */
+  color: var(--color-red-600);
 }
 
 :global(.dark) .amount-negative {
-  color: #f87171; /* red-400 */
+  color: var(--color-red-400);
 }
 
 .amount-neutral {
-  color: #111827; /* gray-900 */
+  color: var(--color-gray-900);
 }
 
 :global(.dark) .amount-neutral {
-  color: #f3f4f6; /* gray-100 */
+  color: var(--color-gray-100);
 }
 </style>

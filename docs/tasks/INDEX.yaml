@@ -45,6 +45,12 @@ docs/tasks/presentation/PRESENTATION-20251217-040304-QTJ-ui-refactor-move-tabs-t
 
 docs/tasks/presentation/PRESENTATION-20251217-170600-VRS-header-and-layout-redesign.md:
 
+docs/tasks/presentation/PRESENTATION-20251220-040356-YOM-improve-expense-form-responsiveness.md:
+
+docs/tasks/presentation/PRESENTATION-20251220-110515-VSD-refactor-ui-to-remove-legacy-css-and-standardize-on-nuxt-ui.md:
+
+docs/tasks/presentation/PRESENTATION-20251221-014054-RPS-fix-dark-mode-and-layout-margins.md:
+
 docs/tasks/review/REVIEW-20251213-021759-ZSN-codebase-gap-analysis.md:
 
 docs/tasks/security/SECURITY-20251213-021824-YED-migrate-authentication-to-nextauth.md:
@@ -52,3 +58,5 @@ docs/tasks/security/SECURITY-20251213-021824-YED-migrate-authentication-to-nexta
 docs/tasks/testing/TESTING-20251214-140255-OCQ-fix-tests-and-investigate-authentication-failure.md:
 
 docs/tasks/testing/TESTING-20251215-013845-DCC-expand-component-test-coverage.md:
+
+docs/tasks/testing/TESTING-20251219-080522-EZH-implement-e2e-core-workflow-tests.md:

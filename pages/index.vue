@@ -93,24 +93,24 @@ function navigateToList() {
   width: 4rem;
   height: 4rem;
   margin: 0 auto;
-  color: #9ca3af; /* gray-400 */
+  color: var(--color-gray-400);
 }
 
 .auth-title {
   font-size: 1.25rem;
   font-weight: 500;
-  color: #374151; /* gray-700 */
+  color: var(--color-gray-700);
 }
 
 :global(.dark) .auth-title {
-  color: #e5e7eb; /* gray-200 */
+  color: var(--color-gray-200);
 }
 
 .auth-subtitle {
-  color: #6b7280; /* gray-500 */
+  color: var(--color-gray-500);
 }
 
 :global(.dark) .auth-subtitle {
-  color: #9ca3af; /* gray-400 */
+  color: var(--color-gray-400);
 }
 </style>
