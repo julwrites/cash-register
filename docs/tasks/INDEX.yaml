@@ -31,6 +31,8 @@ docs/tasks/infrastructure/INFRASTRUCTURE-20251215-144424-MHH-fix-auth-redirects-
 
 docs/tasks/infrastructure/INFRASTRUCTURE-20251217-162153-AET-ensure-build-lint-and-test-pass.md:
 
+docs/tasks/infrastructure/INFRASTRUCTURE-20251221-145132-CDL-investigate-style-discrepancy-in-docker-build.md:
+
 docs/tasks/presentation/PRESENTATION-20251213-021904-TQK-replace-blocking-alerts-with-toasts.md:
 
 docs/tasks/presentation/PRESENTATION-20251215-013845-IRD-add-dark-mode-toggle.md:
@@ -45,6 +47,18 @@ docs/tasks/presentation/PRESENTATION-20251217-040304-QTJ-ui-refactor-move-tabs-t
 
 docs/tasks/presentation/PRESENTATION-20251217-170600-VRS-header-and-layout-redesign.md:
 
+docs/tasks/presentation/PRESENTATION-20251220-040356-YOM-improve-expense-form-responsiveness.md:
+
+docs/tasks/presentation/PRESENTATION-20251220-110515-VSD-refactor-ui-to-remove-legacy-css-and-standardize-on-nuxt-ui.md:
+
+docs/tasks/presentation/PRESENTATION-20251221-014054-RPS-fix-dark-mode-and-layout-margins.md:
+
+docs/tasks/presentation/PRESENTATION-20251222-094421-MJZ-refactor-frontend-styling-for-consistency.md:
+
+docs/tasks/presentation/PRESENTATION-20251222-133657-PPW-frontend-css-cleanup-and-consistency.md:
+
+docs/tasks/presentation/PRESENTATION-20251222-133723-JHB-refactor-chart-colors-to-use-css-variables.md:
+
 docs/tasks/review/REVIEW-20251213-021759-ZSN-codebase-gap-analysis.md:
 
 docs/tasks/security/SECURITY-20251213-021824-YED-migrate-authentication-to-nextauth.md:
@@ -52,3 +66,5 @@ docs/tasks/security/SECURITY-20251213-021824-YED-migrate-authentication-to-nexta
 docs/tasks/testing/TESTING-20251214-140255-OCQ-fix-tests-and-investigate-authentication-failure.md:
 
 docs/tasks/testing/TESTING-20251215-013845-DCC-expand-component-test-coverage.md:
+
+docs/tasks/testing/TESTING-20251219-080522-EZH-implement-e2e-core-workflow-tests.md:
