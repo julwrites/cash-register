@@ -14,6 +14,12 @@ export const useThemeColors = () => {
     warning: '#f59e0b',
   })
 
+  // Reactive palette
+  const palette = ref([
+    '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#6366F1', '#EC4899', '#8B5CF6',
+    '#0EA5E9', '#22C55E', '#EAB308', '#818CF8', '#D946EF', '#A855F7',
+  ])
+
   const updateColors = () => {
     if (typeof window === 'undefined') return
 
@@ -32,8 +38,24 @@ export const useThemeColors = () => {
       primary: getVar('--color-primary', '#3b82f6'),
       success: getVar('--color-success', '#10b981'),
       danger: getVar('--color-danger', '#ef4444'),
-      warning: '#f59e0b', // We might want to add a variable for this if needed
+      warning: '#f59e0b',
     }
+
+    palette.value = [
+      getVar('--color-chart-1', '#3B82F6'),
+      getVar('--color-chart-2', '#EF4444'),
+      getVar('--color-chart-3', '#10B981'),
+      getVar('--color-chart-4', '#F59E0B'),
+      getVar('--color-chart-5', '#6366F1'),
+      getVar('--color-chart-6', '#EC4899'),
+      getVar('--color-chart-7', '#8B5CF6'),
+      getVar('--color-chart-8', '#0EA5E9'),
+      getVar('--color-chart-9', '#22C55E'),
+      getVar('--color-chart-10', '#EAB308'),
+      getVar('--color-chart-11', '#818CF8'),
+      getVar('--color-chart-12', '#D946EF'),
+      getVar('--color-chart-13', '#A855F7'),
+    ]
   }
 
   let observer: MutationObserver | null = null
@@ -67,12 +89,6 @@ export const useThemeColors = () => {
     // Small delay to ensure DOM has updated
     setTimeout(updateColors, 50)
   }, { flush: 'post' })
-
-  // Centralized palette for charts (e.g. categories)
-  const palette = [
-    '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#6366F1', '#EC4899', '#8B5CF6',
-    '#0EA5E9', '#22C55E', '#EAB308', '#818CF8', '#D946EF', '#A855F7',
-  ]
 
   return {
     colors,

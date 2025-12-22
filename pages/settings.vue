@@ -30,9 +30,9 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue';
-import AdminPage from './admin.vue';
-import ManageCategoriesPage from './manage-categories.vue';
-import UserSettings from './user-settings.vue';
+import AdminPage from '@/components/settings/AdminSettings.vue';
+import ManageCategoriesPage from '@/components/settings/CategorySettings.vue';
+import UserSettings from '@/components/settings/UserSettings.vue';
 
 const route = useRoute();
 const { data } = useAuth();

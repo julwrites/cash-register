@@ -42,7 +42,7 @@
           <div class="transaction-desc">{{ expense.description }}</div>
           <div class="transaction-meta">{{ formatDate(expense.date) }} • {{ expense.category }}</div>
         </div>
-        <div class="transaction-amount" :class="expense.amount < 0 ? 'amount-negative' : 'amount-positive'">
+        <div class="transaction-amount" :class="getAmountColor(expense)">
           {{ formatCurrency(expense.amount) }}
         </div>
       </div>
@@ -104,7 +104,7 @@ const categoryData = computed(() => {
     labels: categories,
     datasets: [
       {
-        backgroundColor: palette.slice(0, categories.length),
+        backgroundColor: palette.value.slice(0, categories.length),
         data: data
       }
     ]
@@ -116,11 +116,18 @@ const editForm = ref({});
 
 defineEmits(['view-all']);
 
-function formatCurrency(amount: number) {
+function formatCurrency(amount: number | string) {
+  const value = typeof amount === 'string' ? parseFloat(amount) : amount;
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(amount);
+  }).format(value);
+}
+
+function getAmountColor(expense: any) {
+  if (expense.credit > 0) return 'amount-positive';
+  if (expense.debit > 0) return 'amount-negative';
+  return 'amount-neutral';
 }
 
 function formatDate(dateStr: string) {

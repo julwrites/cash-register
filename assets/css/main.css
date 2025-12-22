@@ -58,6 +58,21 @@
   /* Charts */
   --color-chart-text: var(--p-gray-700);
   --color-chart-grid: var(--p-gray-200);
+
+  /* Chart Palette */
+  --color-chart-1: #3B82F6;
+  --color-chart-2: #EF4444;
+  --color-chart-3: #10B981;
+  --color-chart-4: #F59E0B;
+  --color-chart-5: #6366F1;
+  --color-chart-6: #EC4899;
+  --color-chart-7: #8B5CF6;
+  --color-chart-8: #0EA5E9;
+  --color-chart-9: #22C55E;
+  --color-chart-10: #EAB308;
+  --color-chart-11: #818CF8;
+  --color-chart-12: #D946EF;
+  --color-chart-13: #A855F7;
 }
 
 .dark {
