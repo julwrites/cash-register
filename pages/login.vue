@@ -59,8 +59,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import SetPassword from './components/SetPassword.vue';
-import SetupAdminAccount from './components/SetupAdminAccount.vue';
+import SetPassword from '@/components/auth/SetPassword.vue';
+import SetupAdminAccount from '@/components/auth/SetupAdminAccount.vue';
 
 const username = ref('');
 const password = ref('');

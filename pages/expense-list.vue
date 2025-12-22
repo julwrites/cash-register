@@ -377,10 +377,6 @@ async function executeDelete() {
   color: var(--color-text-body);
 }
 
-:global(.dark) .page-title {
-  /* Handled by vars */
-}
-
 .view-mode-group {
   display: flex;
   align-items: center;
@@ -391,10 +387,6 @@ async function executeDelete() {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-muted);
-}
-
-:global(.dark) .view-mode-label {
-  /* Handled by vars */
 }
 
 .filters-section {
@@ -408,7 +400,7 @@ async function executeDelete() {
 .recent-mode-hint {
   margin-bottom: 1rem;
   font-size: 0.875rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-text-muted);
   font-style: italic;
 }
 

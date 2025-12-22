@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import ExpenseForm from '@/pages/components/ExpenseForm.vue';
+import ExpenseForm from '@/components/ExpenseForm.vue';
 
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
