@@ -44,6 +44,7 @@
   
   --color-border: var(--p-gray-200);
   --color-border-hover: var(--p-gray-300);
+  --color-border-card: var(--p-gray-200);
   
   /* Header specific */
   --color-bg-header: var(--p-primary-600);
@@ -76,6 +77,7 @@
   
   --color-border: var(--p-gray-700);
   --color-border-hover: var(--p-gray-600);
+  --color-border-card: var(--p-gray-700);
   
   /* Header specific - Match sidebar/dark theme */
   --color-bg-header: var(--p-gray-800);

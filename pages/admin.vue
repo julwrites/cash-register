@@ -454,11 +454,11 @@ async function triggerDescriptionMigration() {
 }
 
 .status-success {
-  color: #16a34a; /* green-600 */
+  color: var(--color-success);
 }
 
 .status-error {
-  color: #dc2626; /* red-600 */
+  color: var(--color-danger);
 }
 
 .stats-container {
@@ -484,7 +484,7 @@ async function triggerDescriptionMigration() {
 .spinner {
   width: 2rem;
   height: 2rem;
-  color: #3b82f6; /* primary-500 */
+  color: var(--color-primary);
   animation: spin 1s linear infinite;
 }
 
@@ -494,9 +494,9 @@ async function triggerDescriptionMigration() {
 }
 
 .error-banner {
-  color: #ef4444; /* red-500 */
+  color: var(--color-danger);
   padding: 1rem;
-  border: 1px solid #fecaca; /* red-200 */
+  border: 1px solid var(--color-danger);
   border-radius: 0.25rem;
 }
 
