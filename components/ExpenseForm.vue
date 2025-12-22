@@ -12,7 +12,7 @@
           type="date"
           required
           color="gray"
-          class="form-input dark:text-white"
+          class="form-input"
         />
       </UFormGroup>
 
@@ -23,7 +23,7 @@
           :options="categoryOptions"
           required
           color="gray"
-          class="form-input dark:text-white"
+          class="form-input"
         />
       </UFormGroup>
 
@@ -37,7 +37,7 @@
           creatable
           searchable
           color="gray"
-          class="form-input dark:text-white"
+          class="form-input"
         />
       </UFormGroup>
 
@@ -49,7 +49,7 @@
           step="0.01"
           min="0"
           color="gray"
-          class="form-input dark:text-white"
+          class="form-input"
         />
       </UFormGroup>
 
@@ -61,7 +61,7 @@
           step="0.01"
           min="0"
           color="gray"
-          class="form-input dark:text-white"
+          class="form-input"
         />
       </UFormGroup>
 
@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
-import { defaultExpense } from '../../composables/defaultExpense';
+import { defaultExpense } from '@/composables/defaultExpense';
 import { useCategories } from '@/composables/useCategories';
 
 const { categoriesByID, fetchCategories } = useCategories();

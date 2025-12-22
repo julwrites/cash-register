@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime';
-import ExpenseForm from '../../pages/components/ExpenseForm.vue';
+import ExpenseForm from '@/components/ExpenseForm.vue';
 
 const toastAdd = vi.fn();
 

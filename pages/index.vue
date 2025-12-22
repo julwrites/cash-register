@@ -56,19 +56,19 @@ function navigateToList() {
 }
 
 .content-container {
-  padding: 1.5rem 0; /* py-6 */
+  padding: 1.5rem 0;
   width: 100%;
 }
 
 @media (min-width: 640px) {
   .content-container {
-    padding-top: 2rem; /* sm:py-8 */
+    padding-top: 2rem;
     padding-bottom: 2rem;
   }
 }
 
 .form-wrapper {
-  max-width: 42rem; /* max-w-2xl */
+  max-width: 42rem;
   margin: 0 auto;
 }
 
@@ -93,24 +93,16 @@ function navigateToList() {
   width: 4rem;
   height: 4rem;
   margin: 0 auto;
-  color: #9ca3af; /* gray-400 */
+  color: var(--color-text-muted);
 }
 
 .auth-title {
   font-size: 1.25rem;
   font-weight: 500;
-  color: #374151; /* gray-700 */
-}
-
-:global(.dark) .auth-title {
-  color: #e5e7eb; /* gray-200 */
+  color: var(--color-text-body);
 }
 
 .auth-subtitle {
-  color: #6b7280; /* gray-500 */
-}
-
-:global(.dark) .auth-subtitle {
-  color: #9ca3af; /* gray-400 */
+  color: var(--color-text-muted);
 }
 </style>

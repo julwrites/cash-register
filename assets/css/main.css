@@ -1,20 +1,25 @@
 :root {
   /* Primitive Colors - Tailwind Palette References */
+  /* Blue */
   --p-primary-600: #2563eb;
   --p-primary-500: #3b82f6;
   --p-primary-400: #60a5fa;
   --p-primary-100: #dbeafe;
 
+  /* Cool Gray */
+  --p-gray-950: #030712;
   --p-gray-900: #111827;
   --p-gray-800: #1f2937;
   --p-gray-700: #374151;
   --p-gray-600: #4b5563;
   --p-gray-500: #6b7280;
   --p-gray-400: #9ca3af;
+  --p-gray-300: #d1d5db;
   --p-gray-200: #e5e7eb;
   --p-gray-100: #f3f4f6;
-  --p-gray-50: #f9fafb;
+  --p-gray-50:  #f9fafb;
 
+  /* Status */
   --p-green-600: #16a34a;
   --p-green-500: #22c55e;
   --p-green-400: #4ade80;
@@ -25,51 +30,63 @@
 
   /* Semantic Tokens - Light Mode (Default) */
   --color-primary: var(--p-primary-600);
+  --color-primary-text: #ffffff; /* Text on primary bg */
   
   --color-bg-body: var(--p-gray-50);
+  --color-bg-subtle: var(--p-gray-100);
+  --color-bg-card: #ffffff;
+  --color-bg-input: #ffffff;
+  --color-bg-hover: var(--p-gray-50);
+
   --color-text-body: var(--p-gray-900);
   --color-text-muted: var(--p-gray-500);
+  --color-text-inverse: #ffffff;
   
-  --color-bg-card: #ffffff;
-  --color-border-card: var(--p-gray-200);
+  --color-border: var(--p-gray-200);
+  --color-border-hover: var(--p-gray-300);
   
+  /* Header specific */
   --color-bg-header: var(--p-primary-600);
   --color-text-header: #ffffff;
   --color-header-border: transparent;
   
-  --color-border: var(--p-gray-200);
-  --color-bg-hover: var(--p-gray-50);
-  --color-bg-input: var(--p-gray-50);
-
+  /* Status */
   --color-success: var(--p-green-600);
   --color-danger: var(--p-red-600);
   
-  /* Chart Colors */
+  /* Charts */
   --color-chart-text: var(--p-gray-700);
   --color-chart-grid: var(--p-gray-200);
 }
 
 .dark {
   /* Semantic Tokens - Dark Mode */
-  --color-bg-body: var(--p-gray-900);
+  --color-primary: var(--p-primary-500);
+  --color-primary-text: #ffffff;
+
+  --color-bg-body: var(--p-gray-900); /* deep dark */
+  --color-bg-subtle: var(--p-gray-800);
+  --color-bg-card: var(--p-gray-800);
+  --color-bg-input: var(--p-gray-950); /* slightly darker than card for contrast */
+  --color-bg-hover: var(--p-gray-700);
+
   --color-text-body: var(--p-gray-100);
   --color-text-muted: var(--p-gray-400);
-  
-  --color-bg-card: var(--p-gray-800);
-  --color-border-card: var(--p-gray-700);
-  
-  --color-bg-header: var(--p-gray-800);
-  --color-text-header: #ffffff;
-  --color-header-border: var(--p-gray-700);
+  --color-text-inverse: var(--p-gray-900);
   
   --color-border: var(--p-gray-700);
-  --color-bg-hover: var(--p-gray-700);
-  --color-bg-input: var(--p-gray-900);
-
+  --color-border-hover: var(--p-gray-600);
+  
+  /* Header specific - Match sidebar/dark theme */
+  --color-bg-header: var(--p-gray-800);
+  --color-text-header: var(--p-gray-100);
+  --color-header-border: var(--p-gray-700);
+  
+  /* Status */
   --color-success: var(--p-green-400);
   --color-danger: var(--p-red-400);
 
-  /* Chart Colors */
+  /* Charts */
   --color-chart-text: var(--p-gray-200);
   --color-chart-grid: var(--p-gray-700);
 }
@@ -80,22 +97,45 @@ body {
   background-color: var(--color-bg-body);
   color: var(--color-text-body);
   transition: background-color 0.2s, color 0.2s;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Global Form Input Overrides */
-.form-input, 
-.form-select, 
-.form-textarea,
-.form-multiselect {
-  background-color: var(--color-bg-input) !important;
+/* Global Layout Utilities */
+.page-container {
+  width: 100%;
+}
+
+.page-title {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 700;
+  margin-bottom: 1.5rem;
   color: var(--color-text-body);
 }
 
-/* Ensure nested elements in Nuxt UI components also inherit the background */
-.form-input button,
+.section-title {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-text-body);
+}
+
+/* Form Input Overrides to ensure CSS variable usage */
+/* These target Nuxt UI internal classes */
 .form-input input,
-.form-select button,
-.form-select select {
+.form-input button,
+.form-select select,
+.form-textarea textarea {
   background-color: var(--color-bg-input) !important;
-  color: var(--color-text-body);
+  color: var(--color-text-body) !important;
+  border-color: var(--color-border) !important;
+}
+
+.form-input input::placeholder,
+.form-textarea textarea::placeholder {
+  color: var(--color-text-muted) !important;
+}
+
+/* Fix for SelectMenu input */
+div[data-headlessui-state] input {
+  color: var(--color-text-body) !important;
 }

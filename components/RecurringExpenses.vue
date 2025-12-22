@@ -251,6 +251,7 @@ function formatCurrency(amount: number) {
 .section-title {
   font-size: 1.25rem;
   font-weight: 700;
+  color: var(--color-text-body);
 }
 
 .actions-group {
@@ -321,21 +322,16 @@ function formatCurrency(amount: number) {
 
 .empty-state {
   text-align: center;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-text-muted);
   padding: 2rem 0;
 }
 
 .mobile-card {
   padding: 1rem;
-  background-color: white;
+  background-color: var(--color-bg-card);
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb; /* gray-200 */
-}
-
-:global(.dark) .mobile-card {
-  background-color: #1f2937; /* gray-800 */
-  border-color: #374151; /* gray-700 */
+  border: 1px solid var(--color-border);
 }
 
 .card-header {
@@ -348,16 +344,18 @@ function formatCurrency(amount: number) {
 .card-title {
   font-weight: 700;
   font-size: 1.125rem;
+  color: var(--color-text-body);
 }
 
 .card-meta {
   font-size: 0.875rem;
-  color: #6b7280; /* gray-500 */
+  color: var(--color-text-muted);
 }
 
 .card-amount {
   font-weight: 700;
   font-size: 1.125rem;
+  color: var(--color-text-body);
 }
 
 .card-footer {
@@ -369,10 +367,11 @@ function formatCurrency(amount: number) {
 
 .card-status {
   font-size: 0.875rem;
+  color: var(--color-text-body);
 }
 
 .status-label {
-  color: #6b7280; /* gray-500 */
+  color: var(--color-text-muted);
 }
 
 .status-badge {

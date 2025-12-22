@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import ExpenseForm from './components/ExpenseForm.vue';
-import { defaultExpense } from '../composables/defaultExpense';
+import ExpenseForm from '@/components/ExpenseForm.vue';
+import { defaultExpense } from '@/composables/defaultExpense';
 
 const newExpense = ref<Expense>({ ...defaultExpense });
 
