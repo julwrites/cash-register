@@ -91,10 +91,6 @@ function formatCurrency(amount: number) {
   margin-bottom: 0.25rem;
 }
 
-:global(.dark) .card-label {
-  /* Handled by vars */
-}
-
 .card-value-container {
   font-size: 1.5rem; /* text-2xl */
   font-weight: 700;
@@ -108,32 +104,16 @@ function formatCurrency(amount: number) {
   color: var(--color-success);
 }
 
-:global(.dark) .income-value {
-  /* Handled by vars */
-}
-
 .expense-value {
   color: var(--color-danger);
-}
-
-:global(.dark) .expense-value {
-  /* Handled by vars */
 }
 
 .balance-positive {
   color: var(--color-primary);
 }
 
-:global(.dark) .balance-positive {
-  /* Handled by vars */
-}
-
 .balance-negative {
   color: var(--color-danger);
-}
-
-:global(.dark) .balance-negative {
-  /* Handled by vars */
 }
 
 .skeleton {

@@ -19,8 +19,7 @@ const props = defineProps({
   },
 });
 
-const colorMode = useColorMode();
-const isDark = computed(() => colorMode.value === 'dark');
+const { colors } = useThemeColors();
 
 const totalExpenses = computed(() =>
   props.chartData.datasets[0].data.reduce((acc: number, curr: number) => acc + curr, 0)
@@ -32,7 +31,7 @@ const chartOptions = computed(() => ({
   plugins: {
     legend: {
       labels: {
-        color: isDark.value ? '#e5e7eb' : '#374151',
+        color: colors.value.text,
       },
     },
     tooltip: {

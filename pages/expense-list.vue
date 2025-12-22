@@ -371,10 +371,7 @@ async function executeDelete() {
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
   margin: 0;
-  color: var(--color-text-body);
 }
 
 .view-mode-group {

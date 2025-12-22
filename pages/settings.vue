@@ -104,23 +104,23 @@ watch(
 }
 
 .settings-content {
-  padding: 20px;
+  padding: 1.25rem;
   width: 100%;
-  max-width: 1200px;
+  max-width: 75rem; /* 1200px */
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
 }
 
 .settings-header {
-  margin-bottom: 30px;
-  padding-bottom: 15px;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--color-border);
 }
 
 .settings-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-text-body);
 }
@@ -135,36 +135,36 @@ watch(
 
 .no-access {
   text-align: center;
-  padding: 40px 20px;
+  padding: 2.5rem 1.25rem;
   background-color: var(--color-bg-subtle);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   border: 1px solid var(--color-border);
 }
 
 .no-access p {
-  margin-bottom: 20px;
-  font-size: 16px;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
   color: var(--color-text-muted);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .settings-title {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
 
   .settings-content {
-    padding: 15px;
+    padding: 1rem;
   }
 }
 
 @media (max-width: 640px) {
   .settings-title {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 
   .settings-content {
-    padding: 10px;
+    padding: 0.625rem;
   }
 }
 </style>

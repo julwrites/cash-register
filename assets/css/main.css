@@ -122,16 +122,7 @@ body {
 }
 
 /* Form Input Overrides to ensure CSS variable usage */
-/* These target Nuxt UI internal classes */
-.form-input input,
-.form-input button,
-.form-select select,
-.form-textarea textarea {
-  background-color: var(--color-bg-input) !important;
-  color: var(--color-text-body) !important;
-  border-color: var(--color-border) !important;
-}
-
+/* Placeholder color */
 .form-input input::placeholder,
 .form-textarea textarea::placeholder {
   color: var(--color-text-muted) !important;
