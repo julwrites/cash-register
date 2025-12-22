@@ -115,18 +115,14 @@ watch(
 .settings-header {
   margin-bottom: 30px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .settings-title {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #2d3748;
-}
-
-:global(.dark) .settings-title {
-  color: #f3f4f6;
+  color: var(--color-text-body);
 }
 
 .tabs-container {
@@ -140,15 +136,15 @@ watch(
 .no-access {
   text-align: center;
   padding: 40px 20px;
-  background-color: #f8f9fa;
+  background-color: var(--color-bg-subtle);
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 }
 
 .no-access p {
   margin-bottom: 20px;
   font-size: 16px;
-  color: #4a5568;
+  color: var(--color-text-muted);
 }
 
 /* Responsive adjustments */

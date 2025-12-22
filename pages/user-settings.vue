@@ -86,10 +86,6 @@ async function updateLogin() {
 .logout-section {
   margin-top: 2rem; /* mt-8 */
   padding-top: 2rem; /* pt-8 */
-  border-top: 1px solid #e5e7eb; /* border-gray-200 */
-}
-
-:global(.dark) .logout-section {
-  border-color: #374151; /* dark:border-gray-700 */
+  border-top: 1px solid var(--color-border);
 }
 </style>

@@ -176,12 +176,8 @@ function startEditCategory(category: { id: number; name: string }) {
 .add-category-section {
   margin-top: 1.5rem; /* mt-6 */
   padding: 1rem; /* p-4 */
-  border: 1px solid #e5e7eb; /* border-gray-200 */
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem; /* rounded-lg */
-}
-
-:global(.dark) .add-category-section {
-  border-color: #374151; /* dark:border-gray-700 */
 }
 
 .section-title {

@@ -221,10 +221,6 @@ function getAmountColor(row: Record<string, any>) {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-:global(.dark) .mobile-card {
-  /* Handled by vars */
-}
-
 .mobile-header {
   display: flex;
   justify-content: space-between;
@@ -235,10 +231,6 @@ function getAmountColor(row: Record<string, any>) {
 .mobile-date {
   font-size: 0.875rem;
   color: var(--color-text-muted);
-}
-
-:global(.dark) .mobile-date {
-  /* Handled by vars */
 }
 
 .mobile-amount {
@@ -252,10 +244,6 @@ function getAmountColor(row: Record<string, any>) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-:global(.dark) .mobile-desc {
-  /* Handled by vars */
 }
 
 .mobile-footer {
@@ -274,23 +262,11 @@ function getAmountColor(row: Record<string, any>) {
   color: var(--color-success);
 }
 
-:global(.dark) .amount-positive {
-  /* Handled by vars */
-}
-
 .amount-negative {
   color: var(--color-danger);
 }
 
-:global(.dark) .amount-negative {
-  /* Handled by vars */
-}
-
 .amount-neutral {
   color: var(--color-text-body);
-}
-
-:global(.dark) .amount-neutral {
-  /* Handled by vars */
 }
 </style>
