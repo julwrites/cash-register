@@ -54,14 +54,6 @@ async function addExpense(expense: Expense) {
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
   text-align: center;
-  color: var(--color-text-body);
-}
-
-:global(.dark) .page-title {
-  /* Handled by vars */
 }
 </style>

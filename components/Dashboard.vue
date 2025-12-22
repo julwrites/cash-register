@@ -66,6 +66,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useExpenses } from '@/composables/useExpenses';
 import { useCategories } from '@/composables/useCategories';
+import { useThemeColors } from '@/composables/useThemeColors';
 import EditExpenseModal from '@/components/EditExpenseModal.vue';
 import IncomeExpenseChart from '@/components/IncomeExpenseChart.vue';
 import ExpensesByCategoryChart from '@/components/ExpensesByCategoryChart.vue';
@@ -73,6 +74,7 @@ import SummaryCards from '@/components/SummaryCards.vue';
 
 const { fetchPaginatedExpenses, fetchExpenseSummary, expenseSummary, paginatedExpenses, loading, updateExpense } = useExpenses();
 const { categoriesByName, fetchCategories } = useCategories();
+const { colors, palette } = useThemeColors();
 const toast = useToast();
 
 const summary = computed(() => expenseSummary.value);
@@ -86,7 +88,7 @@ const incomeExpenseData = computed(() => {
     datasets: [
       {
         label: 'Amount',
-        backgroundColor: ['#10B981', '#EF4444'],
+        backgroundColor: [colors.value.success, colors.value.danger],
         data: [summary.value.income, summary.value.expenses]
       }
     ]
@@ -98,17 +100,11 @@ const categoryData = computed(() => {
   const categories = Object.keys(summary.value.byCategory);
   const data = Object.values(summary.value.byCategory);
 
-  // Need colors for categories
-  const backgroundColors = [
-    '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#6366F1', '#EC4899', '#8B5CF6',
-    '#0EA5E9', '#22C55E', '#EAB308', '#818CF8', '#D946EF', '#A855F7'
-  ];
-
   return {
     labels: categories,
     datasets: [
       {
-        backgroundColor: backgroundColors.slice(0, categories.length),
+        backgroundColor: palette.slice(0, categories.length),
         data: data
       }
     ]
@@ -271,10 +267,6 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-:global(.dark) .recent-list {
-  /* Handled by vars */
-}
-
 .transaction-item {
   display: flex;
   justify-content: space-between;
@@ -285,20 +277,12 @@ onMounted(async () => {
   transition: background-color 0.2s;
 }
 
-:global(.dark) .transaction-item {
-  /* Handled by vars */
-}
-
 .transaction-item:last-child {
   border-bottom: none;
 }
 
 .transaction-item:hover {
   background-color: var(--color-bg-hover);
-}
-
-:global(.dark) .transaction-item:hover {
-  /* Handled by vars */
 }
 
 .transaction-info {
@@ -312,10 +296,6 @@ onMounted(async () => {
 .transaction-meta {
   font-size: 0.875rem;
   color: var(--color-text-muted);
-}
-
-:global(.dark) .transaction-meta {
-  /* Handled by vars */
 }
 
 .transaction-amount {

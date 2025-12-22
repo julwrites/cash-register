@@ -89,28 +89,22 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-  entries: {
-    type: Array,
-    required: true,
-  },
-  columns: {
-    type: Array,
-    required: true,
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  sort: {
-    type: Object,
-    default: undefined,
-  }
-});
+interface Column {
+  key: string;
+  label: string;
+  sortable?: boolean;
+}
+
+defineProps<{
+  entries: Expense[];
+  columns: Column[];
+  loading?: boolean;
+  sort?: { column: string; direction: 'asc' | 'desc' };
+}>();
 
 const emit = defineEmits(['edit', 'delete', 'update:sort']);
 
-function actions(row: Record<string, any>) {
+function actions(row: Expense) {
   return [
     [
       {
@@ -127,7 +121,7 @@ function actions(row: Record<string, any>) {
   ];
 }
 
-function getAmountColor(row: Record<string, any>) {
+function getAmountColor(row: Expense) {
   if (row.credit > 0) return 'amount-positive';
   if (row.debit > 0) return 'amount-negative';
   return 'amount-neutral';

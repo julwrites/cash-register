@@ -86,10 +86,6 @@ function isActive(item: NavItem) {
   display: block;
 }
 
-:global(.dark) .mobile-nav-bar {
-  /* Handled by vars */
-}
-
 @media (min-width: 768px) {
   .mobile-nav-bar {
     display: none;
@@ -118,10 +114,6 @@ function isActive(item: NavItem) {
   transition: color 0.2s;
 }
 
-:global(.dark) .nav-item {
-  /* Handled by vars */
-}
-
 .nav-item:focus {
   outline: none;
 }
@@ -130,16 +122,8 @@ function isActive(item: NavItem) {
   color: var(--color-text-body);
 }
 
-:global(.dark) .nav-item:hover {
-  /* Handled by vars */
-}
-
 .nav-item-active {
   color: var(--color-primary) !important;
-}
-
-:global(.dark) .nav-item-active {
-  /* Handled by vars */
 }
 
 .nav-icon {

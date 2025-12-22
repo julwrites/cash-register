@@ -6,7 +6,7 @@
         @view-all="navigateToList"
       />
       <div v-else-if="selectedTab === 'form'" class="form-wrapper">
-        <ExpenseForm />
+        <AddExpense />
       </div>
       <ExpenseList v-else-if="selectedTab === 'list'" />
       <RecurringExpenses v-else-if="selectedTab === 'recurring'" />
@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import ExpenseForm from './expense-form.vue';
+import AddExpense from '@/components/AddExpense.vue';
 import ExpenseList from './expense-list.vue';
 import Dashboard from '@/components/Dashboard.vue';
 import RecurringExpenses from '@/components/RecurringExpenses.vue';

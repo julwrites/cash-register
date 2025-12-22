@@ -34,8 +34,7 @@ defineProps({
   },
 });
 
-const colorMode = useColorMode();
-const isDark = computed(() => colorMode.value === 'dark');
+const { colors } = useThemeColors();
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -43,25 +42,25 @@ const chartOptions = computed(() => ({
   scales: {
     x: {
       ticks: {
-        color: isDark.value ? '#e5e7eb' : '#374151',
+        color: colors.value.text,
       },
       grid: {
-        color: isDark.value ? '#374151' : '#e5e7eb',
+        color: colors.value.grid,
       },
     },
     y: {
       ticks: {
-        color: isDark.value ? '#e5e7eb' : '#374151',
+        color: colors.value.text,
       },
       grid: {
-        color: isDark.value ? '#374151' : '#e5e7eb',
+        color: colors.value.grid,
       },
     },
   },
   plugins: {
     legend: {
       labels: {
-        color: isDark.value ? '#e5e7eb' : '#374151',
+        color: colors.value.text,
       },
     },
     tooltip: {
