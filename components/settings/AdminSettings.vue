@@ -120,14 +120,34 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-const users = ref([]);
-const loading = ref(true);
-const error = ref(null);
+interface User {
+  id: number;
+  username: string;
+  is_admin: boolean;
+  is_approved: boolean;
+}
 
-const rows = ref([]);
+interface MigrationStatistics {
+  totalDescriptions: number;
+  totalUsageCount: number;
+  yearsProcessed: number[];
+  migrationTime: string;
+}
+
+interface MigrationResult {
+  success: boolean;
+  statistics?: MigrationStatistics;
+  error?: string;
+}
+
+const users = ref<User[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
+
+const rows = ref<any[]>([]);
 const columns = [
   { key: 'id', label: 'ID' },
   { key: 'name', label: 'Name' },
@@ -140,25 +160,19 @@ const isCreateUserModalOpen = ref(false);
 const isResetPasswordModalOpen = ref(false);
 const isDeleteUserModalOpen = ref(false);
 const newUsername = ref('');
-const resetPasswordData = ref({ userId: null, username: '', password: '' });
-const userToDeleteId = ref(null);
+const resetPasswordData = ref<{ userId: number | null; username: string; password: string }>({ userId: null, username: '', password: '' });
+const userToDeleteId = ref<number | null>(null);
 const migrationLoading = ref(false);
-const migrationResult = ref(null);
+const migrationResult = ref<MigrationResult | null>(null);
 const toast = useToast();
 
 onMounted(async () => {
   try {
-    const response = await fetch('/api/users/admin/getUsers');
-    if (!response.ok) {
-      throw new Error('You do not have permission to access this page');
-    }
-    users.value = await response.json();
-
+    users.value = await $fetch<User[]>('/api/users/admin/getUsers');
     updateRows();
-
     loading.value = false;
-  } catch (err) {
-    error.value = err.message;
+  } catch (err: any) {
+    error.value = err.message || 'You do not have permission to access this page';
     loading.value = false;
   }
 });
@@ -174,7 +188,7 @@ function updateRows() {
   });
 }
 
-function actions(row) {
+function actions(row: any) {
   const items = [];
 
   if (row.status === 'Pending') {
@@ -213,28 +227,20 @@ function actions(row) {
   return [items];
 }
 
-async function approveUser(userId) {
+async function approveUser(userId: number) {
   try {
-    const response = await fetch('/api/users/admin/approveUser', {
+    const updatedUser = await $fetch<User>('/api/users/admin/approveUser', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId: userId }),
+      body: { userId: userId },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to approve user');
-    }
-
-    const updatedUser = await response.json();
     const index = users.value.findIndex((user) => user.id === userId);
     if (index !== -1) {
       users.value[index] = updatedUser;
       updateRows();
       toast.add({ title: 'User approved successfully', color: 'green' });
     }
-  } catch (err) {
+  } catch (err: any) {
     error.value = err.message;
     toast.add({
       title: 'Failed to approve user',
@@ -244,36 +250,28 @@ async function approveUser(userId) {
   }
 }
 
-async function promoteUser(userId) {
+async function promoteUser(userId: number) {
   await updateAdmin(userId, { is_admin: true });
 }
 
-async function demoteUser(userId) {
+async function demoteUser(userId: number) {
   await updateAdmin(userId, { is_admin: false });
 }
 
 async function createUser() {
   try {
-    const response = await fetch('/api/users/admin/createUser', {
+    const newUser = await $fetch<User>('/api/users/admin/createUser', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username: newUsername.value }),
+      body: { username: newUsername.value },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create user');
-    }
-
-    const newUser = await response.json();
     users.value.push(newUser);
     updateRows();
 
     isCreateUserModalOpen.value = false;
     newUsername.value = '';
     toast.add({ title: 'User created successfully', color: 'green' });
-  } catch (err) {
+  } catch (err: any) {
     error.value = err.message;
     toast.add({
       title: 'Failed to create user',
@@ -283,7 +281,7 @@ async function createUser() {
   }
 }
 
-function confirmRemoveUser(userId) {
+function confirmRemoveUser(userId: number) {
   userToDeleteId.value = userId;
   isDeleteUserModalOpen.value = true;
 }
@@ -293,22 +291,16 @@ async function executeRemoveUser() {
 
   const userId = userToDeleteId.value;
   try {
-    const response = await fetch(`/api/users/admin/deleteUser`, {
+    await $fetch(`/api/users/admin/deleteUser`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId: userId }),
+      body: { userId: userId },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to remove user');
-    }
     users.value = users.value.filter((user) => user.id !== userId);
     updateRows();
     toast.add({ title: 'User removed successfully', color: 'green' });
     isDeleteUserModalOpen.value = false;
-  } catch (err) {
+  } catch (err: any) {
     error.value = err.message;
     toast.add({
       title: 'Failed to remove user',
@@ -318,7 +310,7 @@ async function executeRemoveUser() {
   }
 }
 
-function openResetPasswordModal(userId, username) {
+function openResetPasswordModal(userId: number, username: string) {
   resetPasswordData.value = { userId, username, password: '' };
   isResetPasswordModalOpen.value = true;
 }
@@ -336,18 +328,10 @@ async function executeResetPassword() {
   }
 
   try {
-    const response = await fetch('/api/users/auth/setPassword', {
+    await $fetch('/api/users/auth/setPassword', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
+      body: { username, password },
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to reset password');
-    }
 
     toast.add({
       title: 'Password reset successfully',
@@ -355,36 +339,29 @@ async function executeResetPassword() {
       color: 'green',
     });
     isResetPasswordModalOpen.value = false;
-  } catch (err) {
+  } catch (err: any) {
     toast.add({
       title: 'Failed to reset password',
-      description: err.message,
+      description: err.message || err.data?.message,
       color: 'red',
     });
   }
 }
 
-async function updateAdmin(userId, updates) {
+async function updateAdmin(userId: number, updates: Partial<User>) {
   try {
-    const response = await fetch(`/api/users/admin/setAdmin`, {
+    const updatedUser = await $fetch<User>(`/api/users/admin/setAdmin`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId, ...updates }),
+      body: { userId, ...updates },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update user');
-    }
-    const updatedUser = await response.json();
     const index = users.value.findIndex((user) => user.id === userId);
     if (index !== -1) {
       users.value[index] = updatedUser;
       updateRows();
       toast.add({ title: 'User updated successfully', color: 'green' });
     }
-  } catch (err) {
+  } catch (err: any) {
     error.value = err.message;
     toast.add({
       title: 'Failed to update user',
@@ -399,18 +376,13 @@ async function triggerDescriptionMigration() {
     migrationLoading.value = true;
     migrationResult.value = null;
 
-    const response = await fetch('/api/descriptions/migrate', {
+    const result = await $fetch<MigrationResult>('/api/descriptions/migrate', {
       method: 'POST',
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to trigger migration');
-    }
-
-    const result = await response.json();
     migrationResult.value = result;
     toast.add({ title: 'Migration completed', color: 'green' });
-  } catch (err) {
+  } catch (err: any) {
     error.value = err.message;
     toast.add({
       title: 'Migration failed',

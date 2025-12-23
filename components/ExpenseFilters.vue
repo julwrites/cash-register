@@ -181,11 +181,6 @@ const periodOptions = [
   min-width: 200px;
 }
 
-.filter-select :deep(button), .filter-input :deep(input) {
-  background-color: var(--color-bg-input) !important;
-  color: var(--color-text-body);
-}
-
 .date-range-group {
   display: flex;
   gap: 0.5rem;

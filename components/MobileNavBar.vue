@@ -123,7 +123,7 @@ function isActive(item: NavItem) {
 }
 
 .nav-item-active {
-  color: var(--color-primary) !important;
+  color: var(--color-primary);
 }
 
 .nav-icon {
