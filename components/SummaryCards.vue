@@ -94,7 +94,7 @@ function formatCurrency(amount: number) {
 .card-value-container {
   font-size: 1.5rem; /* text-2xl */
   font-weight: 700;
-  min-height: 32px;
+  min-height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
