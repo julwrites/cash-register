@@ -137,11 +137,6 @@ body {
 }
 
 /* Form Input Overrides to ensure CSS variable usage */
-/* Placeholder color */
-.form-input input::placeholder,
-.form-textarea textarea::placeholder {
-  color: var(--color-text-muted) !important;
-}
 
 /* Fix for SelectMenu input */
 div[data-headlessui-state] input {
