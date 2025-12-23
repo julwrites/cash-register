@@ -34,12 +34,12 @@ const isOpen = computed({
 
 <style scoped>
 .modal-title {
-  font-size: 18px;
-  font-weight: semibold;
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
 .edit-modal {
-  max-width: 90vw;
+  max-width: 32rem;
   width: 100%;
   margin: 0 auto;
 }

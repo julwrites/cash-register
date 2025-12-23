@@ -55,6 +55,6 @@ const chartOptions = computed(() => ({
 <style scoped>
 .chart {
   width: 100%;
-  height: 300px;
+  height: 18.75rem;
 }
 </style>
