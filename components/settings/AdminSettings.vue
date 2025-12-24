@@ -523,7 +523,7 @@ async function triggerDescriptionMigration() {
 .mobile-card {
   padding: 1rem;
   background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-card);
   border-radius: 0.5rem;
 }
 

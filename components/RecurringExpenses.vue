@@ -1,7 +1,7 @@
 <template>
   <div class="recurring-container">
     <div class="header-row">
-      <h2 class="section-title">Recurring Expenses</h2>
+      <h3 class="page-title">Recurring Expenses</h3>
       <div class="actions-group">
         <UButton :loading="processing" icon="i-heroicons-arrow-path" color="gray" @click="processRules">
           <span class="desktop-label">Process Now</span>
@@ -325,7 +325,7 @@ function formatCurrency(amount: number) {
   background-color: var(--color-bg-card);
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-card);
 }
 
 .card-header {
