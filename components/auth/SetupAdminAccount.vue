@@ -1,7 +1,7 @@
 <template>
   <UCard>
     <template #header>
-      <h2 class="form-title">Set Up Admin Account</h2>
+      <h2 class="section-title text-center">Set Up Admin Account</h2>
     </template>
     <form class="setup-form" @submit.prevent="setupAccount">
       <UFormGroup label="Username" name="username" required>
@@ -78,10 +78,9 @@ async function setupAccount() {
 </script>
 
 <style scoped>
-.form-title {
-  font-size: 1.25rem; /* text-xl */
-  font-weight: 700; /* font-bold */
+.text-center {
   text-align: center;
+  margin-bottom: 0;
 }
 
 .setup-form {

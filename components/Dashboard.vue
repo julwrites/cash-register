@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <h3 class="dashboard-title">Dashboard</h3>
+    <h3 class="page-title">Dashboard</h3>
 
     <!-- Summary Cards -->
     <div class="summary-section">
@@ -211,12 +211,6 @@ onMounted(async () => {
 <style scoped>
 .dashboard-container {
   width: 100%;
-}
-
-.dashboard-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
 }
 
 .summary-section {

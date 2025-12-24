@@ -18,7 +18,7 @@
     <div v-if="migrationResult" class="migration-status">
       <UCard>
         <template #header>
-          <h3 class="card-title">Migration Status</h3>
+          <h3 class="section-title">Migration Status</h3>
         </template>
         <div v-if="migrationResult.success" class="status-success">
           <p><strong>✓ Migration completed successfully!</strong></p>
@@ -57,23 +57,45 @@
     </div>
     <div v-else-if="error" class="error-banner">{{ error }}</div>
     <div v-else class="table-container">
-      <UTable :rows="rows" :columns="columns" class="users-table">
-        <template #actions-data="{ row }">
-          <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
-            <UButton
-              color="gray"
-              variant="ghost"
-              icon="i-heroicons-ellipsis-horizontal-20-solid"
-            />
-          </UDropdown>
-        </template>
-      </UTable>
+      <div class="desktop-view">
+        <UTable :rows="rows" :columns="columns" class="users-table">
+          <template #actions-data="{ row }">
+            <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
+              <UButton
+                color="gray"
+                variant="ghost"
+                icon="i-heroicons-ellipsis-horizontal-20-solid"
+              />
+            </UDropdown>
+          </template>
+        </UTable>
+      </div>
+      <div class="mobile-view">
+        <div v-for="row in rows" :key="row.id" class="mobile-card">
+          <div class="mobile-card-header">
+            <div>
+              <div class="mobile-card-title">{{ row.name }}</div>
+              <div class="mobile-card-meta">{{ row.role }} • {{ row.status }}</div>
+            </div>
+            <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
+              <UButton
+                color="gray"
+                variant="ghost"
+                icon="i-heroicons-ellipsis-horizontal-20-solid"
+              />
+            </UDropdown>
+          </div>
+          <div class="mobile-card-details">
+            ID: {{ row.id }}
+          </div>
+        </div>
+      </div>
     </div>
 
     <UModal v-model="isCreateUserModalOpen">
       <UCard>
         <template #header>
-          <h3 class="card-title">Create New User</h3>
+          <h3 class="section-title">Create New User</h3>
         </template>
         <form @submit.prevent="createUser">
           <UFormGroup label="Username" name="username">
@@ -88,7 +110,7 @@
     <UModal v-model="isResetPasswordModalOpen">
       <UCard>
         <template #header>
-          <h3 class="card-title">Reset Password for {{ resetPasswordData.username }}</h3>
+          <h3 class="section-title">Reset Password for {{ resetPasswordData.username }}</h3>
         </template>
         <form @submit.prevent="executeResetPassword">
           <UFormGroup label="New Password" name="password">
@@ -106,7 +128,7 @@
     <UModal v-model="isDeleteUserModalOpen">
       <UCard>
         <template #header>
-          <h3 class="card-title">Confirm Delete</h3>
+          <h3 class="section-title">Confirm Delete</h3>
         </template>
         <div class="modal-body">
           <p class="modal-text">Are you sure you want to delete this user? This action cannot be undone.</p>
@@ -420,9 +442,8 @@ async function triggerDescriptionMigration() {
   margin-bottom: 1rem;
 }
 
-.card-title {
-  font-size: 1.125rem;
-  font-weight: 700;
+.section-title {
+  margin-bottom: 0;
 }
 
 .status-success {
@@ -473,7 +494,59 @@ async function triggerDescriptionMigration() {
 }
 
 .table-container {
-  overflow-x: auto;
+  width: 100%;
+}
+
+.desktop-view {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-view {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.mobile-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-view {
+    display: none;
+  }
+}
+
+.mobile-card {
+  padding: 1rem;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-card-title {
+  font-weight: 600;
+  color: var(--color-text-body);
+}
+
+.mobile-card-meta {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.mobile-card-details {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
 }
 
 .users-table {

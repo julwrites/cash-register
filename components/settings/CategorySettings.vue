@@ -1,23 +1,40 @@
 <template>
   <div class="categories-container">
     <div class="table-container">
-      <UTable :rows="categoriesByID" :columns="columns">
-        <template #actions-data="{ row }">
-          <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
-            <UButton
-              color="gray"
-              variant="ghost"
-              icon="i-heroicons-ellipsis-horizontal-20-solid"
-            />
-          </UDropdown>
-        </template>
-      </UTable>
+      <div class="desktop-view">
+        <UTable :rows="categoriesByID" :columns="columns">
+          <template #actions-data="{ row }">
+            <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
+              <UButton
+                color="gray"
+                variant="ghost"
+                icon="i-heroicons-ellipsis-horizontal-20-solid"
+              />
+            </UDropdown>
+          </template>
+        </UTable>
+      </div>
+      <div class="mobile-view">
+        <div v-for="row in categoriesByID" :key="row.id" class="mobile-card">
+          <div class="mobile-card-header">
+            <span class="mobile-card-title">{{ row.name }}</span>
+            <UDropdown :items="actions(row)" :popper="{ strategy: 'fixed' }">
+              <UButton
+                color="gray"
+                variant="ghost"
+                icon="i-heroicons-ellipsis-horizontal-20-solid"
+              />
+            </UDropdown>
+          </div>
+          <div class="mobile-card-meta">ID: {{ row.id }}</div>
+        </div>
+      </div>
     </div>
 
     <UModal v-model="isEditModalOpen">
       <UCard>
         <template #header>
-          <h3 class="modal-title">Edit Category</h3>
+          <h3 class="section-title modal-header-title">Edit Category</h3>
         </template>
         <UForm
           :state="editFormState"
@@ -153,12 +170,58 @@ function startEditCategory(category: { id: number; name: string }) {
 }
 
 .table-container {
-  overflow-x: auto;
+  width: 100%;
 }
 
-.modal-title {
-  font-size: 1.125rem; /* text-lg */
-  font-weight: 700; /* font-bold */
+.desktop-view {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-view {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.mobile-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-view {
+    display: none;
+  }
+}
+
+.mobile-card {
+  padding: 1rem;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-card-title {
+  font-weight: 600;
+  color: var(--color-text-body);
+}
+
+.mobile-card-meta {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.modal-header-title {
+  margin-bottom: 0;
 }
 
 .edit-form {
@@ -178,12 +241,6 @@ function startEditCategory(category: { id: number; name: string }) {
   padding: 1rem; /* p-4 */
   border: 1px solid var(--color-border);
   border-radius: 0.5rem; /* rounded-lg */
-}
-
-.section-title {
-  font-size: 1.125rem; /* text-lg */
-  font-weight: 600; /* font-semibold */
-  margin-bottom: 1rem; /* mb-4 */
 }
 
 .add-category-form {

@@ -3,10 +3,10 @@ import { computed, ref } from 'vue';
 export function useCategories() {
   const categories = ref<{ id: number; name: string }[]>([]);
   const categoriesByID = computed(() =>
-    categories.value.slice().sort((a, b) => a.id > b.id)
+    categories.value.slice().sort((a, b) => a.id - b.id)
   );
   const categoriesByName = computed(() =>
-    categories.value.slice().sort((a, b) => a.name > b.name)
+    categories.value.slice().sort((a, b) => a.name.localeCompare(b.name))
   );
 
   async function fetchCategories() {

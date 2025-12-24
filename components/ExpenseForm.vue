@@ -104,6 +104,13 @@ const descriptionOptions = computed(() =>
 );
 const toast = useToast();
 
+watch(
+  () => props.expense,
+  (newVal) => {
+    expenseData.value = { ...defaultExpense, ...newVal };
+  }
+);
+
 const categoryOptions = computed(() => [
   ...categoriesByID.value.map((cat) => cat.name),
 ]);
