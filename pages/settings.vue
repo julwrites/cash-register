@@ -2,7 +2,7 @@
   <div class="settings-container">
     <div class="settings-content">
       <div class="settings-header">
-        <h2 class="settings-title">{{ pageTitle }}</h2>
+        <h2 class="settings-title page-title">{{ pageTitle }}</h2>
       </div>
 
       <UTabs
@@ -106,7 +106,6 @@ watch(
 .settings-content {
   padding: 1.25rem;
   width: 100%;
-  max-width: 75rem; /* 1200px */
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
@@ -120,8 +119,6 @@ watch(
 
 .settings-title {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
   color: var(--color-text-body);
 }
 
