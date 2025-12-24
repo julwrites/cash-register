@@ -2,7 +2,7 @@
   <UModal v-model="isOpen">
     <UCard class="edit-modal">
       <template #header>
-        <h3 class="modal-title">Edit Expense</h3>
+        <h3 class="section-title modal-header-title">Edit Expense</h3>
       </template>
       <ExpenseForm
         :expense="expense"
@@ -33,9 +33,8 @@ const isOpen = computed({
 </script>
 
 <style scoped>
-.modal-title {
-  font-size: 1.125rem;
-  font-weight: 600;
+.modal-header-title {
+  margin-bottom: 0;
 }
 
 .edit-modal {

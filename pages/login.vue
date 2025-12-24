@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <UCard class="login-card">
-      <h1 class="login-title">
+      <h1 class="page-title text-center">
         {{ isFirstUser ? 'Welcome' : 'Login' }}
       </h1>
       <div v-if="isFirstUser" class="first-user-msg">
@@ -178,11 +178,8 @@ function onAccountSetup() {
   max-width: 24rem;
 }
 
-.login-title {
+.text-center {
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
 }
 
 .first-user-msg {

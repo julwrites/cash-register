@@ -65,7 +65,7 @@
     <UModal v-model="isModalOpen">
       <UCard>
         <template #header>
-          <h3 class="modal-header-title">{{ editingId ? 'Edit Rule' : 'Add Rule' }}</h3>
+          <h3 class="section-title modal-header-title">{{ editingId ? 'Edit Rule' : 'Add Rule' }}</h3>
         </template>
 
         <UForm class="form-content" :state="formData" @submit="saveRule">
@@ -248,12 +248,6 @@ function formatCurrency(amount: number) {
   align-items: center;
 }
 
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-text-body);
-}
-
 .actions-group {
   display: flex;
   gap: 0.5rem;
@@ -384,7 +378,7 @@ function formatCurrency(amount: number) {
 }
 
 .modal-header-title {
-  font-weight: 600;
+  margin-bottom: 0;
 }
 
 .form-content {
