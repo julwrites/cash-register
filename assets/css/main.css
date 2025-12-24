@@ -35,7 +35,7 @@
   --color-bg-body: var(--p-gray-50);
   --color-bg-subtle: var(--p-gray-100);
   --color-bg-card: #ffffff;
-  --color-bg-input: #ffffff;
+  --color-bg-input: var(--p-gray-100);
   --color-bg-hover: var(--p-gray-50);
 
   --color-text-body: var(--p-gray-900);
