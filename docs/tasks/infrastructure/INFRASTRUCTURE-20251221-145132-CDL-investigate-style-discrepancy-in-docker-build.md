@@ -1,6 +1,6 @@
 ---
 id: INFRASTRUCTURE-20251221-145132-CDL
-status: in_progress
+status: completed
 title: Investigate style discrepancy in Docker build
 priority: medium
 created: 2025-12-21 14:51:32
