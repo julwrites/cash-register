@@ -141,4 +141,24 @@ body {
 /* Fix for SelectMenu input */
 div[data-headlessui-state] input {
   color: var(--color-text-body) !important;
+  background-color: var(--color-bg-input) !important;
+}
+
+/* Fix for all form inputs to use theme variables */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  background-color: var(--color-bg-input) !important;
+  color: var(--color-text-body) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* Override any .form-input rules that set white background */
+.form-input,
+.form-textarea,
+.form-select,
+.form-multiselect {
+  background-color: var(--color-bg-input) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-body) !important;
 }

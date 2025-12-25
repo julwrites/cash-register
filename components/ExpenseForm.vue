@@ -12,7 +12,7 @@
           type="date"
           required
           color="gray"
-          class="form-input"
+          :ui="{ base: 'w-full' }"
         />
       </UFormGroup>
 
@@ -23,7 +23,7 @@
           :options="categoryOptions"
           required
           color="gray"
-          class="form-input"
+          :ui="{ base: 'w-full' }"
         />
       </UFormGroup>
 
@@ -37,7 +37,7 @@
           creatable
           searchable
           color="gray"
-          class="form-input"
+          :ui="{ base: 'w-full' }"
         />
       </UFormGroup>
 
@@ -49,7 +49,7 @@
           step="0.01"
           min="0"
           color="gray"
-          class="form-input"
+          :ui="{ base: 'w-full' }"
         />
       </UFormGroup>
 
@@ -61,7 +61,7 @@
           step="0.01"
           min="0"
           color="gray"
-          class="form-input"
+          :ui="{ base: 'w-full' }"
         />
       </UFormGroup>
 
@@ -186,9 +186,7 @@ function cancelEdit() {
   gap: 1.5rem;
 }
 
-.form-input {
-  width: 100%;
-}
+/* .form-input class removed - using :ui="{ base: 'w-full' }" instead */
 
 .form-actions {
   display: flex;
