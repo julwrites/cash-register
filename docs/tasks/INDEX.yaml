@@ -15,11 +15,15 @@ docs/tasks/features/FEATURES-20251217-023351-BUN-auto-fill-category-from-descrip
 
 docs/tasks/features/FEATURES-20251217-023431-ZTM-recurring-expenses-system.md:
 
+docs/tasks/features/FEATURES-20251225-033247-QKF-implement-user-notification-system-for-admin-actions.md:
+
 docs/tasks/foundation/FOUNDATION-20251212-114704-RKM-initial-project-setup.md:
 
 docs/tasks/foundation/FOUNDATION-20251212-132626-DCF-update-documentation-to-match-codebase.md:
 
 docs/tasks/foundation/FOUNDATION-20251213-021945-OIP-refactor-database-access-and-improve-tests.md:
+
+docs/tasks/foundation/FOUNDATION-20251225-033200-YXG-refactor-any-types-to-strict-interfaces.md:
 
 docs/tasks/infrastructure/INFRASTRUCTURE-20251212-121403-TQK-replace-cloudflare-pipeline-with-build-and-test.md:
 
@@ -59,6 +63,16 @@ docs/tasks/presentation/PRESENTATION-20251222-133657-PPW-frontend-css-cleanup-an
 
 docs/tasks/presentation/PRESENTATION-20251222-133723-JHB-refactor-chart-colors-to-use-css-variables.md:
 
+docs/tasks/presentation/PRESENTATION-20251222-162026-FUS-refactor-settings-and-styling-consistency.md:
+
+docs/tasks/presentation/PRESENTATION-20251222-235040-CKY-refactor-adminsettings-and-css-cleanup.md:
+
+docs/tasks/presentation/PRESENTATION-20251223-021236-NHP-fix-frontend-styling-inconsistencies.md:
+
+docs/tasks/presentation/PRESENTATION-20251223-055606-SHB-standardize-input-placeholder-colors-and-cleanup-redundant-css.md:
+
+docs/tasks/presentation/PRESENTATION-20251223-083101-RRN-fix-frontend-styling-and-logic-gaps.md:
+
 docs/tasks/review/REVIEW-20251213-021759-ZSN-codebase-gap-analysis.md:
 
 docs/tasks/security/SECURITY-20251213-021824-YED-migrate-authentication-to-nextauth.md:
@@ -68,3 +82,5 @@ docs/tasks/testing/TESTING-20251214-140255-OCQ-fix-tests-and-investigate-authent
 docs/tasks/testing/TESTING-20251215-013845-DCC-expand-component-test-coverage.md:
 
 docs/tasks/testing/TESTING-20251219-080522-EZH-implement-e2e-core-workflow-tests.md:
+
+docs/tasks/testing/TESTING-20251225-033254-CKY-investigate-test-warnings-and-improve-performance.md:

@@ -3,6 +3,25 @@ import fs from 'fs';
 import path from 'path';
 import { registerEndpoint } from '@nuxt/test-utils/runtime';
 
+// Suppress specific unhandled rejections that are known noise in the test environment
+const originalUnhandledRejection = process.listeners('unhandledRejection');
+process.removeAllListeners('unhandledRejection');
+process.on('unhandledRejection', (reason, promise) => {
+  if (
+    reason instanceof Error &&
+    reason.message.includes("Cannot read properties of undefined (reading 'history')")
+  ) {
+    // Known issue with vue-router in Nuxt test environment - ignore
+    return;
+  }
+  // Otherwise, pass it to the original listeners or log it
+  if (originalUnhandledRejection.length > 0) {
+    originalUnhandledRejection.forEach((listener) => listener(reason, promise));
+  } else {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  }
+});
+
 // Mock the auth session endpoint
 registerEndpoint('/api/auth/session', () => ({
   user: {

@@ -1,6 +1,6 @@
 ---
 id: PRESENTATION-20251217-040304-QTJ
-status: review_requested
+status: completed
 title: UI Refactor: Move tabs to header and fix description reset
 priority: medium
 created: 2025-12-17 04:03:04
