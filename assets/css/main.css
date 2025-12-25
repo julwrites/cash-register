@@ -162,3 +162,57 @@ select {
   border-color: var(--color-border) !important;
   color: var(--color-text-body) !important;
 }
+
+/* Fix USelectMenu search input width and styling */
+[data-headlessui-state="open"] input[type="search"],
+[data-headlessui-state="open"] input[type="text"] {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background-color: var(--color-bg-input) !important;
+  color: var(--color-text-body) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* Style search input placeholder */
+[data-headlessui-state="open"] input[type="search"]::placeholder,
+[data-headlessui-state="open"] input[type="text"]::placeholder {
+  color: var(--color-text-muted) !important;
+}
+
+/* Fix mobile keyboard issue for dropdowns */
+@media (max-width: 768px) {
+  /* Target dropdown panels - common pattern for Headless UI */
+  [data-headlessui-state="open"] [role="listbox"],
+  [data-headlessui-state="open"] [role="menu"],
+  [data-headlessui-state="open"] [role="dialog"] {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.1), 0 -10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    transform: none !important;
+    top: auto !important;
+  }
+
+  /* Ensure search input is visible and full width */
+  [data-headlessui-state="open"] input[type="search"],
+  [data-headlessui-state="open"] input[type="text"] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: sticky !important;
+    top: 0 !important;
+    background-color: var(--color-bg-card) !important;
+    z-index: 10000 !important;
+    border-bottom: 1px solid var(--color-border) !important;
+  }
+
+  /* Prevent body scroll when dropdown is open on mobile */
+  body[data-headlessui-state="open"] {
+    overflow: hidden !important;
+  }
+}
