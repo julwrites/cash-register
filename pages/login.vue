@@ -116,7 +116,7 @@ async function checkUser() {
   }
 }
 
-const { signIn } = useAuth();
+const { signIn, getSession } = useAuth();
 
 async function login() {
   try {
@@ -129,6 +129,9 @@ async function login() {
     if (result?.error) {
       throw new Error(result.error);
     }
+
+    // Force session refresh to ensure we are authenticated before redirecting
+    await getSession();
 
     router.push('/');
   } catch (error) {
