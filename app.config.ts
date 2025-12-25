@@ -1,3 +1,7 @@
+const inputColor = {
+  outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
+};
+
 export default defineAppConfig({
   ui: {
     primary: 'blue',
@@ -56,12 +60,8 @@ export default defineAppConfig({
         color: 'gray',
       },
       color: {
-        white: {
-          outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
-        },
-        gray: {
-          outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
-        },
+        white: inputColor,
+        gray: inputColor,
       },
     },
     select: {
@@ -69,12 +69,8 @@ export default defineAppConfig({
         color: 'gray',
       },
       color: {
-        white: {
-          outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
-        },
-        gray: {
-          outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
-        },
+        white: inputColor,
+        gray: inputColor,
       },
     },
     selectMenu: {
@@ -83,12 +79,8 @@ export default defineAppConfig({
       },
       input: {
         color: {
-          white: {
-            outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
-          },
-          gray: {
-            outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
-          },
+          white: inputColor,
+          gray: inputColor,
         },
       },
       background: 'bg-[var(--color-bg-input)]',
@@ -103,12 +95,8 @@ export default defineAppConfig({
         color: 'gray',
       },
       color: {
-        white: {
-          outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
-        },
-        gray: {
-          outline: 'bg-[var(--color-bg-input)] text-[var(--color-text-body)] placeholder:text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)] focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400',
-        },
+        white: inputColor,
+        gray: inputColor,
       },
     },
   },
