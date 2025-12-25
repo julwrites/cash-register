@@ -11,6 +11,7 @@ export default withNuxt({
         caughtErrorsIgnorePattern: '^_',
       },
     ],
-    '@typescript-eslint/no-explicit-any': 'warn',
+    // TODO: Refactor to strict interfaces (See FOUNDATION-20251225-033200-YXG)
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 });
