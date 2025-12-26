@@ -24,6 +24,8 @@
           required
           color="gray"
           :ui="{ base: 'w-full' }"
+          @open="handleDropdownOpen"
+          @close="handleDropdownClose"
         />
       </UFormGroup>
 
@@ -38,6 +40,8 @@
           searchable
           color="gray"
           :ui="{ base: 'w-full' }"
+          @open="handleDropdownOpen"
+          @close="handleDropdownClose"
         />
       </UFormGroup>
 
@@ -76,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 import { defaultExpense } from '@/composables/defaultExpense';
 import { useCategories } from '@/composables/useCategories';
 
@@ -138,6 +142,11 @@ onMounted(async () => {
   await fetchDescriptions();
 });
 
+onUnmounted(() => {
+  // Clean up any leftover dropdown open state
+  document.body.classList.remove('dropdown-open');
+});
+
 async function handleSubmit() {
   if (validateExpense(expenseData.value)) {
     emits('submit', expenseData.value);
@@ -172,6 +181,18 @@ function validateExpense(expense: Expense): boolean {
 function cancelEdit() {
   expenseData.value = { ...defaultExpense }; // Reset form
   emits('cancel');
+}
+
+function handleDropdownOpen() {
+  // Add class to body to prevent scrolling when dropdown is open on mobile
+  if (window.innerWidth <= 768) {
+    document.body.classList.add('dropdown-open');
+  }
+}
+
+function handleDropdownClose() {
+  // Remove class from body when dropdown closes
+  document.body.classList.remove('dropdown-open');
 }
 </script>
 

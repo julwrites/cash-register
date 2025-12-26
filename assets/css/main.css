@@ -179,40 +179,127 @@ select {
   color: var(--color-text-muted) !important;
 }
 
-/* Fix mobile keyboard issue for dropdowns */
+/* Fix mobile keyboard issue for dropdowns - top-half modal to avoid keyboard overlap */
 @media (max-width: 768px) {
-  /* Target dropdown panels - common pattern for Headless UI */
+  /* Reset any transforms on all elements that could interfere with fixed positioning */
+  [data-headlessui-state="open"] * {
+    transform: none !important;
+    perspective: none !important;
+    filter: none !important;
+  }
+
+  /* Target the dropdown panel itself - this is what Headless UI creates */
   [data-headlessui-state="open"] [role="listbox"],
   [data-headlessui-state="open"] [role="menu"],
   [data-headlessui-state="open"] [role="dialog"] {
     position: fixed !important;
-    bottom: 0 !important;
+    top: 3.5rem !important; /* Account for header height (approx 56px) */
     left: 0 !important;
     right: 0 !important;
-    max-height: 70vh !important;
-    overflow-y: auto !important;
+    max-height: calc(50vh - 3.5rem) !important; /* Adjust height to account for header */
+    height: calc(50vh - 3.5rem) !important;
+    /* Container doesn't scroll by itself, child elements scroll */
     z-index: 9999 !important;
     margin: 0 !important;
-    border-radius: 0.75rem 0.75rem 0 0 !important;
-    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.1), 0 -10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    border-radius: 0 0 0.75rem 0.75rem !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
     transform: none !important;
-    top: auto !important;
+    background-color: var(--color-bg-card) !important;
+    border: 1px solid var(--color-border) !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
-  /* Ensure search input is visible and full width */
+  /* Ensure search input is visible and functional - at top of modal */
   [data-headlessui-state="open"] input[type="search"],
   [data-headlessui-state="open"] input[type="text"] {
     width: 100% !important;
     box-sizing: border-box !important;
-    position: sticky !important;
-    top: 0 !important;
     background-color: var(--color-bg-card) !important;
-    z-index: 10000 !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    padding: 1rem !important;
+    font-size: 1rem !important;
+    margin: 0 !important;
+    -webkit-appearance: none !important; /* Remove iOS styling */
+    border-radius: 0 !important; /* Remove iOS styling */
+    flex-shrink: 0 !important; /* Don't shrink */
+  }
+
+  /* Target ul elements for scrolling - Headless UI often uses ul for listboxes */
+  [data-headlessui-state="open"] [role="listbox"] ul,
+  [data-headlessui-state="open"] [role="menu"] ul,
+  [data-headlessui-state="open"] [role="dialog"] ul {
+    flex-grow: 1 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    max-height: 100% !important; /* Ensure it has a height constraint */
+    min-height: 0 !important; /* Important for flex children to respect overflow */
+  }
+
+  /* Target any element that might be the options container */
+  /* Use a simpler selector without :has() */
+  [data-headlessui-state="open"] [role="listbox"] > *:last-child,
+  [data-headlessui-state="open"] [role="menu"] > *:last-child,
+  [data-headlessui-state="open"] [role="dialog"] > *:last-child {
+    flex-grow: 1 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  /* Ensure search input (usually first child) doesn't grow */
+  [data-headlessui-state="open"] [role="listbox"] > *:first-child,
+  [data-headlessui-state="open"] [role="menu"] > *:first-child,
+  [data-headlessui-state="open"] [role="dialog"] > *:first-child {
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Make dropdown options more touch-friendly */
+  [data-headlessui-state="open"] [role="option"],
+  [data-headlessui-state="open"] [role="menuitem"] {
+    padding: 0.75rem 1rem !important;
+    min-height: 44px !important; /* Minimum touch target size */
+    font-size: 1rem !important;
+    cursor: pointer !important;
     border-bottom: 1px solid var(--color-border) !important;
   }
 
-  /* Prevent body scroll when dropdown is open on mobile */
-  body[data-headlessui-state="open"] {
+  /* Remove border from last option */
+  [data-headlessui-state="open"] [role="option"]:last-child,
+  [data-headlessui-state="open"] [role="menuitem"]:last-child {
+    border-bottom: none !important;
+  }
+
+  /* Improve focus states for mobile */
+  [data-headlessui-state="open"] [role="option"]:focus,
+  [data-headlessui-state="open"] [role="option"]:hover,
+  [data-headlessui-state="open"] [role="menuitem"]:focus,
+  [data-headlessui-state="open"] [role="menuitem"]:hover {
+    background-color: var(--color-bg-hover) !important;
+  }
+
+  /* Backdrop for bottom half of screen - using body pseudo-element */
+  body.dropdown-open::after {
+    content: '';
+    position: fixed !important;
+    top: 50vh !important; /* Start at bottom of modal */
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    z-index: 9998 !important;
+    pointer-events: auto !important; /* Allow clicks to close dropdown */
+  }
+
+  /* Prevent body scroll when dropdown is open */
+  body.dropdown-open {
     overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
   }
 }
