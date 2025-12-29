@@ -57,28 +57,30 @@ function formatCurrency(amount: number) {
 <style scoped>
 .summary-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 640px) {
   .summary-grid {
-    grid-template-columns: repeat(3, 1fr);
+    gap: 0.25rem;
   }
 }
 
 .summary-card {
-  /* You can target UCard specific parts via deep selectors if needed,
-     but defaults are usually fine. */
+  /* Reduce card padding */
 }
 
-/* Optional: Override UCard padding if it's too much/little */
-/*
 :deep(.u-card-body) {
-  padding: 1.25rem;
+  padding: 0.75rem !important;
 }
-*/
+
+@media (max-width: 640px) {
+  :deep(.u-card-body) {
+    padding: 0.5rem !important;
+  }
+}
 
 .card-content {
   text-align: center;
@@ -86,18 +88,33 @@ function formatCurrency(amount: number) {
 
 .card-label {
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 0.75rem; /* Smaller on all screens */
   font-weight: 500;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 768px) {
+  .card-label {
+    font-size: 0.875rem; /* Slightly larger on desktop */
+  }
 }
 
 .card-value-container {
-  font-size: 1.5rem; /* text-2xl */
+  font-size: 1rem; /* Smaller font size */
   font-weight: 700;
-  min-height: 2rem;
+  min-height: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .card-value-container {
+    font-size: 1.25rem; /* Slightly larger on desktop */
+  }
 }
 
 .income-value {
@@ -117,7 +134,14 @@ function formatCurrency(amount: number) {
 }
 
 .skeleton {
-  height: 2rem;
-  width: 6rem;
+  height: 1.5rem;
+  width: 4rem;
+}
+
+@media (min-width: 768px) {
+  .skeleton {
+    height: 1.75rem;
+    width: 5rem;
+  }
 }
 </style>

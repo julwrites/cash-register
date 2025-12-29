@@ -23,8 +23,8 @@
       </div>
     </div>
 
-    <!-- Filters (Only visible in 'All' mode) -->
-    <div v-if="viewMode === 'all'" class="filters-section">
+    <!-- Filters (Visible in both 'Recent' and 'All' modes) -->
+    <div class="filters-section">
       <ExpenseFilters
         :selected-period="selectedPeriod"
         :selected-category="selectedCategory"
@@ -46,9 +46,6 @@
           :loading="loading"
         />
       </div>
-    </div>
-    <div v-else class="recent-mode-hint">
-      Showing the 10 most recent transactions for quick editing. Switch to "All" to search, filter, and sort.
     </div>
 
     <div>
@@ -201,10 +198,8 @@ const currentFilters = computed(() => {
 
 // Watchers
 watch([selectedPeriod, selectedCategory, startDate, endDate], () => {
-  if (viewMode.value === 'all') {
-    currentPage.value = 1;
-    refreshData();
-  }
+  currentPage.value = 1;
+  refreshData();
 });
 
 watch(viewMode, (newMode) => {
@@ -230,17 +225,19 @@ onMounted(async () => {
 // Functions
 async function refreshData() {
   try {
+    const filters = currentFilters.value;
+
     if (viewMode.value === 'recent') {
-      // Recent Mode: Force sort by date desc, no filters, limit 10
+      // Recent Mode: Force sort by date desc, limit 10, but apply filters
       await fetchPaginatedExpenses({
         page: 1,
         limit: 10,
         sortBy: 'date',
-        sortOrder: 'desc'
+        sortOrder: 'desc',
+        ...filters
       });
     } else {
-      // All Mode: Use user selected filters
-      const filters = currentFilters.value;
+      // All Mode: Use user selected filters with pagination
       await Promise.all([
         fetchPaginatedExpenses({
           page: currentPage.value,
@@ -391,15 +388,9 @@ async function executeDelete() {
 }
 
 .summary-cards-wrapper {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
-.recent-mode-hint {
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  font-style: italic;
-}
 
 .pagination-wrapper {
   margin-top: 1rem;

@@ -2,6 +2,22 @@
   <div class="dashboard-container">
     <h3 class="page-title">Dashboard</h3>
 
+    <!-- Filters -->
+    <div class="filters-section">
+      <ExpenseFilters
+        :selected-period="selectedPeriod"
+        :selected-category="selectedCategory"
+        :category-options="categoryOptions"
+        :start-date="startDate"
+        :end-date="endDate"
+        @update:selected-period="selectedPeriod = $event"
+        @update:selected-category="selectedCategory = $event"
+        @update:start-date="startDate = $event"
+        @update:end-date="endDate = $event"
+        @reset-filters="resetFilters"
+      />
+    </div>
+
     <!-- Summary Cards -->
     <div class="summary-section">
       <SummaryCards
@@ -22,36 +38,6 @@
       </UCard>
     </div>
 
-    <!-- Recent Transactions -->
-    <h4 class="recent-title">Recent Transactions</h4>
-    <div v-if="loading" class="loading-container">
-      <UIcon name="i-heroicons-arrow-path-20-solid" class="spinner" />
-      <span>Loading...</span>
-    </div>
-    <div v-else-if="recentExpenses.length === 0" class="no-data">
-      No recent transactions found.
-    </div>
-    <div v-else class="recent-list">
-      <div
-        v-for="expense in recentExpenses"
-        :key="expense.id"
-        class="transaction-item"
-        @click="startEditing(expense)"
-      >
-        <div class="transaction-info">
-          <div class="transaction-desc">{{ expense.description }}</div>
-          <div class="transaction-meta">{{ formatDate(expense.date) }} • {{ expense.category }}</div>
-        </div>
-        <div class="transaction-amount" :class="getAmountColor(expense)">
-          {{ formatCurrency(expense.amount) }}
-        </div>
-      </div>
-    </div>
-
-    <div class="view-all-container">
-      <UButton variant="link" @click="$emit('view-all')">View All Transactions</UButton>
-    </div>
-
     <EditExpenseModal
       v-model:is-open="isEditModalOpen"
       :expense="editForm"
@@ -63,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useExpenses } from '@/composables/useExpenses';
 import { useCategories } from '@/composables/useCategories';
 import { useThemeColors } from '@/composables/useThemeColors';
@@ -71,15 +57,75 @@ import EditExpenseModal from '@/components/EditExpenseModal.vue';
 import IncomeExpenseChart from '@/components/IncomeExpenseChart.vue';
 import ExpensesByCategoryChart from '@/components/ExpensesByCategoryChart.vue';
 import SummaryCards from '@/components/SummaryCards.vue';
+import ExpenseFilters from '@/components/ExpenseFilters.vue';
 
-const { fetchPaginatedExpenses, fetchExpenseSummary, expenseSummary, paginatedExpenses, loading, updateExpense } = useExpenses();
+const { fetchExpenseSummary, expenseSummary, loading, updateExpense } = useExpenses();
 const { categoriesByName, fetchCategories } = useCategories();
 const { colors, palette } = useThemeColors();
 const toast = useToast();
 
 const summary = computed(() => expenseSummary.value);
-const recentExpenses = computed(() => paginatedExpenses.value);
 const categories = computed(() => categoriesByName.value);
+
+// Filter variables
+const selectedPeriod = ref({ label: 'This Month', value: 'month' });
+const selectedCategory = ref({ label: 'All Categories', value: '' });
+const startDate = ref<string | null>(null);
+const endDate = ref<string | null>(null);
+
+const categoryOptions = computed(() => [
+  { label: 'All Categories', value: '' },
+  ...categoriesByName.value.map((cat) => ({
+    label: cat.name,
+    value: cat.name,
+  })),
+]);
+
+// Helper to convert selected filters into query params
+const currentFilters = computed(() => {
+  const filters: any = {};
+  if (selectedCategory.value.value) {
+    filters.category = selectedCategory.value.value;
+  }
+
+  if (selectedPeriod.value.value) {
+    const now = new Date();
+    const filterStartDate = new Date(now);
+    const filterEndDate = new Date(now);
+
+    if (selectedPeriod.value.value === 'week') {
+      filterStartDate.setDate(now.getDate() - now.getDay());
+      filterStartDate.setHours(0, 0, 0, 0);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filters.startDate = filterStartDate.toISOString().split('T')[0];
+      filters.endDate = filterEndDate.toISOString().split('T')[0];
+    } else if (selectedPeriod.value.value === 'month') {
+      filterStartDate.setDate(1);
+      filterStartDate.setHours(0, 0, 0, 0);
+      filterEndDate.setMonth(now.getMonth() + 1, 0);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filters.startDate = filterStartDate.toISOString().split('T')[0];
+      filters.endDate = filterEndDate.toISOString().split('T')[0];
+    } else if (selectedPeriod.value.value === 'year') {
+      filterStartDate.setMonth(0, 1);
+      filterStartDate.setHours(0, 0, 0, 0);
+      filterEndDate.setMonth(11, 31);
+      filterEndDate.setHours(23, 59, 59, 999);
+      filters.startDate = filterStartDate.toISOString().split('T')[0];
+      filters.endDate = filterEndDate.toISOString().split('T')[0];
+    } else if (
+      selectedPeriod.value.value === 'custom' &&
+      startDate.value &&
+      endDate.value
+    ) {
+      // Use provided start/end date
+      filters.startDate = startDate.value;
+      filters.endDate = endDate.value;
+    }
+  }
+
+  return filters;
+});
 
 const incomeExpenseData = computed(() => {
   if (!summary.value) return null;
@@ -114,7 +160,17 @@ const categoryData = computed(() => {
 const isEditModalOpen = ref(false);
 const editForm = ref({});
 
-defineEmits(['view-all']);
+// Watchers for filters
+watch([selectedPeriod, selectedCategory, startDate, endDate], () => {
+  refreshData();
+});
+
+function resetFilters() {
+  selectedPeriod.value = { label: 'All Time', value: '' };
+  selectedCategory.value = { label: 'All Categories', value: '' };
+  startDate.value = null;
+  endDate.value = null;
+}
 
 function formatCurrency(amount: number | string) {
   const value = typeof amount === 'string' ? parseFloat(amount) : amount;
@@ -124,15 +180,6 @@ function formatCurrency(amount: number | string) {
   }).format(value);
 }
 
-function getAmountColor(expense: any) {
-  if (expense.credit > 0) return 'amount-positive';
-  if (expense.debit > 0) return 'amount-negative';
-  return 'amount-neutral';
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString();
-}
 
 function startEditing(expense: any) {
   editForm.value = { ...expense };
@@ -165,46 +212,13 @@ async function handleSave(updatedExpense: any) {
 }
 
 async function refreshData() {
-    // Re-fetch recent expenses to update the list
-    await fetchPaginatedExpenses({
-        page: 1,
-        limit: 5,
-        sort: 'date',
-        order: 'desc'
-    });
-
-    // Also re-fetch summary as amount might have changed
-    const now = new Date();
-    const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-    await fetchExpenseSummary({
-        startDate,
-        endDate,
-        period: 'month'
-    });
+  const filters = currentFilters.value;
+  await fetchExpenseSummary(filters);
 }
 
 onMounted(async () => {
   await fetchCategories();
-
-  const now = new Date();
-  const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-
-  // Fetch summary for this month
-  await fetchExpenseSummary({
-    startDate,
-    endDate,
-    period: 'month'
-  });
-
-  // Fetch recent 5 expenses
-  await fetchPaginatedExpenses({
-    page: 1,
-    limit: 5,
-    sort: 'date',
-    order: 'desc'
-  });
+  await refreshData();
 });
 </script>
 
@@ -214,7 +228,7 @@ onMounted(async () => {
 }
 
 .summary-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .charts-grid {
@@ -230,89 +244,7 @@ onMounted(async () => {
   }
 }
 
-.recent-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-}
-
-.spinner {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-right: 0.5rem;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.no-data {
-  text-align: center;
-  padding: 1rem;
-  color: var(--color-text-muted);
-}
-
-.recent-list {
-  background-color: var(--color-bg-card);
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-}
-
-.transaction-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.transaction-item:last-child {
-  border-bottom: none;
-}
-
-.transaction-item:hover {
-  background-color: var(--color-bg-hover);
-}
-
-.transaction-info {
-  /* container for text */
-}
-
-.transaction-desc {
-  font-weight: 500;
-}
-
-.transaction-meta {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-}
-
-.transaction-amount {
-  font-weight: 700;
-}
-
-.amount-negative {
-  color: var(--color-danger);
-}
-
-.amount-positive {
-  color: var(--color-success);
-}
-
-.view-all-container {
-  margin-top: 1rem;
-  text-align: center;
+.filters-section {
+  margin-bottom: 1.5rem;
 }
 </style>
