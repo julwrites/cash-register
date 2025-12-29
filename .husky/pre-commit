@@ -1,4 +1,11 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+echo "Validating package-lock.json..."
+if ! npm ci --dry-run; then
+  echo "Error: package-lock.json is out of sync with package.json."
+  echo "Please run 'npm install' to update package-lock.json."
+  exit 1
+fi
+
 npm run lint
