@@ -172,20 +172,6 @@ function resetFilters() {
   endDate.value = null;
 }
 
-function formatCurrency(amount: number | string) {
-  const value = typeof amount === 'string' ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(value);
-}
-
-
-function startEditing(expense: any) {
-  editForm.value = { ...expense };
-  isEditModalOpen.value = true;
-}
-
 function cancelEditing() {
   isEditModalOpen.value = false;
   editForm.value = {};
