@@ -6,7 +6,7 @@ priority: medium
 created: 2025-12-13 02:19:24
 category: features
 dependencies: []
-type: feature
+type: story
 ---
 
 # Implement Pagination for Expenses

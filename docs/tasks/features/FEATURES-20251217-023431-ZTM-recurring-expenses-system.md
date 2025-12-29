@@ -6,7 +6,7 @@ priority: high
 created: 2025-12-17 02:34:31
 category: features
 dependencies: []
-type: feature
+type: story
 ---
 
 # Recurring Expenses System
