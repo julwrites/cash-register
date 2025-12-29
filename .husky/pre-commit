@@ -1,4 +1,20 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# 1. Validate package-lock.json integrity
+echo "Validating package-lock.json..."
+if ! npm ci --dry-run; then
+  echo "Error: package-lock.json is out of sync with package.json."
+  echo "Please run 'npm install' to update package-lock.json."
+  exit 1
+fi
+
+# 2. Validate tasks (Agent Harness)
+echo "Validating tasks..."
+if ! python3 scripts/tasks.py validate --format text; then
+  echo "Error: Task validation failed."
+  exit 1
+fi
+
+# 3. Linting
 npm run lint
