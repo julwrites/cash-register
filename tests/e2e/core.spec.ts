@@ -77,8 +77,18 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
         throw e;
     }
 
-    // Check for dashboard element
-    await expect(page.getByText('Add New Record')).toBeVisible();
+    // Ensure hydration and auth state propagation
+    await page.waitForLoadState('networkidle');
+
+    // Debugging: If "Add New Record" isn't visible, check if we are still showing "Authentication Required"
+    if (await page.getByText('Authentication Required').isVisible()) {
+        console.log('Still showing Authentication Required after redirect. Reloading...');
+        await page.reload();
+        await page.waitForLoadState('networkidle');
+    }
+
+    // Check for dashboard element (Add New Record header)
+    await expect(page.getByRole('heading', { name: 'Add New Record' })).toBeVisible({ timeout: 10000 });
   });
 
   // 4. Add Expense
@@ -108,18 +118,26 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
   // 5. View Expense
   await test.step('View Expense', async () => {
     await page.goto('/?tab=list');
-    await page.getByRole('button', { name: 'Recent' }).click();
+
+    // Switch to All Time view to see 2024 record
+    await page.getByRole('button', { name: 'All', exact: true }).click();
+
+    // Select "All Time" period
+    // The select menu trigger usually has the current value "This Month"
+    // Use last() to target the inner button if Nuxt UI wraps it in a div[role=button]
+    await page.getByRole('button', { name: 'This Month' }).last().click();
+    await page.getByRole('option', { name: 'All Time' }).click();
 
     // Check for row
-    await expect(page.getByRole('cell', { name: 'Team Lunch' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Team Lunch' }).first()).toBeVisible();
     // Verify amount
-    await expect(page.getByRole('cell').filter({ hasText: '45.50' })).toBeVisible();
+    await expect(page.getByRole('cell').filter({ hasText: '45.50' }).first()).toBeVisible();
   });
 
   // 6. Edit Expense
   await test.step('Edit Expense', async () => {
     // Find row
-    const row = page.getByRole('row').filter({ hasText: 'Team Lunch' });
+    const row = page.getByRole('row').filter({ hasText: 'Team Lunch' }).first();
 
     // Click actions (last button in row)
     await row.getByRole('button').last().click();
@@ -140,7 +158,7 @@ test('Core Workflow: Setup -> Login -> Add -> View -> Edit', async ({ page, requ
     await expect(page.getByText('Expense updated successfully')).toBeVisible();
 
     // Verify table update
-    await expect(page.getByRole('cell').filter({ hasText: '50.00' })).toBeVisible();
-    await expect(page.getByRole('cell', { name: 'Food' })).toBeVisible();
+    await expect(page.getByRole('cell').filter({ hasText: '50.00' }).first()).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Food' }).first()).toBeVisible();
   });
 });

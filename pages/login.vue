@@ -131,7 +131,13 @@ async function login() {
     }
 
     // Force session refresh to ensure we are authenticated before redirecting
-    await getSession();
+    // Retry a few times to ensure state propagation
+    const { status } = useAuth();
+    for (let i = 0; i < 5; i++) {
+        await getSession();
+        if (status.value === 'authenticated') break;
+        await new Promise(r => setTimeout(r, 200));
+    }
 
     router.push('/');
   } catch (error) {
