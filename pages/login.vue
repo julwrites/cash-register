@@ -123,17 +123,13 @@ async function login() {
     const result = await signIn('credentials', {
       username: username.value,
       password: password.value,
-      redirect: false,
+      callbackUrl: '/',
+      redirect: true,
     });
 
     if (result?.error) {
       throw new Error(result.error);
     }
-
-    // Force session refresh to ensure we are authenticated before redirecting
-    await getSession();
-
-    router.push('/');
   } catch (error) {
     console.error('Login error:', error);
     toast.add({
