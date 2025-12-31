@@ -50,11 +50,15 @@ test.describe('Responsiveness', () => {
 
     // Mobile View
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.waitForTimeout(1000); // wait for layout shift
-
+    // Wait for layout shift using visual assertion or specific element state
     const groups = page.locator('.form-grid > div');
-    // Wait for groups to be present
     await expect(groups.first()).toBeVisible();
+    // Ensure styles have applied (checking display block/grid property or bounding box stability)
+    // Retrying bounding box check is often better than hard wait
+    await expect.poll(async () => {
+        const box = await groups.nth(1).boundingBox();
+        return box?.y;
+    }, { timeout: 5000 }).toBeGreaterThan(0);
 
     const box1Mobile = await groups.nth(0).boundingBox();
     const box2Mobile = await groups.nth(1).boundingBox();
@@ -69,7 +73,12 @@ test.describe('Responsiveness', () => {
 
     // Desktop View
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.waitForTimeout(1000); // wait for layout shift
+    // Allow resize
+    await expect.poll(async () => {
+         const box1 = await groups.nth(0).boundingBox();
+         const box2 = await groups.nth(1).boundingBox();
+         return Math.abs((box1?.x || 0) - (box2?.x || 0));
+    }, { timeout: 5000 }).toBeGreaterThan(50);
 
     const box1Desktop = await groups.nth(0).boundingBox();
     const box2Desktop = await groups.nth(1).boundingBox();

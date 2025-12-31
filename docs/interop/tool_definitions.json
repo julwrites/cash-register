@@ -11,7 +11,7 @@
             "category": {
               "type": "string",
               "enum": ["foundation", "infrastructure", "domain", "presentation",
- "migration", "features", "testing"],
+ "migration", "features", "testing", "review", "security", "research"],
               "description": "The category of the task."
             },
             "title": {
@@ -45,7 +45,7 @@ d", "verified", "completed", "blocked", "cancelled", "deferred"],
             "category": {
               "type": "string",
               "enum": ["foundation", "infrastructure", "domain", "presentation",
- "migration", "features", "testing"],
+ "migration", "features", "testing", "review", "security", "research"],
               "description": "Filter by task category."
             },
             "archived": {
