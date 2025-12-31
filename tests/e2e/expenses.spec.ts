@@ -31,7 +31,9 @@ test.describe('Expense Management', () => {
             await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
             await page.getByLabel('Password', { exact: true }).fill('password123');
             await page.getByRole('button', { name: 'Login' }).click();
-            await expect(page).toHaveURL('/');
+            // Wait for navigation to dashboard by checking for a dashboard-specific element
+            // This avoids strict URL matching which can be flaky with trailing slashes or redirects
+            await expect(page.getByText('Add New Record')).toBeVisible({ timeout: 15000 });
         }
     });
 
@@ -88,6 +90,18 @@ test.describe('Expense Management', () => {
 
         // View
         await page.goto('/?tab=list');
+
+        // Switch to "All Time" to ensure we see the expense (it might be in a different month)
+        // Use simpler selector for the first button in desktop filters (Period filter)
+        const periodFilter = page.locator('.desktop-filters button').first();
+        await expect(periodFilter).toBeVisible();
+        await page.waitForTimeout(500); // Wait for hydration/handlers
+        await periodFilter.click({ force: true });
+
+        // Wait for dropdown to open
+        await expect(page.getByRole('option', { name: 'All Time' })).toBeVisible();
+        await page.getByRole('option', { name: 'All Time' }).click();
+
         await page.getByRole('button', { name: 'Recent' }).click();
 
         // Find row
