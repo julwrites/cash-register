@@ -77,7 +77,11 @@ test.describe('Expense Management', () => {
         await page.getByLabel('Date').fill('2024-01-15');
         await page.getByLabel('Category').click();
         await page.locator('[role="option"]').filter({ hasText: 'Food' }).first().click();
-        await page.getByLabel('Description').fill('Test Expense');
+
+        await page.getByLabel('Description').click();
+        await page.keyboard.type('Test Expense');
+        await page.keyboard.press('Enter');
+
         await page.getByLabel('Debit').fill('10.00');
         await page.getByRole('button', { name: 'Submit' }).click();
         await expect(page.getByText('Expense added successfully')).toBeVisible();
