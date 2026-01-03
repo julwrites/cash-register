@@ -163,6 +163,15 @@ select {
   color: var(--color-text-body) !important;
 }
 
+/* Prevent auto-zoom on mobile devices by enforcing 16px font size on inputs */
+@media (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 /* Fix USelectMenu search input width and styling */
 [data-headlessui-state="open"] input[type="search"],
 [data-headlessui-state="open"] input[type="text"] {
