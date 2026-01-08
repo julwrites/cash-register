@@ -61,7 +61,7 @@
       <!-- Pagination (Only visible in 'All' mode) -->
       <div v-if="viewMode === 'all' && totalCount > 0" class="pagination-wrapper">
         <UPagination
-          v-model="currentPage"
+          :model-value="currentPage"
           :total="totalCount"
           :per-page="itemsPerPage"
           @update:model-value="handlePageChange"
