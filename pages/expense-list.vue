@@ -64,7 +64,7 @@
           v-model="currentPage"
           :total="totalCount"
           :per-page="itemsPerPage"
-          @change="handlePageChange"
+          @update:model-value="handlePageChange"
         />
       </div>
     </div>
