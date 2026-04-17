@@ -149,8 +149,13 @@ onUnmounted(() => {
 
 async function handleSubmit() {
   if (validateExpense(expenseData.value)) {
+    const isNewDescription = !descriptionList.value.some(
+      (d) => d.label === expenseData.value.description
+    );
     emits('submit', expenseData.value);
-    await fetchDescriptions();
+    if (isNewDescription) {
+      await fetchDescriptions();
+    }
   }
   expenseData.value = { ...defaultExpense };
   formKey.value++;
