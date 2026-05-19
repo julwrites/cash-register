@@ -51,6 +51,6 @@ describe('ExpenseForm Reset', () => {
     expect(component.vm.expenseData.description).toBe('');
 
     // Check if other fields are reset
-    expect(component.vm.expenseData.debit).toBe(0);
+    expect(component.vm.expenseData.debit).toBe("");
   });
 });

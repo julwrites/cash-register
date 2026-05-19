@@ -16,7 +16,7 @@
         />
       </UFormGroup>
 
-      <UFormGroup label="Description" name="description" class="full-width-field">
+      <UFormGroup label="Description" name="description">
         <USelectMenu
           id="description"
           :key="formKey"
@@ -32,7 +32,7 @@
         />
       </UFormGroup>
 
-      <UFormGroup label="Category" name="category">
+      <UFormGroup label="Category" name="category" class="full-width-field">
         <USelectMenu
           id="category"
           v-model="expenseData.category"
