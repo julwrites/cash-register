@@ -16,19 +16,6 @@
         />
       </UFormGroup>
 
-      <UFormGroup label="Category" name="category">
-        <USelectMenu
-          id="category"
-          v-model="expenseData.category"
-          :options="categoryOptions"
-          required
-          color="gray"
-          :ui="{ base: 'w-full' }"
-          @open="handleDropdownOpen"
-          @close="handleDropdownClose"
-        />
-      </UFormGroup>
-
       <UFormGroup label="Description" name="description" class="full-width-field">
         <USelectMenu
           id="description"
@@ -38,6 +25,19 @@
           required
           creatable
           searchable
+          color="gray"
+          :ui="{ base: 'w-full' }"
+          @open="handleDropdownOpen"
+          @close="handleDropdownClose"
+        />
+      </UFormGroup>
+
+      <UFormGroup label="Category" name="category">
+        <USelectMenu
+          id="category"
+          v-model="expenseData.category"
+          :options="categoryOptions"
+          required
           color="gray"
           :ui="{ base: 'w-full' }"
           @open="handleDropdownOpen"
@@ -96,10 +96,21 @@ const emits = defineEmits<{
   (event: 'cancel'): void;
 }>();
 
-const expenseData = ref<Expense>({
-  ...defaultExpense,
-  ...props.expense,
-});
+interface FormExpense extends Omit<Expense, 'credit' | 'debit'> {
+  credit: number | '';
+  debit: number | '';
+}
+
+const initExpenseData = (expense: Partial<Expense>): FormExpense => {
+  const merged = { ...defaultExpense, ...expense };
+  return {
+    ...merged,
+    credit: merged.credit === 0 ? '' : merged.credit,
+    debit: merged.debit === 0 ? '' : merged.debit,
+  };
+};
+
+const expenseData = ref<FormExpense>(initExpenseData(props.expense));
 
 const formKey = ref(0);
 const descriptionList = ref<{ label: string; category: string }[]>([]);
@@ -111,7 +122,7 @@ const toast = useToast();
 watch(
   () => props.expense,
   (newVal) => {
-    expenseData.value = { ...defaultExpense, ...newVal };
+    expenseData.value = initExpenseData(newVal);
   }
 );
 
@@ -148,17 +159,23 @@ onUnmounted(() => {
 });
 
 async function handleSubmit() {
-  if (validateExpense(expenseData.value)) {
+  const submitData: Expense = {
+    ...expenseData.value,
+    credit: expenseData.value.credit === '' ? 0 : Number(expenseData.value.credit),
+    debit: expenseData.value.debit === '' ? 0 : Number(expenseData.value.debit),
+  };
+
+  if (validateExpense(submitData)) {
     const isNewDescription = !descriptionList.value.some(
-      (d) => d.label === expenseData.value.description
+      (d) => d.label === submitData.description
     );
-    emits('submit', expenseData.value);
+    emits('submit', submitData);
     if (isNewDescription) {
       await fetchDescriptions();
     }
+    expenseData.value = initExpenseData(defaultExpense);
+    formKey.value++;
   }
-  expenseData.value = { ...defaultExpense };
-  formKey.value++;
 }
 
 function validateExpense(expense: Expense): boolean {
@@ -184,7 +201,7 @@ function validateExpense(expense: Expense): boolean {
 }
 
 function cancelEdit() {
-  expenseData.value = { ...defaultExpense }; // Reset form
+  expenseData.value = initExpenseData(defaultExpense); // Reset form
   emits('cancel');
 }
 
