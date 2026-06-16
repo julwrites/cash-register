@@ -2,6 +2,13 @@
   <div class="filters-container">
     <!-- Desktop Filters -->
     <div class="desktop-filters">
+      <UInput
+        v-model="localSearchQuery"
+        placeholder="Search expenses..."
+        icon="i-heroicons-magnifying-glass-20-solid"
+        class="filter-input"
+        clearable
+      />
       <USelectMenu
         v-model="localSelectedPeriod"
         :options="periodOptions"
@@ -49,6 +56,13 @@
       <UAccordion :items="[{ label: 'Filters', slot: 'filters' }]">
         <template #filters>
           <div class="mobile-filter-content">
+             <UInput
+              v-model="localSearchQuery"
+              placeholder="Search expenses..."
+              icon="i-heroicons-magnifying-glass-20-solid"
+              class="filter-input"
+              clearable
+            />
              <USelectMenu
               v-model="localSelectedPeriod"
               :options="periodOptions"
@@ -106,6 +120,7 @@ const props = defineProps({
   categoryOptions: { type: Array, default: () => [] },
   startDate: { type: String, default: '' },
   endDate: { type: String, default: '' },
+  searchQuery: { type: String, default: '' },
 });
 
 const emit = defineEmits([
@@ -113,6 +128,7 @@ const emit = defineEmits([
   'update:selectedCategory',
   'update:startDate',
   'update:endDate',
+  'update:searchQuery',
   'reset-filters',
 ]);
 
@@ -124,6 +140,11 @@ const localSelectedPeriod = computed({
 const localSelectedCategory = computed({
   get: () => props.selectedCategory,
   set: (value) => emit('update:selectedCategory', value),
+});
+
+const localSearchQuery = computed({
+  get: () => props.searchQuery,
+  set: (value) => emit('update:searchQuery', value),
 });
 
 const localStartDate = ref(props.startDate || '');

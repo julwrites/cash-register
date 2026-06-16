@@ -7,10 +7,12 @@ export default defineEventHandler((event) => {
   const startDate = query.startDate as string;
   const endDate = query.endDate as string;
   const category = query.category as string;
+  const search = query.search as string;
 
   return getExpenseSummary({
     startDate,
     endDate,
     category,
+    search,
   });
 });

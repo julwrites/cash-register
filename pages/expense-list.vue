@@ -31,10 +31,12 @@
         :category-options="categoryOptions"
         :start-date="startDate"
         :end-date="endDate"
+        :search-query="searchQuery"
         @update:selected-period="selectedPeriod = $event"
         @update:selected-category="selectedCategory = $event"
         @update:start-date="startDate = $event"
         @update:end-date="endDate = $event"
+        @update:search-query="searchQuery = $event"
         @reset-filters="resetFilters"
       />
 
@@ -125,6 +127,7 @@ const itemsPerPage = 10;
 
 const startDate = ref(null);
 const endDate = ref(null);
+const searchQuery = ref('');
 
 const selectedPeriod = ref({ label: 'This Month', value: 'month' });
 const selectedCategory = ref({ label: 'All Categories', value: '' });
@@ -155,6 +158,9 @@ const currentFilters = computed(() => {
   const filters: any = {};
   if (selectedCategory.value.value) {
     filters.category = selectedCategory.value.value;
+  }
+  if (searchQuery.value) {
+    filters.search = searchQuery.value;
   }
 
   if (selectedPeriod.value.value) {
@@ -197,7 +203,7 @@ const currentFilters = computed(() => {
 });
 
 // Watchers
-watch([selectedPeriod, selectedCategory, startDate, endDate], () => {
+watch([selectedPeriod, selectedCategory, startDate, endDate, searchQuery], () => {
   currentPage.value = 1;
   refreshData();
 });
@@ -265,6 +271,7 @@ function resetFilters() {
   selectedCategory.value = { label: 'All Categories', value: '' };
   startDate.value = null;
   endDate.value = null;
+  searchQuery.value = '';
   currentPage.value = 1;
   sort.value = { column: 'date', direction: 'desc' };
   // Watcher will trigger refreshData

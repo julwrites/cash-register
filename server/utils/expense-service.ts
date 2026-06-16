@@ -21,6 +21,7 @@ interface FetchExpensesParams {
   category?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  search?: string;
 }
 
 interface PaginatedResponse {
@@ -88,6 +89,10 @@ export const getExpenseSummary = (
     if (params.endDate) {
       conditions.push('date <= ?');
       args.push(params.endDate);
+    }
+    if (params.search) {
+      conditions.push('description LIKE ?');
+      args.push(`%${params.search}%`);
     }
 
     const whereClause =
@@ -178,6 +183,10 @@ export const fetchExpensesPaginated = (
         conditions.push('date <= ?');
         args.push(params.endDate);
       }
+      if (params.search) {
+        conditions.push('description LIKE ?');
+        args.push(`%${params.search}%`);
+      }
 
       if (conditions.length > 0) {
         query += ' WHERE ' + conditions.join(' AND ');
@@ -221,6 +230,10 @@ export const fetchExpensesPaginated = (
     if (params.endDate) {
       conditions.push('date <= ?');
       args.push(params.endDate);
+    }
+    if (params.search) {
+      conditions.push('description LIKE ?');
+      args.push(`%${params.search}%`);
     }
 
     if (conditions.length > 0) {
@@ -270,6 +283,10 @@ export const fetchExpensesPaginated = (
         conditions.push('date <= ?');
         args.push(params.endDate);
       }
+      if (params.search) {
+        conditions.push('description LIKE ?');
+        args.push(`%${params.search}%`);
+      }
 
       if (conditions.length > 0) {
         query += ' WHERE ' + conditions.join(' AND ');
@@ -316,6 +333,10 @@ export const fetchExpensesPaginated = (
         if (params.endDate) {
           conditions.push('date <= ?');
           args.push(params.endDate);
+        }
+        if (params.search) {
+          conditions.push('description LIKE ?');
+          args.push(`%${params.search}%`);
         }
 
         if (conditions.length > 0) {

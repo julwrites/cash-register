@@ -18,6 +18,7 @@ interface FetchParams {
   category?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  search?: string;
 }
 
 interface ExpenseSummary {
@@ -44,6 +45,7 @@ export function useExpenses() {
       if (params.startDate) query.append('startDate', params.startDate);
       if (params.endDate) query.append('endDate', params.endDate);
       if (params.category) query.append('category', params.category);
+      if (params.search) query.append('search', params.search);
       if (params.sortBy) query.append('sortBy', params.sortBy);
       if (params.sortOrder) query.append('sortOrder', params.sortOrder);
 
@@ -88,6 +90,7 @@ export function useExpenses() {
       if (params.startDate) query.append('startDate', params.startDate);
       if (params.endDate) query.append('endDate', params.endDate);
       if (params.category) query.append('category', params.category);
+      if (params.search) query.append('search', params.search);
 
       const response = await fetch(`/api/expenses?${query.toString()}`);
       if (!response.ok) {
@@ -135,6 +138,7 @@ export function useExpenses() {
       if (params.startDate) query.append('startDate', params.startDate);
       if (params.endDate) query.append('endDate', params.endDate);
       if (params.category) query.append('category', params.category);
+      if (params.search) query.append('search', params.search);
 
       const response = await fetch(`/api/expenses/summary?${query.toString()}`);
       if (!response.ok) {

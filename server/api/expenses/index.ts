@@ -11,6 +11,7 @@ export default defineEventHandler((event) => {
   const category = query.category as string;
   const sortBy = query.sortBy as string;
   const sortOrder = query.sortOrder as 'asc' | 'desc';
+  const search = query.search as string;
 
   return fetchExpensesPaginated({
     page,
@@ -20,5 +21,6 @@ export default defineEventHandler((event) => {
     category,
     sortBy,
     sortOrder,
+    search,
   });
 });
